@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ka">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wemo — Discover Georgia</title>
+<title>Wemo — აღმოაჩინე საქართველო</title>
 <link rel="stylesheet" href="assets/fonts.css">
 <style>
 :root {
@@ -24,12 +24,32 @@ html { background: var(--base); }
 body {
   background: var(--base);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Noto Sans Georgian', sans-serif;
   max-width: 430px;
   margin: 0 auto;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+body.lang-ka {
+  font-family: 'Noto Sans Georgian', 'Inter', sans-serif;
+}
+
+body.lang-ka .logo-name,
+body.lang-en .logo-name,
+body.lang-en .mood-title,
+body.lang-en .sec-title,
+body.lang-en .card-name,
+body.lang-en .deals-title {
+  font-family: 'Syne', 'Inter', sans-serif;
+}
+
+body.lang-ka .mood-title,
+body.lang-ka .sec-title,
+body.lang-ka .card-name,
+body.lang-ka .deals-title {
+  font-family: 'Noto Sans Georgian', 'Inter', sans-serif;
 }
 
 /* ── NAV ── */
@@ -70,18 +90,25 @@ nav {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.nav-pill {
+.nav-pill,
+.lang-toggle {
   background: var(--lavender-dim);
   border: 1px solid rgba(183,177,255,0.2);
   color: var(--lavender);
   font-size: 12px;
-  font-weight: 600;
-  padding: 7px 13px;
+  font-weight: 700;
+  padding: 7px 12px;
   border-radius: 100px;
   cursor: pointer;
+  font-family: inherit;
+}
+
+.lang-toggle {
+  min-width: 42px;
+  text-align: center;
 }
 
 .nav-icon {
@@ -163,12 +190,18 @@ nav {
 }
 
 .mood-title {
-  font-family: 'Syne', sans-serif;
   font-size: 30px;
   font-weight: 800;
   line-height: 1.05;
   color: var(--text);
   letter-spacing: -0.02em;
+  max-width: 230px;
+}
+
+body.lang-ka .mood-title {
+  font-size: 28px;
+  line-height: 1.12;
+  letter-spacing: 0;
 }
 
 .mood-title em {
@@ -276,8 +309,9 @@ nav {
   border: none;
   outline: none;
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: inherit;
   font-size: 15px;
+  min-width: 0;
 }
 
 .search-box input::placeholder { color: var(--muted); }
@@ -337,7 +371,6 @@ nav {
 }
 
 .sec-title {
-  font-family: 'Syne', sans-serif;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -476,7 +509,6 @@ nav {
 }
 
 .card-name {
-  font-family: 'Syne', sans-serif;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
@@ -501,6 +533,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid var(--line);
@@ -512,6 +545,7 @@ nav {
   gap: 5px;
   font-size: 12px;
   color: var(--muted);
+  min-width: 0;
 }
 
 .star { color: var(--lavender); }
@@ -525,6 +559,7 @@ nav {
   padding: 6px 14px;
   border-radius: 100px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .cards-row {
@@ -600,7 +635,6 @@ nav {
 }
 
 .deals-title {
-  font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 800;
   color: var(--text);
@@ -662,11 +696,11 @@ nav {
 .spacer { height: 100px; }
 </style>
 </head>
-<body>
+<body class="lang-ka">
 
 <nav>
   <div class="logo">
-    <svg class="logo-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg class="logo-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <rect width="100" height="100" rx="24" fill="#B7B1FF"/>
       <line x1="31" y1="22" x2="47" y2="78" stroke="white" stroke-width="11" stroke-linecap="round"/>
       <line x1="69" y1="22" x2="53" y2="78" stroke="white" stroke-width="11" stroke-linecap="round"/>
@@ -675,7 +709,8 @@ nav {
     <span class="logo-name">wemo</span>
   </div>
   <div class="nav-right">
-    <div class="nav-pill">Batumi</div>
+    <button class="lang-toggle" type="button" data-lang-toggle aria-label="Switch language">EN</button>
+    <div class="nav-pill" data-i18n="city">ბათუმი</div>
     <div class="nav-icon">🔔</div>
   </div>
 </nav>
@@ -686,32 +721,32 @@ nav {
   <div class="mood-content">
     <div class="mood-eyebrow">
       <div class="pulse"></div>
-      <span>Live · Thursday night</span>
+      <span data-i18n="moodEyebrow">ახლა · ხუთშაბათი საღამო</span>
     </div>
     <div>
-      <div class="mood-title">Batumi is<br><em>alive</em> right now</div>
+      <div class="mood-title"><span data-i18n="moodLine1">ბათუმი</span><br><em data-i18n="moodEm">ცოცხალია</em><br><span data-i18n="moodLine2">ამ წუთას</span></div>
     </div>
     <div class="mood-bottom">
       <div>
         <div class="mood-tags">
-          <span class="mood-tag">🎵 Jazz</span>
-          <span class="mood-tag">🌊 Beach</span>
-          <span class="mood-tag">🍷 Wine</span>
+          <span class="mood-tag" data-i18n="tagJazz">🎵 ჯაზი</span>
+          <span class="mood-tag" data-i18n="tagBeach">🌊 ზღვა</span>
+          <span class="mood-tag" data-i18n="tagWine">🍷 ღვინო</span>
         </div>
-        <div class="mood-count" style="margin-top:7px;">34 places open · 8 events tonight</div>
+        <div class="mood-count" style="margin-top:7px;" data-i18n="moodCount">34 ადგილი ღიაა · 8 ღონისძიება დღეს</div>
       </div>
     </div>
   </div>
   <div class="mood-cards">
     <div class="mini-card">
-      <div class="mc-label">Open now</div>
-      <div class="mc-name">Lighthouse Beach Bar</div>
-      <div class="mc-meta">5 min away</div>
+      <div class="mc-label" data-i18n="openNow">ღიაა ახლა</div>
+      <div class="mc-name" data-i18n="placeBeachBar">Lighthouse Beach Bar</div>
+      <div class="mc-meta" data-i18n="fiveMin">5 წუთში</div>
     </div>
     <div class="mini-card">
-      <div class="mc-label">Tonight 9PM</div>
-      <div class="mc-name">Jazz on the Boulevard</div>
-      <div class="mc-meta">Free entry</div>
+      <div class="mc-label" data-i18n="tonight9">დღეს 21:00</div>
+      <div class="mc-name" data-i18n="placeJazz">ჯაზი ბულვარში</div>
+      <div class="mc-meta" data-i18n="freeEntry">შესვლა უფასოა</div>
     </div>
   </div>
 </div>
@@ -719,65 +754,65 @@ nav {
 <div class="search-wrap">
   <div class="search-box">
     <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Restaurants, beach clubs, events…">
+    <input type="text" data-i18n-placeholder="searchPlaceholder" placeholder="რესტორნები, კლუბები, ღონისძიებები...">
     <div class="filter-btn">⚡</div>
   </div>
 </div>
 
 <div class="chips">
-  <div class="chip on">All</div>
-  <div class="chip">Open now</div>
-  <div class="chip">Tonight</div>
-  <div class="chip">Beaches</div>
-  <div class="chip">Restaurants</div>
-  <div class="chip">Stays</div>
-  <div class="chip">Activities</div>
+  <div class="chip on" data-i18n="chipAll">ყველა</div>
+  <div class="chip" data-i18n="chipOpen">ღიაა ახლა</div>
+  <div class="chip" data-i18n="chipTonight">დღეს</div>
+  <div class="chip" data-i18n="chipBeaches">პლაჟები</div>
+  <div class="chip" data-i18n="chipRestaurants">რესტორნები</div>
+  <div class="chip" data-i18n="chipStays">სასტუმროები</div>
+  <div class="chip" data-i18n="chipActivities">აქტივობები</div>
 </div>
 
 <div class="sec">
   <div class="sec-head">
-    <span class="sec-title">Explore</span>
+    <span class="sec-title" data-i18n="explore">აღმოაჩინე</span>
   </div>
 </div>
 <div class="cat-strip">
   <div class="cat on">
     <div class="cat-icon">🍽️</div>
-    <span class="cat-label">Restaurants</span>
+    <span class="cat-label" data-i18n="catRestaurants">რესტორნები</span>
   </div>
   <div class="cat">
     <div class="cat-icon">🏖️</div>
-    <span class="cat-label">Beach clubs</span>
+    <span class="cat-label" data-i18n="catBeachClubs">Beach clubs</span>
   </div>
   <div class="cat">
     <div class="cat-icon">🏨</div>
-    <span class="cat-label">Stays</span>
+    <span class="cat-label" data-i18n="catStays">სასტუმროები</span>
   </div>
   <div class="cat">
     <div class="cat-icon">🎉</div>
-    <span class="cat-label">Events</span>
+    <span class="cat-label" data-i18n="catEvents">ივენთები</span>
   </div>
   <div class="cat">
     <div class="cat-icon">🚤</div>
-    <span class="cat-label">Activities</span>
+    <span class="cat-label" data-i18n="catActivities">აქტივობები</span>
   </div>
   <div class="cat">
     <div class="cat-icon">🍷</div>
-    <span class="cat-label">Bars</span>
+    <span class="cat-label" data-i18n="catBars">ბარები</span>
   </div>
   <div class="cat">
     <div class="cat-icon">🗺️</div>
-    <span class="cat-label">Tours</span>
+    <span class="cat-label" data-i18n="catTours">ტურები</span>
   </div>
   <div class="cat">
     <div class="cat-icon">⛱️</div>
-    <span class="cat-label">Pools</span>
+    <span class="cat-label" data-i18n="catPools">აუზები</span>
   </div>
 </div>
 
 <div class="sec">
   <div class="sec-head">
-    <span class="sec-title">Trending now</span>
-    <span class="sec-link">See all →</span>
+    <span class="sec-title" data-i18n="trending">ახლა პოპულარულია</span>
+    <span class="sec-link" data-i18n="seeAll">ყველას ნახვა →</span>
   </div>
 </div>
 
@@ -787,20 +822,20 @@ nav {
       <div class="card-big-thumb">
         <div class="thumb-bg tb1">🌊</div>
         <div class="thumb-overlay"></div>
-        <div class="thumb-tag green">Open now</div>
+        <div class="thumb-tag green" data-i18n="openNow">ღიაა ახლა</div>
       </div>
       <div class="card-big-body">
         <div class="card-row">
-          <div class="card-name">Lighthouse Beach Bar</div>
+          <div class="card-name" data-i18n="placeBeachBar">Lighthouse Beach Bar</div>
           <div class="card-price">₾₾</div>
         </div>
-        <div class="card-meta">Beach club · Batumi seafront · 5 min walk</div>
+        <div class="card-meta" data-i18n="beachBarMeta">Beach club · ბათუმის სანაპირო · 5 წუთი ფეხით</div>
         <div class="card-footer">
           <div class="rating">
             <span class="star">★</span>
-            4.9 · 284 reviews
+            <span data-i18n="reviewsBeach">4.9 · 284 შეფასება</span>
           </div>
-          <div class="book-btn">Request table</div>
+          <div class="book-btn" data-i18n="requestTable">მაგიდის მოთხოვნა</div>
         </div>
       </div>
     </div>
@@ -811,22 +846,22 @@ nav {
       <div class="card-sm-thumb">
         <div class="thumb-bg tb2" style="height:100%; font-size:32px;">🎵</div>
         <div class="thumb-overlay"></div>
-        <div class="thumb-tag" style="font-size:9px; top:8px; left:8px; padding:3px 8px;">Tonight</div>
+        <div class="thumb-tag" style="font-size:9px; top:8px; left:8px; padding:3px 8px;" data-i18n="tonight">დღეს</div>
       </div>
       <div class="card-sm-body">
-        <div class="card-sm-name">Jazz on the Boulevard</div>
-        <div class="card-sm-meta">Event · Free · 9PM</div>
+        <div class="card-sm-name" data-i18n="placeJazz">ჯაზი ბულვარში</div>
+        <div class="card-sm-meta" data-i18n="jazzMeta">ივენთი · უფასო · 21:00</div>
       </div>
     </div>
     <div class="card-sm">
       <div class="card-sm-thumb">
         <div class="thumb-bg tb3" style="height:100%; font-size:32px;">🚤</div>
         <div class="thumb-overlay"></div>
-        <div class="thumb-tag" style="font-size:9px; top:8px; left:8px; padding:3px 8px;">From ₾80</div>
+        <div class="thumb-tag" style="font-size:9px; top:8px; left:8px; padding:3px 8px;" data-i18n="from80">₾80-დან</div>
       </div>
       <div class="card-sm-body">
-        <div class="card-sm-name">Kobuleti Jet Ski</div>
-        <div class="card-sm-meta">Activity · Open now</div>
+        <div class="card-sm-name" data-i18n="placeJetSki">ქობულეთის ჯეტ სკი</div>
+        <div class="card-sm-meta" data-i18n="jetSkiMeta">აქტივობა · ღიაა ახლა</div>
       </div>
     </div>
   </div>
@@ -835,30 +870,30 @@ nav {
     <div class="card-big-thumb">
       <div class="thumb-bg tb2">🍷</div>
       <div class="thumb-overlay"></div>
-      <div class="thumb-tag">Trending</div>
+      <div class="thumb-tag" data-i18n="trendingTag">პოპულარული</div>
     </div>
     <div class="card-big-body">
       <div class="card-row">
-        <div class="card-name">Old Town Wine House</div>
+        <div class="card-name" data-i18n="placeWineHouse">ძველი ქალაქის ღვინის სახლი</div>
         <div class="card-price">₾₾₾</div>
       </div>
-      <div class="card-meta">Restaurant · Old Batumi · Georgian cuisine</div>
+      <div class="card-meta" data-i18n="wineMeta">რესტორანი · ძველი ბათუმი · ქართული სამზარეულო</div>
       <div class="card-footer">
         <div class="rating">
           <span class="star">★</span>
-          4.8 · 312 reviews
+          <span data-i18n="reviewsWine">4.8 · 312 შეფასება</span>
         </div>
-        <div class="book-btn">Reserve</div>
+        <div class="book-btn" data-i18n="reserve">დაჯავშნა</div>
       </div>
     </div>
   </div>
 </div>
 
 <div class="deals">
-  <div class="deals-tag">This week only</div>
-  <div class="deals-title">20% off beach beds</div>
-  <div class="deals-sub">At 6 beach clubs across Batumi & Kobuleti</div>
-  <div class="deals-btn">See all deals →</div>
+  <div class="deals-tag" data-i18n="thisWeek">მხოლოდ ამ კვირაში</div>
+  <div class="deals-title" data-i18n="dealTitle">20% ფასდაკლება შეზლონგებზე</div>
+  <div class="deals-sub" data-i18n="dealSub">ბათუმისა და ქობულეთის 6 beach club-ში</div>
+  <div class="deals-btn" data-i18n="seeDeals">ნახე ყველა შეთავაზება →</div>
 </div>
 
 <div class="spacer"></div>
@@ -866,25 +901,185 @@ nav {
 <div class="bottom-nav">
   <div class="nav-btn on">
     <span class="nav-btn-icon">⌂</span>
-    Home
+    <span data-i18n="navHome">მთავარი</span>
   </div>
   <div class="nav-btn">
     <span class="nav-btn-icon">🧭</span>
-    Explore
+    <span data-i18n="navExplore">აღმოაჩინე</span>
   </div>
   <div class="nav-btn">
     <span class="nav-btn-icon">📅</span>
-    Events
+    <span data-i18n="navEvents">ივენთები</span>
   </div>
   <div class="nav-btn">
     <span class="nav-btn-icon">♡</span>
-    Saved
+    <span data-i18n="navSaved">შენახული</span>
   </div>
   <div class="nav-btn">
     <span class="nav-btn-icon">◎</span>
-    Profile
+    <span data-i18n="navProfile">პროფილი</span>
   </div>
 </div>
+
+<script>
+const translations = {
+  ka: {
+    pageTitle: 'Wemo — აღმოაჩინე საქართველო',
+    toggle: 'EN',
+    toggleLabel: 'Switch language to English',
+    city: 'ბათუმი',
+    moodEyebrow: 'ახლა · ხუთშაბათი საღამო',
+    moodLine1: 'ბათუმი',
+    moodEm: 'ცოცხალია',
+    moodLine2: 'ამ წუთას',
+    tagJazz: '🎵 ჯაზი',
+    tagBeach: '🌊 ზღვა',
+    tagWine: '🍷 ღვინო',
+    moodCount: '34 ადგილი ღიაა · 8 ღონისძიება დღეს',
+    openNow: 'ღიაა ახლა',
+    placeBeachBar: 'Lighthouse Beach Bar',
+    fiveMin: '5 წუთში',
+    tonight9: 'დღეს 21:00',
+    placeJazz: 'ჯაზი ბულვარში',
+    freeEntry: 'შესვლა უფასოა',
+    searchPlaceholder: 'რესტორნები, კლუბები, ღონისძიებები...',
+    chipAll: 'ყველა',
+    chipOpen: 'ღიაა ახლა',
+    chipTonight: 'დღეს',
+    chipBeaches: 'პლაჟები',
+    chipRestaurants: 'რესტორნები',
+    chipStays: 'სასტუმროები',
+    chipActivities: 'აქტივობები',
+    explore: 'აღმოაჩინე',
+    catRestaurants: 'რესტორნები',
+    catBeachClubs: 'Beach clubs',
+    catStays: 'სასტუმროები',
+    catEvents: 'ივენთები',
+    catActivities: 'აქტივობები',
+    catBars: 'ბარები',
+    catTours: 'ტურები',
+    catPools: 'აუზები',
+    trending: 'ახლა პოპულარულია',
+    seeAll: 'ყველას ნახვა →',
+    beachBarMeta: 'Beach club · ბათუმის სანაპირო · 5 წუთი ფეხით',
+    reviewsBeach: '4.9 · 284 შეფასება',
+    requestTable: 'მაგიდის მოთხოვნა',
+    tonight: 'დღეს',
+    jazzMeta: 'ივენთი · უფასო · 21:00',
+    from80: '₾80-დან',
+    placeJetSki: 'ქობულეთის ჯეტ სკი',
+    jetSkiMeta: 'აქტივობა · ღიაა ახლა',
+    trendingTag: 'პოპულარული',
+    placeWineHouse: 'ძველი ქალაქის ღვინის სახლი',
+    wineMeta: 'რესტორანი · ძველი ბათუმი · ქართული სამზარეულო',
+    reviewsWine: '4.8 · 312 შეფასება',
+    reserve: 'დაჯავშნა',
+    thisWeek: 'მხოლოდ ამ კვირაში',
+    dealTitle: '20% ფასდაკლება შეზლონგებზე',
+    dealSub: 'ბათუმისა და ქობულეთის 6 beach club-ში',
+    seeDeals: 'ნახე ყველა შეთავაზება →',
+    navHome: 'მთავარი',
+    navExplore: 'აღმოაჩინე',
+    navEvents: 'ივენთები',
+    navSaved: 'შენახული',
+    navProfile: 'პროფილი'
+  },
+  en: {
+    pageTitle: 'Wemo — Discover Georgia',
+    toggle: 'ქარ',
+    toggleLabel: 'ენის შეცვლა ქართულზე',
+    city: 'Batumi',
+    moodEyebrow: 'Live · Thursday night',
+    moodLine1: 'Batumi is',
+    moodEm: 'alive',
+    moodLine2: 'right now',
+    tagJazz: '🎵 Jazz',
+    tagBeach: '🌊 Beach',
+    tagWine: '🍷 Wine',
+    moodCount: '34 places open · 8 events tonight',
+    openNow: 'Open now',
+    placeBeachBar: 'Lighthouse Beach Bar',
+    fiveMin: '5 min away',
+    tonight9: 'Tonight 9PM',
+    placeJazz: 'Jazz on the Boulevard',
+    freeEntry: 'Free entry',
+    searchPlaceholder: 'Restaurants, beach clubs, events...',
+    chipAll: 'All',
+    chipOpen: 'Open now',
+    chipTonight: 'Tonight',
+    chipBeaches: 'Beaches',
+    chipRestaurants: 'Restaurants',
+    chipStays: 'Stays',
+    chipActivities: 'Activities',
+    explore: 'Explore',
+    catRestaurants: 'Restaurants',
+    catBeachClubs: 'Beach clubs',
+    catStays: 'Stays',
+    catEvents: 'Events',
+    catActivities: 'Activities',
+    catBars: 'Bars',
+    catTours: 'Tours',
+    catPools: 'Pools',
+    trending: 'Trending now',
+    seeAll: 'See all →',
+    beachBarMeta: 'Beach club · Batumi seafront · 5 min walk',
+    reviewsBeach: '4.9 · 284 reviews',
+    requestTable: 'Request table',
+    tonight: 'Tonight',
+    jazzMeta: 'Event · Free · 9PM',
+    from80: 'From ₾80',
+    placeJetSki: 'Kobuleti Jet Ski',
+    jetSkiMeta: 'Activity · Open now',
+    trendingTag: 'Trending',
+    placeWineHouse: 'Old Town Wine House',
+    wineMeta: 'Restaurant · Old Batumi · Georgian cuisine',
+    reviewsWine: '4.8 · 312 reviews',
+    reserve: 'Reserve',
+    thisWeek: 'This week only',
+    dealTitle: '20% off beach beds',
+    dealSub: 'At 6 beach clubs across Batumi & Kobuleti',
+    seeDeals: 'See all deals →',
+    navHome: 'Home',
+    navExplore: 'Explore',
+    navEvents: 'Events',
+    navSaved: 'Saved',
+    navProfile: 'Profile'
+  }
+};
+
+const languageButton = document.querySelector('[data-lang-toggle]');
+
+function setLanguage(lang) {
+  const activeLang = translations[lang] ? lang : 'ka';
+  const copy = translations[activeLang];
+
+  document.documentElement.lang = activeLang;
+  document.body.classList.toggle('lang-ka', activeLang === 'ka');
+  document.body.classList.toggle('lang-en', activeLang === 'en');
+  document.title = copy.pageTitle;
+
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    const key = node.dataset.i18n;
+    if (copy[key]) node.textContent = copy[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+    const key = node.dataset.i18nPlaceholder;
+    if (copy[key]) node.placeholder = copy[key];
+  });
+
+  languageButton.textContent = copy.toggle;
+  languageButton.setAttribute('aria-label', copy.toggleLabel);
+  localStorage.setItem('wemo-language', activeLang);
+}
+
+languageButton.addEventListener('click', () => {
+  const nextLang = document.documentElement.lang === 'ka' ? 'en' : 'ka';
+  setLanguage(nextLang);
+});
+
+setLanguage(localStorage.getItem('wemo-language') || 'ka');
+</script>
 
 </body>
 </html>
