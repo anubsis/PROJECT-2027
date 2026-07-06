@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wemo — Discover Georgia</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts.css">
 <style>
 :root {
   --base: #0E0E12;
@@ -54,7 +53,6 @@ nav {
   gap: 9px;
 }
 
-/* SVG logo inline */
 .logo-mark {
   width: 34px;
   height: 34px;
@@ -208,7 +206,6 @@ nav {
   white-space: nowrap;
 }
 
-/* Floating event cards on mood strip */
 .mood-cards {
   position: absolute;
   right: 16px;
@@ -407,7 +404,12 @@ nav {
   gap: 12px;
 }
 
-/* Big card */
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .card-big {
   background: var(--card);
   border: 1px solid var(--line);
@@ -525,7 +527,6 @@ nav {
   cursor: pointer;
 }
 
-/* Small cards row */
 .cards-row {
   display: flex;
   gap: 10px;
@@ -663,10 +664,8 @@ nav {
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="logo">
-    <!-- Wemo W mark SVG — traced from your logo -->
     <svg class="logo-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="100" height="100" rx="24" fill="#B7B1FF"/>
       <line x1="31" y1="22" x2="47" y2="78" stroke="white" stroke-width="11" stroke-linecap="round"/>
@@ -681,7 +680,6 @@ nav {
   </div>
 </nav>
 
-<!-- SIGNATURE: MOOD STRIP -->
 <div class="mood">
   <div class="mood-bg"></div>
   <div class="mood-grid"></div>
@@ -704,7 +702,6 @@ nav {
       </div>
     </div>
   </div>
-  <!-- Floating mini cards -->
   <div class="mood-cards">
     <div class="mini-card">
       <div class="mc-label">Open now</div>
@@ -719,7 +716,6 @@ nav {
   </div>
 </div>
 
-<!-- SEARCH -->
 <div class="search-wrap">
   <div class="search-box">
     <span class="search-icon">🔍</span>
@@ -728,7 +724,6 @@ nav {
   </div>
 </div>
 
-<!-- CHIPS -->
 <div class="chips">
   <div class="chip on">All</div>
   <div class="chip">Open now</div>
@@ -739,7 +734,6 @@ nav {
   <div class="chip">Activities</div>
 </div>
 
-<!-- CATEGORIES -->
 <div class="sec">
   <div class="sec-head">
     <span class="sec-title">Explore</span>
@@ -780,7 +774,6 @@ nav {
   </div>
 </div>
 
-<!-- TRENDING -->
 <div class="sec">
   <div class="sec-head">
     <span class="sec-title">Trending now</span>
@@ -788,59 +781,31 @@ nav {
   </div>
 </div>
 
-<div class="editorial"><a href="place.html" style="text-decoration:none; color:inherit; display:block;">
-  <div class="card-big">
-    <div class="card-big-thumb">
-      <div class="thumb-bg tb1">🌊</div>
-      <div class="thumb-overlay"></div>
-      <div class="thumb-tag green">Open now</div>
-    </div>
-
-    <div class="card-big-body">
-      <div class="card-row">
-        <div class="card-name">Lighthouse Beach Bar</div>
-        <div class="card-price">₾₾</div>
+<div class="editorial">
+  <a href="place.html" class="card-link">
+    <div class="card-big">
+      <div class="card-big-thumb">
+        <div class="thumb-bg tb1">🌊</div>
+        <div class="thumb-overlay"></div>
+        <div class="thumb-tag green">Open now</div>
       </div>
-
-      <div class="card-meta">
-        Beach club · Batumi seafront · 5 min walk
-      </div>
-
-      <div class="card-footer">
-        <div class="rating">
-          <span class="star">★</span>
-          4.9 · 284 reviews
+      <div class="card-big-body">
+        <div class="card-row">
+          <div class="card-name">Lighthouse Beach Bar</div>
+          <div class="card-price">₾₾</div>
         </div>
-
-        <div class="book-btn">
-          Request table
+        <div class="card-meta">Beach club · Batumi seafront · 5 min walk</div>
+        <div class="card-footer">
+          <div class="rating">
+            <span class="star">★</span>
+            4.9 · 284 reviews
+          </div>
+          <div class="book-btn">Request table</div>
         </div>
       </div>
     </div>
-  </div>
-</a>
-    <div class="card-big-thumb">
-      <div class="thumb-bg tb1">🌊</div>
-      <div class="thumb-overlay"></div>
-      <div class="thumb-tag green">Open now</div>
-    </div>
-    <div class="card-big-body">
-      <div class="card-row">
-        <div class="card-name">Lighthouse Beach Bar</div>
-        <div class="card-price">₾₾</div>
-      </div>
-      <div class="card-meta">Beach club · Batumi seafront · 5 min walk</div>
-      <div class="card-footer">
-        <div class="rating">
-          <span class="star">★</span>
-          4.9 · 284 reviews
-        </div>
-        <div class="book-btn">Request table</div>
-      </div>
-    </div>
-  </div>
+  </a>
 
-  <!-- Two small cards -->
   <div class="cards-row">
     <div class="card-sm">
       <div class="card-sm-thumb">
@@ -866,7 +831,6 @@ nav {
     </div>
   </div>
 
-  <!-- Another big card -->
   <div class="card-big">
     <div class="card-big-thumb">
       <div class="thumb-bg tb2">🍷</div>
@@ -890,7 +854,6 @@ nav {
   </div>
 </div>
 
-<!-- DEALS -->
 <div class="deals">
   <div class="deals-tag">This week only</div>
   <div class="deals-title">20% off beach beds</div>
@@ -900,7 +863,6 @@ nav {
 
 <div class="spacer"></div>
 
-<!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <div class="nav-btn on">
     <span class="nav-btn-icon">⌂</span>
