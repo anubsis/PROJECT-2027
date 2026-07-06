@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lighthouse Beach Bar — Wemo</title>
+<title>Old Town Wine House — Wemo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -32,10 +32,8 @@ body {
   position: relative;
 }
 
-/* ── ICONS (shared line-icon system) ── */
 .icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
-/* ── FLOATING TOP BAR (over hero) ── */
 .top-bar {
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -62,7 +60,6 @@ body {
 
 .top-bar-right { display: flex; gap: 8px; }
 
-/* ── HERO GALLERY ── */
 .hero {
   position: relative;
   height: 340px;
@@ -116,7 +113,6 @@ body {
 }
 .hero-count .icon { width: 13px; height: 13px; }
 
-/* ── BODY ── */
 .body-wrap { padding: 18px 22px 0; margin-top: -22px; position: relative; z-index: 3; }
 
 .status-row {
@@ -206,7 +202,6 @@ body {
 
 .rating-divider { width: 1px; height: 30px; background: var(--line); }
 
-/* ── SECTION ── */
 .sec2 { padding: 22px 0 0; }
 .sec2-title {
   font-family: 'Syne', sans-serif;
@@ -221,7 +216,6 @@ body {
   color: #C7C5DB;
 }
 
-/* Amenity grid with custom icons */
 .amenity-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -241,7 +235,6 @@ body {
 .amenity .icon { color: var(--lavender); width: 19px; height: 19px; }
 .amenity span { font-size: 12.5px; font-weight: 600; color: var(--text); }
 
-/* Photo strip */
 .photo-strip {
   display: flex;
   gap: 8px;
@@ -273,7 +266,6 @@ body {
   color: var(--lavender);
 }
 
-/* Location card */
 .map-card {
   border-radius: 16px;
   overflow: hidden;
@@ -319,7 +311,6 @@ body {
 }
 .map-address .icon { width: 13px; height: 13px; color: var(--lavender); }
 
-/* Reviews */
 .review-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -354,7 +345,6 @@ body {
 
 .spacer { height: 110px; }
 
-/* ── STICKY BOOKING BAR ── */
 .book-bar {
   position: fixed;
   bottom: 0; left: 50%;
@@ -392,10 +382,10 @@ body {
 
 <!-- HERO -->
 <div class="hero">
-  <img src="https://images.unsplash.com/photo-1550597186-61e0fc2a77bc?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Lighthouse Beach Bar">
+  <img src="https://images.unsplash.com/photo-1646473315764-c6cd47fe74c3?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Old Town Wine House">
   <div class="hero-fade"></div>
   <div class="top-bar">
-    <div class="round-btn">
+    <div class="round-btn" onclick="location.href='index.html'">
       <svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </div>
     <div class="top-bar-right">
@@ -409,7 +399,7 @@ body {
   </div>
   <div class="hero-count">
     <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M8 5V3M16 5V3M3 10h18"/></svg>
-    1 / 12
+    1 / 8
   </div>
   <div class="hero-dots">
     <div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
@@ -419,67 +409,67 @@ body {
 <div class="body-wrap">
   <div class="status-row">
     <div class="badge-open"><span class="dot-live"></span>Open now</div>
-    <div class="badge-cat">Beach club</div>
+    <div class="badge-cat">Wine restaurant</div>
   </div>
 
   <div class="title-row">
-    <div class="place-title">Lighthouse<br>Beach Bar</div>
-    <div class="price-tag">₾₾</div>
+    <div class="place-title">Old Town<br>Wine House</div>
+    <div class="price-tag">₾₾₾</div>
   </div>
 
   <div class="meta-line">
     <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-    Batumi seafront · 5 min walk from Boulevard
+    Old Batumi · inside the historic quarter
   </div>
 
   <div class="rating-row">
     <div>
-      <div class="rating-score">4.9</div>
+      <div class="rating-score">4.8</div>
       <div class="rating-stars">★★★★★</div>
     </div>
     <div class="rating-divider"></div>
     <div>
-      <div class="rating-score">284</div>
+      <div class="rating-score">312</div>
       <div class="rating-sub">reviews</div>
     </div>
     <div class="rating-divider"></div>
     <div>
-      <div class="rating-score">09–02</div>
+      <div class="rating-score">12–00</div>
       <div class="rating-sub">open today</div>
     </div>
   </div>
 
   <div class="sec2">
     <div class="sec2-title">About</div>
-    <div class="about-text">A beachfront lounge on Batumi's seafront serving Georgian small plates and cocktails right on the pebble shore. Loungers and beach beds by day, live sets and firepits after sunset.</div>
+    <div class="about-text">A restored 19th-century townhouse in Old Batumi serving Georgian home cooking alongside a 200-label wine cellar. Stone-walled dining rooms downstairs, a quiet courtyard for warm evenings.</div>
   </div>
 
   <div class="sec2">
     <div class="sec2-title">Amenities</div>
     <div class="amenity-grid">
       <div class="amenity">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M2 20h20M5 20V10l7-6 7 6v10M9 20v-6h6v6"/></svg>
-        <span>Beachfront</span>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h12l-1 8a5 5 0 0 1-10 0L6 3z"/><path d="M12 15v6M8 21h8"/></svg>
+        <span>Wine cellar</span>
       </div>
       <div class="amenity">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10M2 12a10 10 0 0 1 10-10M2 12a10 10 0 0 0 10 10M22 12a10 10 0 0 1-10 10M8.5 8.5c1.5-1.5 5.5-1.5 7 0M12 18v.01"/></svg>
-        <span>Free Wi-Fi</span>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 21V10l8-6 8 6v11M9 21v-7h6v7"/></svg>
+        <span>Historic building</span>
       </div>
       <div class="amenity">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M9 18V6l10 6-10 6z"/></svg>
-        <span>Live music</span>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v2M5 8H3M21 8h-2M6.5 5.5L5 4M17.5 5.5L19 4"/><path d="M12 8a6 6 0 0 0-6 6c0 2 1 3 1 5h10c0-2 1-3 1-5a6 6 0 0 0-6-6z"/></svg>
+        <span>Courtyard seating</span>
       </div>
       <div class="amenity">
-        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
-        <span>Valet parking</span>
+        <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h2M6 14h2"/></svg>
+        <span>Card payment</span>
       </div>
       <div class="amenity">
         <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/></svg>
         <span>Family friendly</span>
       </div>
       <div class="amenity">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h12l-1 8a5 5 0 0 1-10 0L6 3z"/><path d="M12 15v6M8 21h8"/></svg>
-        <span>Full bar</span>
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 18V6l10 6-10 6z"/></svg>
+        <span>Live jazz nights</span>
       </div>
     </div>
   </div>
@@ -487,10 +477,10 @@ body {
   <div class="sec2">
     <div class="sec2-title">Photos</div>
     <div class="photo-strip">
-      <img src="https://images.unsplash.com/photo-1550597186-61e0fc2a77bc?fm=jpg&q=70&w=300&auto=format&fit=crop" alt="">
-      <img src="https://images.unsplash.com/photo-1643792412669-f7900db4e0c1?fm=jpg&q=70&w=300&auto=format&fit=crop" alt="">
-      <img src="https://images.unsplash.com/photo-1550597186-61e0fc2a77bc?fm=jpg&q=70&w=300&auto=format&fit=crop&sat=-20" alt="">
-      <div class="more-tile">+9</div>
+      <img src="https://images.unsplash.com/photo-1646473315764-c6cd47fe74c3?fm=jpg&q=70&w=300&auto=format&fit=crop" alt="">
+      <img src="https://images.unsplash.com/photo-1511795267602-0424436b99c5?fm=jpg&q=70&w=300&auto=format&fit=crop" alt="">
+      <img src="https://images.unsplash.com/photo-1646473315764-c6cd47fe74c3?fm=jpg&q=70&w=300&auto=format&fit=crop&sat=-25" alt="">
+      <div class="more-tile">+5</div>
     </div>
   </div>
 
@@ -501,7 +491,7 @@ body {
       <div class="map-pin"><svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/></svg></div>
       <div class="map-address">
         <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-        Batumi Boulevard, near the Lighthouse
+        Old Town, near Europe Square, Batumi
       </div>
     </div>
   </div>
@@ -510,27 +500,27 @@ body {
     <div class="sec2-title">Reviews</div>
     <div class="review-card">
       <div class="review-top">
-        <div class="avatar">N</div>
+        <div class="avatar">T</div>
         <div>
-          <div class="review-name">Nini K.</div>
-          <div class="review-date">2 days ago</div>
+          <div class="review-name">Tamar B.</div>
+          <div class="review-date">3 days ago</div>
         </div>
         <div class="review-stars">★★★★★</div>
       </div>
-      <div class="review-text">Best sunset spot on the boulevard. Loungers were comfortable and the khachapuri came out fast. Will be back this weekend.</div>
+      <div class="review-text">The wine list alone is worth the visit. Cozy stone room, attentive staff, and the badrijani was some of the best I've had in Batumi.</div>
     </div>
     <div class="review-card">
       <div class="review-top">
-        <div class="avatar">G</div>
+        <div class="avatar">A</div>
         <div>
-          <div class="review-name">Giorgi T.</div>
-          <div class="review-date">1 week ago</div>
+          <div class="review-name">Aleksandre M.</div>
+          <div class="review-date">2 weeks ago</div>
         </div>
         <div class="review-stars">★★★★★</div>
       </div>
-      <div class="review-text">Live music on Thursdays is worth planning around. Got a beach bed with zero wait since I booked through the app.</div>
+      <div class="review-text">Booked a table for six through the app with no hassle. Quiet courtyard seating was perfect for a long dinner.</div>
     </div>
-    <div class="see-all-reviews">See all 284 reviews →</div>
+    <div class="see-all-reviews">See all 312 reviews →</div>
   </div>
 
   <div class="spacer"></div>
@@ -539,8 +529,8 @@ body {
 <!-- STICKY BOOKING BAR -->
 <div class="book-bar">
   <div class="book-bar-price">
-    <span class="amount">₾45</span>
-    <span class="label">per beach bed / day</span>
+    <span class="amount">₾70</span>
+    <span class="label">avg. per person</span>
   </div>
   <div class="book-cta">Request table</div>
 </div>

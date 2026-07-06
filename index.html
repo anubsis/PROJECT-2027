@@ -15,6 +15,8 @@
   --text: #F0EFFF;
   --muted: #6B6880;
   --line: rgba(240,239,255,0.07);
+  --gold: #E8C468;
+  --gold-dim: rgba(232,196,104,0.14);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -562,6 +564,40 @@ body.lang-ka .mood-title {
   flex-shrink: 0;
 }
 
+/* Pro card: richer photo, gold glow — this is the upgrade showcase */
+.card-big.card-pro {
+  border: 1px solid rgba(232,196,104,0.35);
+  box-shadow: 0 8px 28px rgba(232,196,104,0.10);
+}
+.card-big.card-pro:hover { border-color: rgba(232,196,104,0.55); }
+.card-big.card-pro .card-big-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.card-big.card-pro .thumb-tag.pro-tag {
+  background: var(--gold);
+  color: #1a1400;
+  display: flex; align-items: center; gap: 4px;
+}
+.card-big.card-pro .thumb-tag.pro-tag svg { width: 10px; height: 10px; }
+.card-big.card-pro .book-btn {
+  background: var(--lavender);
+  color: var(--base);
+  border-color: var(--lavender);
+}
+
+/* Basic card: intentionally plainer — no photo, muted tag, flat border */
+.card-big.card-basic {
+  border-color: var(--line);
+  box-shadow: none;
+}
+.card-big.card-basic:hover { border-color: var(--line); }
+.card-big.card-basic .thumb-bg { filter: saturate(0.5) brightness(0.8); }
+.card-big.card-basic .thumb-tag.basic-tag {
+  background: rgba(240,239,255,0.1);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
 .cards-row {
   display: flex;
   gap: 10px;
@@ -818,11 +854,11 @@ body.lang-ka .mood-title {
 
 <div class="editorial">
   <a href="place-pro.html" class="card-link">
-    <div class="card-big">
+    <div class="card-big card-pro">
       <div class="card-big-thumb">
-        <div class="thumb-bg tb1">🌊</div>
+        <img src="https://images.unsplash.com/photo-1550597186-61e0fc2a77bc?fm=jpg&q=75&w=800&auto=format&fit=crop" alt="Lighthouse Beach Bar">
         <div class="thumb-overlay"></div>
-        <div class="thumb-tag green" data-i18n="openNow">ღიაა ახლა</div>
+        <div class="thumb-tag pro-tag"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3L22 9.3l-5 4.9 1.2 7-6.2-3.3L5.8 21.2 7 14.2l-5-4.9 7.1-1z"/></svg>PRO</div>
       </div>
       <div class="card-big-body">
         <div class="card-row">
@@ -866,27 +902,29 @@ body.lang-ka .mood-title {
     </div>
   </div>
 
-  <div class="card-big">
-    <div class="card-big-thumb">
-      <div class="thumb-bg tb2">🍷</div>
-      <div class="thumb-overlay"></div>
-      <div class="thumb-tag" data-i18n="trendingTag">პოპულარული</div>
-    </div>
-    <div class="card-big-body">
-      <div class="card-row">
-        <div class="card-name" data-i18n="placeWineHouse">ძველი ქალაქის ღვინის სახლი</div>
-        <div class="card-price">₾₾₾</div>
+  <a href="place.html" class="card-link">
+    <div class="card-big card-basic">
+      <div class="card-big-thumb">
+        <div class="thumb-bg tb2">🍷</div>
+        <div class="thumb-overlay"></div>
+        <div class="thumb-tag basic-tag" data-i18n="trendingTag">პოპულარული</div>
       </div>
-      <div class="card-meta" data-i18n="wineMeta">რესტორანი · ძველი ბათუმი · ქართული სამზარეულო</div>
-      <div class="card-footer">
-        <div class="rating">
-          <span class="star">★</span>
-          <span data-i18n="reviewsWine">4.8 · 312 შეფასება</span>
+      <div class="card-big-body">
+        <div class="card-row">
+          <div class="card-name" data-i18n="placeWineHouse">ძველი ქალაქის ღვინის სახლი</div>
+          <div class="card-price">₾₾₾</div>
         </div>
-        <div class="book-btn" data-i18n="reserve">დაჯავშნა</div>
+        <div class="card-meta" data-i18n="wineMeta">რესტორანი · ძველი ბათუმი · ქართული სამზარეულო</div>
+        <div class="card-footer">
+          <div class="rating">
+            <span class="star">★</span>
+            <span data-i18n="reviewsWine">4.8 · 312 შეფასება</span>
+          </div>
+          <div class="book-btn" data-i18n="reserve">დაჯავშნა</div>
+        </div>
       </div>
     </div>
-  </div>
+  </a>
 </div>
 
 <div class="deals">
