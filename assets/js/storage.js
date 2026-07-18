@@ -1,0 +1,1 @@
+window.WemoStorage={key:'wemo-saved-places',get(){try{return JSON.parse(localStorage.getItem(this.key))||[]}catch{return[]}},has(id){return this.get().includes(id)},toggle(id){let a=this.get();a=a.includes(id)?a.filter(x=>x!==id):[...a,id];localStorage.setItem(this.key,JSON.stringify(a));return a.includes(id)}};
