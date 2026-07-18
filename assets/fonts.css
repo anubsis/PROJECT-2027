@@ -1,15 +1,1 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
-
-.logo::before {
-  content: '';
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  display: block;
-  border-radius: 8px;
-  background: url('logos/IMG_2859.PNG') center / cover no-repeat;
-}
-
-.logo .logo-mark {
-  display: none;
-}
