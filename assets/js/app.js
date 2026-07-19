@@ -1,21 +1,250 @@
-(()=>{const I=WemoI18n,P=WEMO_PLACES;
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function placeCard(p){let n=p.name[I.lang],loc=p.location[I.lang],saved=WemoStorage.has(p.id);return `<article class="place-card"><a href="${p.detailPage}?place=${p.id}" aria-label="${esc(n)}"><img src="${p.image}" alt="${esc(n)}"></a><div class="place-card-main"><span class="tag">${I.s(p.category)}</span><a href="${p.detailPage}?place=${p.id}"><h3>${esc(n)}</h3></a><p class="meta">${esc(loc)}</p><p class="rating"><span>★</span> ${p.rating} (${p.reviews}) · ${p.price}</p></div><button type="button" class="save-button ${saved?'saved':''}" data-save="${p.id}" aria-label="Save ${esc(n)}">${icon('heart')}</button></article>`}
-function topbar(){return `<header class="topbar"><a class="brand" href="index.html" aria-label="Wemo home">wemo</a><div class="top-actions"><button type="button" class="lang-button" data-language aria-label="Change language">${I.lang==='en'?'ქარ':'EN'}</button><button type="button" class="icon-btn" data-toast="Notifications are a demo feature" aria-label="Notifications">${icon('pin')}</button></div></header>`}
-function search(value=''){return `<form class="search" data-search><label class="sr-only" for="place-search">${I.s('search')}</label>${icon('search')}<input id="place-search" name="q" value="${esc(value)}" placeholder="${I.s('search')}" autocomplete="off"></form>`}
-function chips(active='all',interactive=true){return `<div class="chips">${WEMO_CATEGORIES.map(c=>`<button class="chip ${c===active?'active':''}" ${interactive?`data-category="${c}"`:''}>${I.s(c)}</button>`).join('')}</div>`}
-function home(){return `${topbar()}<main class="page"><section class="hero home-hero"><img src="https://images.unsplash.com/photo-1565008576549-57569a49371d?auto=format&fit=crop&w=1000&q=85" alt="Batumi skyline at dusk"><div class="hero-copy"><p>${I.lang==='en'?'EXPLORE':'აღმოაჩინე'}</p><h1>${I.lang==='en'?'Georgia':'საქართველო'}</h1><p>${I.lang==='en'?'Hidden gems, local favourites, and unforgettable views.':'ფარული მარგალიტები, საყვარელი ადგილები და დაუვიწყარი ხედები.'}</p></div></section>${search()}<div class="home-categories"><a class="home-category" href="explore.html?category=beach-clubs">${icon('map')} ${I.s('beach-clubs')}</a><a class="home-category" href="explore.html?category=restaurants">${icon('map')} ${I.s('restaurants')}</a><a class="home-category" href="explore.html?category=hotels">${icon('map')} ${I.s('hotels')}</a><a class="home-category" href="events.html">${icon('map')} ${I.s('events')}</a></div><div class="section-head"><h2>${I.s('popular')}</h2><a href="explore.html">${I.s('seeAll')} ›</a></div><div class="listing-grid">${P.slice(0,3).map(placeCard).join('')}</div><div class="section-head"><h2>${I.s('recommended')}</h2><a href="explore.html">${I.s('seeAll')} ›</a></div><a href="deals.html" class="deal"><small>${I.lang==='en'?'This week only':'მხოლოდ ამ კვირაში'}</small><h2>${I.lang==='en'?'20% off beach beds':'20% ფასდაკლება შეზლონგებზე'}</h2><p>${I.lang==='en'?'At selected beach clubs around Batumi.':'ბათუმის შერჩეულ ბიჩ კლუბებში.'}</p><span class="primary">${I.lang==='en'?'Explore deals':'შეთავაზებების ნახვა'}</span></a></main>${renderNav()}`}
-function explore(){let param=new URLSearchParams(location.search).get('category')||'all';let category=WEMO_CATEGORIES.includes(param)?param:'all';return `${topbar()}<main class="page"><h1 class="page-title">${I.s('exploreTitle')}</h1><p class="page-subtitle">${I.lang==='en'?'Handpicked places around Batumi':'შერჩეული ადგილები ბათუმში'}</p>${search()}${chips(category)}<div class="chips"><button type="button" class="chip" data-open>${I.s('open')}</button><button type="button" class="chip" data-sort>${I.lang==='en'?'Top rated':'რეიტინგით'}</button></div><div class="section-head"><h2 data-result-title>${I.s(category)}</h2><span class="meta" data-result-count></span></div><div class="listing-grid" data-listings></div></main>${renderNav()}`}
-function saved(){return `${topbar()}<main class="page"><h1 class="page-title">${I.s('saved')}</h1><p class="page-subtitle">${I.lang==='en'?'Your favourite places, all in one spot.':'თქვენი საყვარელი ადგილები ერთ სივრცეში.'}</p><div class="listing-grid" data-saved-list></div></main>${renderNav()}`}
-function map(){return `${topbar()}<main class="page"><h1 class="page-title">${I.s('mapTitle')}</h1>${chips('all',false)}<section class="map-canvas" aria-label="Static map of Batumi"><span class="map-label" style="left:36px;top:120px">Old Batumi</span><span class="map-label" style="left:160px;top:210px">Boulevard</span><span class="map-label" style="right:42px;top:85px">Seafront</span><button class="marker" style="left:23%;top:38%" data-marker="0" aria-label="Lighthouse Beach Bar"></button><button class="marker" style="left:55%;top:51%" data-marker="1" aria-label="Old Town Wine House"></button><button class="marker" style="left:73%;top:26%" data-marker="3" aria-label="San Remo"></button><div class="map-controls"><button data-toast="Location is a demo feature" aria-label="Find my location">⌾</button><button data-marker-next aria-label="Next place">›</button></div><div class="map-preview" data-map-preview></div></section></main>${renderNav()}`}
-function profile(){let l=I.lang==='en'?'English':'ქართული';return `${topbar()}<main class="page"><section class="profile-head"><h1>${I.s('guest')}</h1><p>${I.lang==='en'?'Make Wemo yours with an account.':'შექმენით ანგარიში Wemo-სთვის.'}</p><button class="primary" data-toast="Sign-in is a frontend placeholder">${I.s('join')}</button></section><div class="section-head"><h2>${I.s('profileTitle')}</h2></div><div class="settings"><button class="setting" data-toast="Bookings will appear here"><span>${I.lang==='en'?'My bookings':'ჩემი ჯავშნები'}<small>${I.lang==='en'?'No upcoming plans':'მომავალი გეგმები არ არის'}</small></span>›</button><button class="setting" data-language><span>${I.lang==='en'?'Language':'ენა'}<small>${l}</small></span><span>›</span></button><button class="setting" data-toast="Notifications are a frontend placeholder"><span>${I.lang==='en'?'Notifications':'შეტყობინებები'}<small>${I.lang==='en'?'Manage preferences':'პარამეტრების მართვა'}</small></span>›</button><button class="setting" data-toast="Help and Support is coming soon"><span>${I.lang==='en'?'Help & Support':'დახმარება და მხარდაჭერა'}</span>›</button><button class="setting" data-toast="Business onboarding is coming soon"><span>${I.lang==='en'?'Add your business':'დაამატეთ თქვენი ბიზნესი'}<small>${I.lang==='en'?'For owners and teams':'მფლობელებისა და გუნდებისთვის'}</small></span>›</button></div><p class="meta" style="text-align:center;margin-top:22px">${I.lang==='en'?'Terms · Privacy':'წესები · კონფიდენციალურობა'}</p></main>${renderNav()}`}
-function detail(){let pro=document.body.dataset.pro==='true',id=new URLSearchParams(location.search).get('place'),p=P.find(x=>x.id===id)||(pro?P[0]:P[1]),n=p.name[I.lang],loc=p.location[I.lang];return `${topbar()}<main class="page"><section class="place-hero"><img src="${p.image}" alt="${esc(n)}"><div class="place-actions"><button class="icon-btn" data-back aria-label="Back">${icon('back')}</button><div><button class="icon-btn" data-share data-title="${esc(n)}" aria-label="Share">${icon('share')}</button><button class="icon-btn ${WemoStorage.has(p.id)?'saved':''}" data-save="${p.id}" aria-label="Save">${icon('heart')}</button></div></div></section><section class="place-title"><span class="tag">${I.s(p.category)} ${pro?' · PRO':''}</span><h1>${esc(n)}</h1><p>${esc(loc)} · <strong>${p.rating} ★</strong> (${p.reviews}) · ${p.price}</p></section><section class="detail-section"><h2>${I.lang==='en'?'About':'შესახებ'}</h2><p>${I.lang==='en'?(pro?'A polished beachfront escape with all-day dining, sunset music and easy table requests.':'A warm Old Batumi table for traditional Georgian dishes and small-batch wines.'):(pro?'პრემიუმ სანაპირო ადგილი მთელი დღის მენიუთი, მზის ჩასვლის მუსიკით და მარტივი მოთხოვნით.':'მყუდრო სივრცე ძველ ბათუმში ქართული კერძებითა და მცირე პარტიით ჩამოსხმული ღვინით.')}</p></section><section class="detail-section"><h2>${I.lang==='en'?'Amenities':'სერვისები'}</h2><div class="amenities"><span>Wi‑Fi</span><span>${I.lang==='en'?'Outdoor seating':'ღია სივრცე'}</span><span>${I.lang==='en'?'Card payment':'ბარათით გადახდა'}</span><span>${I.lang==='en'?'Open today':'დღეს ღიაა'}</span></div></section>${pro?`<section class="detail-section"><h2>${I.lang==='en'?'Gallery & offers':'გალერეა და შეთავაზებები'}</h2><div class="gallery"><img src="${p.image}" alt=""><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=500&q=80" alt=""><img src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?auto=format&fit=crop&w=500&q=80" alt=""></div><p class="pro-note">${I.lang==='en'?'Owner note: Sunset reservations are recommended on Fridays and Saturdays.':'მფლობელის შენიშვნა: პარასკევსა და შაბათს მზის ჩასვლის დროისთვის დაჯავშნა რეკომენდებულია.'}</p></section>`:`<section class="detail-section"><h2>${I.lang==='en'?'Hours & reviews':'საათები და შეფასებები'}</h2><p>${I.lang==='en'?'Every day · 12:00 — 23:00':'ყოველდღე · 12:00 — 23:00'}</p><p>“${I.lang==='en'?'Beautiful local favourite with thoughtful service.':'ულამაზესი ადგილობრივი ფავორიტი ყურადღებიანი მომსახურებით.'}” — Mari, 5 ★</p></section>`}</main><div class="sticky-cta"><button class="primary" data-book="${esc(n)}">${I.s('book')}</button></div>`}
-function other(title,copy){let isSearch=document.body.dataset.page==='search',q=new URLSearchParams(location.search).get('q')||'';return `${topbar()}<main class="page"><h1 class="page-title">${title}</h1><p class="page-subtitle">${copy}</p>${isSearch?search(q):''}<div class="listing-grid">${P.slice(0,3).map(placeCard).join('')}</div></main>${renderNav()}`}
-function render(){let page=document.body.dataset.page,html=page==='home'?home():page==='explore'?explore():page==='saved'?saved():page==='map'?map():page==='profile'?profile():page==='place'?detail():page==='search'?other(I.lang==='en'?'Search results':'ძიების შედეგები',''):page==='events'?other(I.s('events'),''):other(I.lang==='en'?'Deals':'შეთავაზებები','');document.getElementById('app').innerHTML=html;bind();if(page==='explore')refreshExplore();if(page==='saved')refreshSaved();if(page==='map')refreshMap();if(page==='search')refreshSearch()}
-function refreshExplore(){let active=document.querySelector('[data-category].active')?.dataset.category||new URLSearchParams(location.search).get('category')||'all',open=document.querySelector('[data-open]')?.classList.contains('active'),sort=document.querySelector('[data-sort]')?.classList.contains('active');let list=P.filter(p=>(active==='all'||p.category===active)&&(!open||p.isOpen));if(sort)list.sort((a,b)=>b.rating-a.rating||b.reviews-a.reviews);document.querySelector('[data-listings]').innerHTML=list.map(placeCard).join('')||`<div class="empty">${I.lang==='en'?'No places match these filters.':'ამ ფილტრებს ადგილი არ ემთხვევა.'}</div>`;document.querySelector('[data-result-count]').textContent=`${list.length} ${I.lang==='en'?'places':'ადგილი'}`}
-function refreshSaved(){let list=P.filter(p=>WemoStorage.has(p.id)),el=document.querySelector('[data-saved-list]');el.innerHTML=list.length?list.map(placeCard).join(''):`<section class="empty"><h2>${I.s('savedEmpty')}</h2><p>${I.s('savedEmptyText')}</p><a class="primary" href="explore.html">${I.s('explore')}</a></section>`}
-let mapIndex=0;function refreshMap(){let p=P[mapIndex],el=document.querySelector('[data-map-preview]');el.innerHTML=`<img src="${p.image}" alt="${esc(p.name[I.lang])}"><div><span class="tag">${I.s(p.category)}</span><a href="${p.detailPage}?place=${p.id}"><h3>${esc(p.name[I.lang])}</h3></a><p class="meta">${p.rating} ★ · ${p.location[I.lang]}</p></div>`}
-function refreshSearch(){let q=(new URLSearchParams(location.search).get('q')||'').trim().toLowerCase(),matches=P.filter(p=>!q||[p.name.en,p.name.ka,p.category,p.location.en,p.location.ka].join(' ').toLowerCase().includes(q)),main=document.querySelector('.page');main.querySelector('.page-subtitle').textContent=q?`“${q}”`:I.lang==='en'?'Try a place, category or neighbourhood.':'მოძებნეთ ადგილი, კატეგორია ან უბანი.';main.querySelector('.listing-grid').innerHTML=matches.length?matches.map(placeCard).join(''):`<div class="empty"><h2>${I.lang==='en'?'No results found':'შედეგი ვერ მოიძებნა'}</h2><p>${I.lang==='en'?'Try another search term.':'სცადეთ სხვა საძიებო სიტყვა.'}</p></div>`}
-function toast(msg){let n=document.createElement('div');n.className='toast';n.textContent=msg;document.body.append(n);setTimeout(()=>n.remove(),2600)}
-function booking(name){let m=document.createElement('div');m.className='modal';m.innerHTML=`<form class="modal-box" data-book-form><h2>${I.s('book')}</h2><p>${esc(name)}</p><div class="form-grid"><label>Date<input required type="date"></label><label>Time<input required type="time"></label><label>${I.lang==='en'?'People':'სტუმრები'}<input required type="number" min="1" value="2"></label><label>${I.lang==='en'?'Name':'სახელი'}<input required></label><label>${I.lang==='en'?'Phone or contact':'ტელეფონი ან კონტაქტი'}<input required></label></div><div class="modal-actions"><button type="button" class="secondary" data-close>${I.lang==='en'?'Cancel':'გაუქმება'}</button><button class="primary">${I.lang==='en'?'Save demo request':'დემო მოთხოვნის შენახვა'}</button></div></form>`;document.body.append(m);m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-close]'))m.remove();if(e.target.closest('[data-book-form]')&&e.target.type==='submit'){e.preventDefault();let r=JSON.parse(localStorage.getItem('wemo-booking-requests')||'[]');r.push({name,date:Date.now()});localStorage.setItem('wemo-booking-requests',JSON.stringify(r));m.remove();toast(I.s('requestSaved'))}})}
-function bind(){document.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{WemoStorage.toggle(b.dataset.save);render()});document.querySelectorAll('[data-language]').forEach(b=>b.onclick=()=>{I.lang=I.lang==='en'?'ka':'en';document.documentElement.lang=I.lang;document.body.className=`lang-${I.lang}`;render()});document.querySelectorAll('[data-toast]').forEach(b=>b.onclick=()=>toast(b.dataset.toast));document.querySelector('[data-search]')?.addEventListener('submit',e=>{e.preventDefault();location.href=`search-results.html?q=${encodeURIComponent(new FormData(e.currentTarget).get('q').trim())}`});document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-category]').forEach(x=>x.classList.remove('active'));b.classList.add('active');refreshExplore()});document.querySelector('[data-open]')?.addEventListener('click',e=>{e.currentTarget.classList.toggle('active');refreshExplore()});document.querySelector('[data-sort]')?.addEventListener('click',e=>{e.currentTarget.classList.toggle('active');refreshExplore()});document.querySelector('[data-marker-next]')?.addEventListener('click',()=>{mapIndex=(mapIndex+1)%P.length;refreshMap()});document.querySelectorAll('[data-marker]').forEach(b=>b.onclick=()=>{mapIndex=Number(b.dataset.marker);refreshMap()});document.querySelector('[data-back]')?.addEventListener('click',()=>history.length>1?history.back():location.href='index.html');document.querySelector('[data-share]')?.addEventListener('click',async e=>{let title=e.currentTarget.dataset.title;try{if(navigator.share)await navigator.share({title,url:location.href});else{await navigator.clipboard.writeText(location.href);toast(I.lang==='en'?'Link copied':'ბმული დაკოპირდა')}}catch{toast(I.lang==='en'?'Share cancelled':'გაზიარება გაუქმდა')}});document.querySelector('[data-book]')?.addEventListener('click',e=>booking(e.currentTarget.dataset.book))}document.documentElement.lang=I.lang;document.body.className=`lang-${I.lang}`;render()})();
+(() => {
+  const i18n = window.WemoI18n;
+  const places = window.WEMO_PLACES;
+  const categories = window.WEMO_CATEGORIES;
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const text = (key) => i18n.s(key);
+  const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[character]));
+
+  function icon(name) {
+    return window.icon(name);
+  }
+
+  function topBar() {
+    return `
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Wemo home">wemo<span>.</span></a>
+        <div class="location-pill" aria-label="Current location">
+          ${icon('pin')}<span>Batumi</span>
+        </div>
+        <div class="top-actions">
+          <button type="button" class="lang-button" data-language aria-label="Change language">
+            ${i18n.lang === 'en' ? 'ქარ' : 'EN'}
+          </button>
+          <button type="button" class="icon-btn" data-toast="Notifications are a demo feature" aria-label="Notifications">
+            ${icon('bell')}
+          </button>
+        </div>
+      </header>`;
+  }
+
+  function searchField(value = '') {
+    return `
+      <form class="search" data-search>
+        <label class="sr-only" for="place-search">${text('search')}</label>
+        ${icon('search')}
+        <input id="place-search" name="q" value="${escapeHtml(value)}" placeholder="${text('search')}" autocomplete="off">
+      </form>`;
+  }
+
+  function placeCard(place, compact = false) {
+    const name = place.name[i18n.lang];
+    const location = place.location[i18n.lang];
+    const saved = WemoStorage.has(place.id);
+    const tier = place.isPro ? 'pro' : 'basic';
+    return `
+      <article class="place-card ${compact ? 'place-card--compact' : ''} place-card--${tier}">
+        <a class="place-card__image" href="${place.detailPage}?place=${place.id}" aria-label="${escapeHtml(name)}">
+          <img src="${place.image}" alt="${escapeHtml(name)}">
+          <span class="place-tier">${place.isPro ? 'Wemo Pro' : 'Basic'}</span>
+        </a>
+        <div class="place-card__body">
+          <span class="tag">${text(place.category)}</span>
+          <a href="${place.detailPage}?place=${place.id}"><h3>${escapeHtml(name)}</h3></a>
+          <p class="meta">${icon('pin')}${escapeHtml(location)}</p>
+          <p class="rating"><span>★</span> ${place.rating} <small>(${place.reviews}) · ${place.price}</small></p>
+        </div>
+        <button type="button" class="save-button ${saved ? 'saved' : ''}" data-save="${place.id}" aria-label="Save ${escapeHtml(name)}">
+          ${icon('heart')}
+        </button>
+      </article>`;
+  }
+
+  function categoryStrip(active = 'all') {
+    return `
+      <div class="category-strip">
+        ${categories.slice(0, 6).map((category) => `
+          <a class="category-tile ${category === active ? 'active' : ''}" href="explore.html?category=${category}">
+            <span>${icon(category === 'beach-clubs' ? 'sun' : category === 'restaurants' ? 'utensils' : 'spark')}</span>
+            ${text(category)}
+          </a>`).join('')}
+      </div>`;
+  }
+
+  function sectionHead(title, href, label = text('seeAll')) {
+    return `<div class="section-head"><h2>${title}</h2>${href ? `<a href="${href}">${label} ${icon('arrow')}</a>` : ''}</div>`;
+  }
+
+  function home() {
+    const pro = places.filter((place) => place.isPro).slice(0, 2);
+    const nearby = places.filter((place) => place.isOpen).slice(1, 4);
+    return `
+      ${topBar()}
+      <main class="page home-page">
+        <section class="city-hero">
+          <img src="https://images.unsplash.com/photo-1565008576549-57569a49371d?auto=format&fit=crop&w=1200&q=85" alt="Batumi skyline at dusk">
+          <div class="city-hero__wash"></div>
+          <div class="city-hero__content">
+            <p class="eyebrow"><i></i>${i18n.lang === 'en' ? 'LIVE IN BATUMI' : 'ბათუმი ახლა'}</p>
+            <h1>${i18n.lang === 'en' ? 'A better way to<br>feel <em>Georgia.</em>' : 'აღმოაჩინე<br><em>საქართველო.</em>'}</h1>
+            <p>${i18n.lang === 'en' ? 'Local tables, sunlit shores and plans worth making.' : 'საყვარელი ადგილები, სანაპირო და ახალი შთაბეჭდილებები.'}</p>
+            <a class="hero-link" href="explore.html">${i18n.lang === 'en' ? 'Explore nearby' : 'აღმოაჩინე ახლოს'} ${icon('arrow')}</a>
+          </div>
+          <div class="city-hero__stats"><strong>24</strong><span>${i18n.lang === 'en' ? 'places open now' : 'ადგილი ღიაა'}</span></div>
+        </section>
+        ${searchField()}
+        ${categoryStrip()}
+        ${sectionHead(text('popular'), 'explore.html')}
+        <div class="listing-grid">${places.slice(0, 3).map((place) => placeCard(place)).join('')}</div>
+        ${sectionHead(i18n.lang === 'en' ? 'Wemo Pro picks' : 'Wemo Pro არჩევანი', 'explore.html')}
+        <section class="editorial-row">${pro.map((place) => `
+          <a class="editorial-card" href="${place.detailPage}?place=${place.id}">
+            <img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}">
+            <div><span>Wemo Pro</span><h3>${escapeHtml(place.name[i18n.lang])}</h3><p>${place.rating} ★ · ${place.location[i18n.lang]}</p></div>
+          </a>`).join('')}</section>
+        ${sectionHead(i18n.lang === 'en' ? 'This weekend' : 'ამ შაბათ-კვირას', 'events.html')}
+        <a href="events.html" class="event-feature">
+          <span class="event-date"><b>19</b> JUL</span>
+          <span><small>${i18n.lang === 'en' ? 'SUNSET SERIES' : 'მზის ჩასვლის სერია'}</small><strong>${i18n.lang === 'en' ? 'Music by the sea' : 'მუსიკა ზღვასთან'}</strong><em>${i18n.lang === 'en' ? 'See event' : 'ივენთის ნახვა'} ${icon('arrow')}</em></span>
+        </a>
+        <a href="deals.html" class="deal-feature">
+          <small>${i18n.lang === 'en' ? 'WEMO WEEKEND' : 'WEMO შაბათ-კვირა'}</small>
+          <h2>${i18n.lang === 'en' ? '20% off<br>beach beds.' : '20% ფასდაკლება<br>შეზლონგებზე.'}</h2>
+          <p>${i18n.lang === 'en' ? 'At selected Batumi beach clubs.' : 'ბათუმის შერჩეულ ბიჩ კლუბებში.'}</p>
+          <span>${i18n.lang === 'en' ? 'See all deals' : 'შეთავაზებების ნახვა'} ${icon('arrow')}</span>
+        </a>
+      </main>
+      ${renderNav()}`;
+  }
+
+  function chips(active) {
+    return `<div class="chips">${categories.map((category) => `<button type="button" class="chip ${category === active ? 'active' : ''}" data-category="${category}">${text(category)}</button>`).join('')}</div>`;
+  }
+
+  function explore() {
+    const category = new URLSearchParams(location.search).get('category') || 'all';
+    return `${topBar()}<main class="page utility-page">
+      <p class="eyebrow">${i18n.lang === 'en' ? 'DISCOVER' : 'აღმოაჩინე'}</p><h1 class="page-title">${text('exploreTitle')}</h1>
+      <p class="page-subtitle">${i18n.lang === 'en' ? 'Thoughtful places, one good plan at a time.' : 'ადგილები, რომლებიც კარგ დღეს ქმნის.'}</p>
+      ${searchField()}${chips(categories.includes(category) ? category : 'all')}
+      <div class="filter-row"><button type="button" class="filter-button" data-open>${icon('clock')}${text('open')}</button><button type="button" class="filter-button" data-sort>${icon('sort')}${i18n.lang === 'en' ? 'Top rated' : 'რეიტინგით'}</button></div>
+      ${sectionHead(`<span data-result-title>${text(category)}</span>`, null)}<span class="result-count" data-result-count></span><div class="listing-grid" data-listings></div>
+    </main>${renderNav()}`;
+  }
+
+  function saved() {
+    return `${topBar()}<main class="page utility-page"><p class="eyebrow">${i18n.lang === 'en' ? 'YOUR LIST' : 'თქვენი სია'}</p><h1 class="page-title">${text('saved')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'Keep every good idea close.' : 'შეინახეთ ყველა კარგი იდეა.'}</p><div class="listing-grid" data-saved-list></div></main>${renderNav()}`;
+  }
+
+  function map() {
+    return `${topBar()}<main class="page utility-page"><p class="eyebrow">BATUMI</p><h1 class="page-title">${text('mapTitle')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'A small map for a good day out.' : 'პატარა რუკა კარგი დღისთვის.'}</p><section class="map-canvas" aria-label="Map of Batumi"><span class="map-label" style="left:34px;top:120px">Old Batumi</span><span class="map-label" style="left:150px;top:214px">Boulevard</span><span class="map-label" style="right:40px;top:80px">Seafront</span>${places.slice(0, 4).map((place, index) => `<button type="button" class="marker" style="left:${22 + index * 17}%;top:${38 + (index % 2) * 19}%" data-marker="${index}" aria-label="${escapeHtml(place.name.en)}"></button>`).join('')}<div class="map-controls"><button type="button" data-toast="Location is a demo feature" aria-label="Find my location">${icon('target')}</button><button type="button" data-marker-next aria-label="Next place">${icon('arrow')}</button></div><div class="map-preview" data-map-preview></div></section></main>${renderNav()}`;
+  }
+
+  function profile() {
+    const language = i18n.lang === 'en' ? 'English' : 'ქართული';
+    return `${topBar()}<main class="page utility-page"><section class="profile-head"><span class="profile-orb">W</span><div><p class="eyebrow">${i18n.lang === 'en' ? 'WEMO MEMBER' : 'WEMO წევრი'}</p><h1>${text('guest')}</h1><p>${i18n.lang === 'en' ? 'Plans, saved places and more.' : 'გეგმები, შენახული ადგილები და მეტი.'}</p></div><button type="button" class="primary" data-toast="Sign-in is a frontend placeholder">${text('join')}</button></section>${sectionHead(text('profileTitle'), null)}<div class="settings"><button type="button" class="setting" data-toast="Bookings will appear here"><span>${icon('calendar')}<b>${i18n.lang === 'en' ? 'My bookings' : 'ჩემი ჯავშნები'}</b><small>${i18n.lang === 'en' ? 'No upcoming plans' : 'მომავალი გეგმები არ არის'}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-language><span>${icon('globe')}<b>${i18n.lang === 'en' ? 'Language' : 'ენა'}</b><small>${language}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Notifications are a frontend placeholder"><span>${icon('bell')}<b>${i18n.lang === 'en' ? 'Notifications' : 'შეტყობინებები'}</b><small>${i18n.lang === 'en' ? 'Manage preferences' : 'პარამეტრების მართვა'}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Business onboarding is coming soon"><span>${icon('spark')}<b>${i18n.lang === 'en' ? 'Add your business' : 'დაამატეთ ბიზნესი'}</b><small>${i18n.lang === 'en' ? 'For owners and teams' : 'მფლობელებისა და გუნდებისთვის'}</small></span>${icon('chevron')}</button></div></main>${renderNav()}`;
+  }
+
+  function detail() {
+    const pro = document.body.dataset.pro === 'true';
+    const id = new URLSearchParams(location.search).get('place');
+    const profilePlaces = places.filter((place) => place.isPro === pro);
+    const place = profilePlaces.find((item) => item.id === id) || profilePlaces[0];
+    const name = place.name[i18n.lang];
+    const locationName = place.location[i18n.lang];
+    return `${topBar()}<main class="place-page">
+      <section class="place-hero ${pro ? 'place-hero--pro' : ''}"><img src="${place.image}" alt="${escapeHtml(name)}"><div class="place-hero__wash"></div><div class="place-actions"><button type="button" class="icon-btn" data-back aria-label="Back">${icon('back')}</button><div><button type="button" class="icon-btn" data-share data-title="${escapeHtml(name)}" aria-label="Share">${icon('share')}</button><button type="button" class="icon-btn ${WemoStorage.has(place.id) ? 'saved' : ''}" data-save="${place.id}" aria-label="Save">${icon('heart')}</button></div></div>${pro ? `<span class="pro-badge">${icon('spark')} Wemo Pro</span><button type="button" class="video-pill" data-toast="Video tour is a demo feature">${icon('play')} ${i18n.lang === 'en' ? 'Watch the vibe' : 'ვიდეო ტური'}</button>` : ''}</section>
+      <section class="place-content"><div class="place-status"><span class="open-status"><i></i>${place.isOpen ? text('open') : (i18n.lang === 'en' ? 'Closed now' : 'დახურულია')}</span><span class="tag">${text(place.category)}</span></div><div class="place-title"><div><h1>${escapeHtml(name)}</h1><p>${icon('pin')}${escapeHtml(locationName)}</p></div><b>${place.price}</b></div><div class="rating-board"><div><strong>${place.rating}</strong><span>★★★★★</span><small>${place.reviews} ${i18n.lang === 'en' ? 'reviews' : 'შეფასება'}</small></div><i></i><div><strong>${place.isOpen ? '12–23' : '12–00'}</strong><small>${i18n.lang === 'en' ? 'today' : 'დღეს'}</small></div><i></i><div><strong>2 km</strong><small>${i18n.lang === 'en' ? 'from centre' : 'ცენტრიდან'}</small></div></div>
+      <section class="detail-section"><h2>${i18n.lang === 'en' ? 'About' : 'შესახებ'}</h2><p>${i18n.lang === 'en' ? (pro ? 'An all-day beachfront escape for slow lunches, sunset music and the kind of evenings that carry on.' : 'A welcoming Old Batumi table for traditional Georgian dishes and small-batch wines.') : (pro ? 'პრემიუმ სანაპირო ადგილი მთელი დღის მენიუთი, მზის ჩასვლის მუსიკით და მარტივი დაჯავშნით.' : 'მყუდრო სივრცე ძველ ბათუმში ქართული კერძებითა და ღვინით.')}</p></section>
+      <section class="detail-section"><h2>${i18n.lang === 'en' ? 'Good to know' : 'სასარგებლო ინფორმაცია'}</h2><div class="amenity-grid"><span>${icon('wifi')}Wi‑Fi</span><span>${icon('sun')} ${i18n.lang === 'en' ? 'Outdoor seating' : 'ღია სივრცე'}</span><span>${icon('card')} ${i18n.lang === 'en' ? 'Card payment' : 'ბარათით გადახდა'}</span><span>${icon('users')} ${i18n.lang === 'en' ? 'Groups welcome' : 'ჯგუფებისთვის'}</span>${pro ? `<span>${icon('music')} ${i18n.lang === 'en' ? 'Live music' : 'ცოცხალი მუსიკა'}</span><span>${icon('camera')} ${i18n.lang === 'en' ? 'Photo spots' : 'ფოტო ზონა'}</span>` : ''}</div></section>
+      <section class="detail-section"><div class="section-head"><h2>${pro ? (i18n.lang === 'en' ? 'The atmosphere' : 'ატმოსფერო') : (i18n.lang === 'en' ? 'A few photos' : 'რამდენიმე ფოტო')}</h2></div><div class="photo-gallery"><img src="${place.image}" alt=""><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=500&q=80" alt=""><img src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?auto=format&fit=crop&w=500&q=80" alt=""></div></section>
+      ${pro ? proSections(place) : basicSections(place)}</section>
+    </main><div class="sticky-cta"><button type="button" class="quick-action" data-share aria-label="Share">${icon('share')}</button><button type="button" class="primary" data-book="${escapeHtml(name)}">${text('book')}</button></div>`;
+  }
+
+  function basicSections(place) {
+    return `<section class="detail-section"><h2>${i18n.lang === 'en' ? 'Recent reviews' : 'ბოლო შეფასებები'}</h2><article class="review"><span>M</span><div><b>Mari K.</b><small>★★★★★ · 3 ${i18n.lang === 'en' ? 'days ago' : 'დღის წინ'}</small><p>${i18n.lang === 'en' ? 'Beautiful local favourite with thoughtful service.' : 'ულამაზესი ადგილობრივი ადგილი ყურადღებიანი მომსახურებით.'}</p></div></article><a class="text-link" href="search-results.html?q=${encodeURIComponent(place.name.en)}">${i18n.lang === 'en' ? 'Explore similar places' : 'მსგავსი ადგილების ნახვა'} ${icon('arrow')}</a></section>`;
+  }
+
+  function proSections(place) {
+    return `<section class="detail-section"><div class="owner-note"><span>${icon('spark')}</span><div><small>${i18n.lang === 'en' ? 'OWNER NOTE' : 'მფლობელის წერილი'}</small><p>${i18n.lang === 'en' ? 'Sunset reservations are recommended on Fridays and Saturdays.' : 'პარასკევსა და შაბათს მზის ჩასვლის დროისთვის დაჯავშნა რეკომენდებულია.'}</p></div></div></section><section class="detail-section"><h2>${i18n.lang === 'en' ? 'Offers & events' : 'შეთავაზებები და ივენთები'}</h2><a href="deals.html" class="offer-card"><span>20%</span><div><b>${i18n.lang === 'en' ? 'Weekday cabanas' : 'შაბათის კაბანა'}</b><small>${i18n.lang === 'en' ? 'Available through July' : 'ხელმისაწვდომია ივლისში'}</small></div>${icon('arrow')}</a><a href="events.html" class="event-mini"><span>19<br><small>JUL</small></span><div><b>${i18n.lang === 'en' ? 'Golden hour sessions' : 'ოქროს საათის სესიები'}</b><small>${i18n.lang === 'en' ? 'Every Saturday · 18:00' : 'ყოველ შაბათს · 18:00'}</small></div></a></section><section class="detail-section"><h2>${i18n.lang === 'en' ? 'Visit & contact' : 'ვიზიტი და კონტაქტი'}</h2><div class="contact-actions"><a href="tel:+995555010101">${icon('phone')}${i18n.lang === 'en' ? 'Call' : 'დარეკვა'}</a><a href="mailto:hello@wemo.ge?subject=${encodeURIComponent(place.name.en)}">${icon('message')}${i18n.lang === 'en' ? 'Message' : 'მიწერა'}</a><a href="map.html">${icon('map')}${i18n.lang === 'en' ? 'Map' : 'რუკა'}</a></div></section><section class="detail-section"><h2>FAQ</h2><details class="faq"><summary>${i18n.lang === 'en' ? 'Do you take walk-ins?' : 'იღებთ სტუმრებს დაჯავშნის გარეშე?'} ${icon('plus')}</summary><p>${i18n.lang === 'en' ? 'Yes, although sunset hours fill up quickly.' : 'დიახ, თუმცა მზის ჩასვლის საათები სწრაფად ივსება.'}</p></details><details class="faq"><summary>${i18n.lang === 'en' ? 'Do you accept cards?' : 'იღებთ ბარათით გადახდას?'} ${icon('plus')}</summary><p>${i18n.lang === 'en' ? 'All major cards and contactless payments are welcome.' : 'ყველა ძირითადი ბარათი და უკონტაქტო გადახდა მისაღებია.'}</p></details></section>`;
+  }
+
+  function collection(title, eyebrow) {
+    return `${topBar()}<main class="page utility-page"><p class="eyebrow">${eyebrow}</p><h1 class="page-title">${title}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'Fresh reasons to go out in Batumi.' : 'ახალი მიზეზები ბათუმში გასასვლელად.'}</p><section class="listing-grid">${places.slice(0, 4).map((place) => placeCard(place)).join('')}</section></main>${renderNav()}`;
+  }
+
+  function render() {
+    const page = document.body.dataset.page;
+    const app = $('#app');
+    const output = page === 'home' ? home() : page === 'explore' ? explore() : page === 'saved' ? saved() : page === 'map' ? map() : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
+    app.innerHTML = output;
+    bind();
+    if (page === 'explore') refreshExplore();
+    if (page === 'saved') refreshSaved();
+    if (page === 'map') refreshMap();
+    if (page === 'search') refreshSearch();
+  }
+
+  function refreshExplore() {
+    const active = $('.chip.active')?.dataset.category || 'all';
+    const open = $('[data-open]')?.classList.contains('active');
+    const sorted = $('[data-sort]')?.classList.contains('active');
+    const list = places.filter((place) => (active === 'all' || place.category === active) && (!open || place.isOpen));
+    if (sorted) list.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews);
+    $('[data-listings]').innerHTML = list.length ? list.map((place) => placeCard(place)).join('') : `<div class="empty"><h2>${i18n.lang === 'en' ? 'No places match these filters.' : 'ამ ფილტრებს ადგილი არ ემთხვევა.'}</h2></div>`;
+    $('[data-result-count]').textContent = `${list.length} ${i18n.lang === 'en' ? 'places' : 'ადგილი'}`;
+  }
+
+  function refreshSaved() {
+    const list = places.filter((place) => WemoStorage.has(place.id));
+    $('[data-saved-list]').innerHTML = list.length ? list.map((place) => placeCard(place)).join('') : `<section class="empty"><h2>${text('savedEmpty')}</h2><p>${text('savedEmptyText')}</p><a class="primary" href="explore.html">${text('explore')}</a></section>`;
+  }
+
+  let mapIndex = 0;
+  function refreshMap() {
+    const place = places[mapIndex];
+    $('[data-map-preview]').innerHTML = `<img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}"><div><span class="tag">${text(place.category)}</span><a href="${place.detailPage}?place=${place.id}"><h3>${escapeHtml(place.name[i18n.lang])}</h3></a><p class="meta">${place.rating} ★ · ${place.location[i18n.lang]}</p></div>`;
+  }
+
+  function refreshSearch() {
+    const query = (new URLSearchParams(location.search).get('q') || '').trim().toLowerCase();
+    const matches = places.filter((place) => !query || [place.name.en, place.name.ka, place.category, place.location.en, place.location.ka].join(' ').toLowerCase().includes(query));
+    $('.page-subtitle').textContent = query ? `“${query}”` : (i18n.lang === 'en' ? 'Try a place, category or neighbourhood.' : 'მოძებნეთ ადგილი, კატეგორია ან უბანი.');
+    $('.listing-grid').innerHTML = matches.length ? matches.map((place) => placeCard(place)).join('') : `<div class="empty"><h2>${i18n.lang === 'en' ? 'No results found' : 'შედეგი ვერ მოიძებნა'}</h2><p>${i18n.lang === 'en' ? 'Try another search term.' : 'სცადეთ სხვა საძიებო სიტყვა.'}</p></div>`;
+  }
+
+  function toast(message) {
+    const notice = document.createElement('div'); notice.className = 'toast'; notice.textContent = message; document.body.append(notice); setTimeout(() => notice.remove(), 2600);
+  }
+
+  function booking(name) {
+    const modal = document.createElement('div'); modal.className = 'modal';
+    modal.innerHTML = `<form class="modal-box" data-book-form><button type="button" class="modal-close" data-close aria-label="Close">${icon('close')}</button><p class="eyebrow">${i18n.lang === 'en' ? 'BOOKING REQUEST' : 'დაჯავშნის მოთხოვნა'}</p><h2>${escapeHtml(name)}</h2><div class="form-grid"><label>Date<input required type="date"></label><label>Time<input required type="time"></label><label>${i18n.lang === 'en' ? 'People' : 'სტუმრები'}<input required type="number" min="1" value="2"></label><label>${i18n.lang === 'en' ? 'Name' : 'სახელი'}<input required></label></div><button class="primary">${i18n.lang === 'en' ? 'Save demo request' : 'დემო მოთხოვნის შენახვა'}</button></form>`;
+    document.body.append(modal);
+    modal.addEventListener('click', (event) => { if (event.target === modal || event.target.closest('[data-close]')) modal.remove(); });
+    $('[data-book-form]', modal).addEventListener('submit', (event) => { event.preventDefault(); const requests = JSON.parse(localStorage.getItem('wemo-booking-requests') || '[]'); requests.push({ name, date: Date.now() }); localStorage.setItem('wemo-booking-requests', JSON.stringify(requests)); modal.remove(); toast(text('requestSaved')); });
+  }
+
+  function bind() {
+    $$('[data-save]').forEach((button) => button.addEventListener('click', () => { WemoStorage.toggle(button.dataset.save); render(); }));
+    $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.className = `lang-${i18n.lang}`; render(); }));
+    $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
+    $('[data-search]')?.addEventListener('submit', (event) => { event.preventDefault(); location.href = `search-results.html?q=${encodeURIComponent(new FormData(event.currentTarget).get('q').trim())}`; });
+    $$('[data-category]').forEach((button) => button.addEventListener('click', () => { $$('[data-category]').forEach((chip) => chip.classList.remove('active')); button.classList.add('active'); refreshExplore(); }));
+    $('[data-open]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
+    $('[data-sort]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
+    $('[data-marker-next]')?.addEventListener('click', () => { mapIndex = (mapIndex + 1) % places.length; refreshMap(); });
+    $$('[data-marker]').forEach((button) => button.addEventListener('click', () => { mapIndex = Number(button.dataset.marker); refreshMap(); }));
+    $('[data-back]')?.addEventListener('click', () => { history.length > 1 ? history.back() : location.assign('index.html'); });
+    $$('[data-share]').forEach((button) => button.addEventListener('click', async () => { try { if (navigator.share) await navigator.share({ title: button.dataset.title || document.title, url: location.href }); else { await navigator.clipboard.writeText(location.href); toast(i18n.lang === 'en' ? 'Link copied' : 'ბმული დაკოპირდა'); } } catch { toast(i18n.lang === 'en' ? 'Share cancelled' : 'გაზიარება გაუქმდა'); } }));
+    $('[data-book]')?.addEventListener('click', (event) => booking(event.currentTarget.dataset.book));
+  }
+
+  document.documentElement.lang = i18n.lang;
+  document.body.className = `lang-${i18n.lang}`;
+  render();
+})();
