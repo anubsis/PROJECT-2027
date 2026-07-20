@@ -116,6 +116,7 @@
           <p>${i18n.lang === 'en' ? 'At selected Batumi beach clubs.' : 'ბათუმის შერჩეულ ბიჩ კლუბებში.'}</p>
           <span>${i18n.lang === 'en' ? 'See all deals' : 'შეთავაზებების ნახვა'} ${icon('arrow')}</span>
         </a>
+        <a href="business.html" class="business-banner">${icon('briefcase')}<div><b>${i18n.lang === 'en' ? 'Own a business?' : 'გაქვთ ბიზნესი?'}</b><small>${i18n.lang === 'en' ? 'Get listed on Wemo — free' : 'დაემატეთ Wemo-ს — უფასოდ'}</small></div>${icon('arrow')}</a>
       </main>
       ${renderNav()}`;
   }
@@ -139,13 +140,43 @@
     return `${topBar()}<main class="page utility-page"><p class="eyebrow">${i18n.lang === 'en' ? 'YOUR LIST' : 'თქვენი სია'}</p><h1 class="page-title">${text('saved')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'Keep every good idea close.' : 'შეინახეთ ყველა კარგი იდეა.'}</p><div class="listing-grid" data-saved-list></div></main>${renderNav()}`;
   }
 
+  function mapChips(active) {
+    return `<div class="chips">${categories.map((category) => `<button type="button" class="chip ${category === active ? 'active' : ''}" data-map-category="${category}">${text(category)}</button>`).join('')}</div>`;
+  }
+
   function map() {
-    return `${topBar()}<main class="page utility-page"><p class="eyebrow">BATUMI</p><h1 class="page-title">${text('mapTitle')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'A small map for a good day out.' : 'პატარა რუკა კარგი დღისთვის.'}</p><section class="map-canvas" aria-label="Map of Batumi"><span class="map-label" style="left:34px;top:120px">Old Batumi</span><span class="map-label" style="left:150px;top:214px">Boulevard</span><span class="map-label" style="right:40px;top:80px">Seafront</span>${places.slice(0, 4).map((place, index) => `<button type="button" class="marker" style="left:${22 + index * 17}%;top:${38 + (index % 2) * 19}%" data-marker="${index}" aria-label="${escapeHtml(place.name.en)}"></button>`).join('')}<div class="map-controls"><button type="button" data-toast="Location is a demo feature" aria-label="Find my location">${icon('target')}</button><button type="button" data-marker-next aria-label="Next place">${icon('arrow')}</button></div><div class="map-preview" data-map-preview></div></section></main>${renderNav()}`;
+    return `${topBar()}<main class="page utility-page map-page"><p class="eyebrow">BATUMI</p><h1 class="page-title">${text('mapTitle')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'A small map for a good day out.' : 'პატარა რუკა კარგი დღისთვის.'}</p>${mapChips('all')}<section class="map-canvas" aria-label="Map of Batumi"><span class="map-label" style="left:34px;top:120px">Old Batumi</span><span class="map-label" style="left:150px;top:214px">Boulevard</span><span class="map-label" style="right:40px;top:80px">Seafront</span>${places.slice(0, 4).map((place, index) => `<button type="button" class="marker" style="left:${22 + index * 17}%;top:${38 + (index % 2) * 19}%" data-marker="${index}" aria-label="${escapeHtml(place.name.en)}"></button>`).join('')}<div class="map-controls"><button type="button" data-toast="Location is a demo feature" aria-label="Find my location">${icon('target')}</button><button type="button" data-marker-next aria-label="Next place">${icon('arrow')}</button></div><div class="map-sheet"><div class="map-sheet__handle"></div><div class="map-sheet__list" data-map-preview></div></div></section></main>${renderNav()}`;
   }
 
   function profile() {
     const language = i18n.lang === 'en' ? 'English' : 'ქართული';
-    return `${topBar()}<main class="page utility-page"><section class="profile-head"><span class="profile-orb">W</span><div><p class="eyebrow">${i18n.lang === 'en' ? 'WEMO MEMBER' : 'WEMO წევრი'}</p><h1>${text('guest')}</h1><p>${i18n.lang === 'en' ? 'Plans, saved places and more.' : 'გეგმები, შენახული ადგილები და მეტი.'}</p></div><button type="button" class="primary" data-toast="Sign-in is a frontend placeholder">${text('join')}</button></section>${sectionHead(text('profileTitle'), null)}<div class="settings"><button type="button" class="setting" data-toast="Bookings will appear here"><span>${icon('calendar')}<b>${i18n.lang === 'en' ? 'My bookings' : 'ჩემი ჯავშნები'}</b><small>${i18n.lang === 'en' ? 'No upcoming plans' : 'მომავალი გეგმები არ არის'}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-language><span>${icon('globe')}<b>${i18n.lang === 'en' ? 'Language' : 'ენა'}</b><small>${language}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Notifications are a frontend placeholder"><span>${icon('bell')}<b>${i18n.lang === 'en' ? 'Notifications' : 'შეტყობინებები'}</b><small>${i18n.lang === 'en' ? 'Manage preferences' : 'პარამეტრების მართვა'}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Business onboarding is coming soon"><span>${icon('spark')}<b>${i18n.lang === 'en' ? 'Add your business' : 'დაამატეთ ბიზნესი'}</b><small>${i18n.lang === 'en' ? 'For owners and teams' : 'მფლობელებისა და გუნდებისთვის'}</small></span>${icon('chevron')}</button></div></main>${renderNav()}`;
+    return `${topBar()}<main class="page utility-page"><section class="profile-head"><span class="profile-orb">W</span><div><p class="eyebrow">${i18n.lang === 'en' ? 'WEMO MEMBER' : 'WEMO წევრი'}</p><h1>${text('guest')}</h1><p>${i18n.lang === 'en' ? 'Plans, saved places and more.' : 'გეგმები, შენახული ადგილები და მეტი.'}</p></div><button type="button" class="primary" data-toast="Sign-in is a frontend placeholder">${text('join')}</button></section>${sectionHead(text('profileTitle'), null)}<div class="settings"><button type="button" class="setting" data-toast="Bookings will appear here"><span>${icon('calendar')}<b>${i18n.lang === 'en' ? 'My bookings' : 'ჩემი ჯავშნები'}</b><small>${i18n.lang === 'en' ? 'No upcoming plans' : 'მომავალი გეგმები არ არის'}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-language><span>${icon('globe')}<b>${i18n.lang === 'en' ? 'Language' : 'ენა'}</b><small>${language}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Notifications are a frontend placeholder"><span>${icon('bell')}<b>${i18n.lang === 'en' ? 'Notifications' : 'შეტყობინებები'}</b><small>${i18n.lang === 'en' ? 'Manage preferences' : 'პარამეტრების მართვა'}</small></span>${icon('chevron')}</button><a class="setting" href="business.html"><span>${icon('briefcase')}<b>${i18n.lang === 'en' ? 'Add your business' : 'დაამატეთ ბიზნესი'}</b><small>${i18n.lang === 'en' ? 'For owners and teams' : 'მფლობელებისა და გუნდებისთვის'}</small></span>${icon('chevron')}</a></div></main>${renderNav()}`;
+  }
+
+  function business() {
+    const en = i18n.lang === 'en';
+    return `${topBar()}<main class="page utility-page">
+      <section class="business-hero"><p class="eyebrow">${en ? 'FOR BUSINESSES' : 'ბიზნესებისთვის'}</p><h1>${en ? 'Get found by every traveller in town.' : 'გახდით ხილული ყველა მოგზაურისთვის.'}</h1><p>${en ? "If your business isn't online yet, this is the fastest way to be. Free to list, no tech skills needed." : 'თუ თქვენი ბიზნესი ჯერ ონლაინ არ არის, ეს ყველაზე სწრაფი გზაა. დარეგისტრირება უფასოა და ტექნიკური ცოდნა არ სჭირდება.'}</p></section>
+      <div class="benefit-list">
+        <div class="benefit">${icon('spark')}<div><b>${en ? 'Free to list' : 'უფასო რეგისტრაცია'}</b><small>${en ? 'No cost to get your business on Wemo' : 'Wemo-ზე დამატება არაფერს გიჯდებათ'}</small></div></div>
+        <div class="benefit">${icon('users')}<div><b>${en ? 'Reach tourists directly' : 'პირდაპირი წვდომა ტურისტებთან'}</b><small>${en ? 'Be the place people find while planning their day' : 'გახდით ადგილი, რომელსაც დღის დაგეგმვისას პოულობენ'}</small></div></div>
+        <div class="benefit">${icon('briefcase')}<div><b>${en ? 'No tech skills needed' : 'ტექნიკური ცოდნა არ სჭირდება'}</b><small>${en ? 'We can build your profile for you' : 'პროფილს თქვენთვის ჩვენ ავაწყობთ'}</small></div></div>
+      </div>
+      <form class="business-form" data-business-form>
+        <h2>${en ? 'Tell us about your business' : 'გვიამბეთ თქვენს ბიზნესზე'}</h2>
+        <div class="field"><label>${en ? 'Business name' : 'ბიზნესის სახელი'}</label><input required name="name" placeholder="${en ? 'e.g. Lighthouse Beach Bar' : 'მაგ. Lighthouse Beach Bar'}"></div>
+        <div class="field-row">
+          <div class="field"><label>${en ? 'Category' : 'კატეგორია'}</label><select name="category">${categories.filter((category) => category !== 'all').map((category) => `<option value="${category}">${text(category)}</option>`).join('')}</select></div>
+          <div class="field"><label>${en ? 'City' : 'ქალაქი'}</label><input required name="city" placeholder="${en ? 'Batumi' : 'ბათუმი'}"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>${en ? 'Phone' : 'ტელეფონი'}</label><input required type="tel" name="phone" placeholder="+995"></div>
+          <div class="field"><label>Email</label><input required type="email" name="email" placeholder="you@business.ge"></div>
+        </div>
+        <div class="field"><label>${en ? 'About your business' : 'ბიზნესის შესახებ'}</label><textarea name="about" placeholder="${en ? 'What makes it worth a visit?' : 'რატომ ღირს ვიზიტი?'}"></textarea></div>
+        <button type="submit" class="primary">${icon('check')}${en ? 'Submit for review' : 'გაგზავნა განსახილველად'}</button>
+      </form>
+    </main>${renderNav()}`;
   }
 
   function detail() {
@@ -180,7 +211,7 @@
   function render() {
     const page = document.body.dataset.page;
     const app = $('#app');
-    const output = page === 'home' ? home() : page === 'explore' ? explore() : page === 'saved' ? saved() : page === 'map' ? map() : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
+    const output = page === 'home' ? home() : page === 'explore' ? explore() : page === 'saved' ? saved() : page === 'map' ? map() : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'business' ? business() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
     app.innerHTML = output;
     bind();
     if (page === 'explore') refreshExplore();
@@ -205,9 +236,19 @@
   }
 
   let mapIndex = 0;
+  let mapCategory = 'all';
   function refreshMap() {
-    const place = places[mapIndex];
-    $('[data-map-preview]').innerHTML = `<img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}"><div><span class="tag">${text(place.category)}</span><a href="${place.detailPage}?place=${place.id}"><h3>${escapeHtml(place.name[i18n.lang])}</h3></a><p class="meta">${place.rating} ★ · ${place.location[i18n.lang]}</p></div>`;
+    const preview = $('[data-map-preview]');
+    if (!preview) return;
+    const filtered = places.filter((place) => mapCategory === 'all' || place.category === mapCategory);
+    const list = filtered.length ? filtered : places;
+    if (!list.includes(places[mapIndex])) mapIndex = places.indexOf(list[0]);
+    preview.innerHTML = list.map((place) => `
+      <button type="button" class="map-sheet__card ${place.id === places[mapIndex]?.id ? 'active' : ''}" data-marker="${places.indexOf(place)}">
+        <img src="${place.image}" alt="">
+        <div><span class="tag">${text(place.category)}</span><h3>${escapeHtml(place.name[i18n.lang])}</h3><p>${place.rating} ★ · ${place.location[i18n.lang]}</p></div>
+      </button>`).join('');
+    $$('.marker').forEach((marker, index) => marker.classList.toggle('active', index === mapIndex));
   }
 
   function refreshSearch() {
@@ -237,11 +278,21 @@
     $$('[data-category]').forEach((button) => button.addEventListener('click', () => { $$('[data-category]').forEach((chip) => chip.classList.remove('active')); button.classList.add('active'); refreshExplore(); }));
     $('[data-open]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
     $('[data-sort]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
-    $('[data-marker-next]')?.addEventListener('click', () => { mapIndex = (mapIndex + 1) % places.length; refreshMap(); });
+    $('[data-marker-next]')?.addEventListener('click', () => { mapIndex = (mapIndex + 1) % places.length; refreshMap(); $(`[data-marker="${mapIndex}"].map-sheet__card`)?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' }); });
     $$('[data-marker]').forEach((button) => button.addEventListener('click', () => { mapIndex = Number(button.dataset.marker); refreshMap(); }));
+    $$('[data-map-category]').forEach((button) => button.addEventListener('click', () => { $$('[data-map-category]').forEach((chip) => chip.classList.remove('active')); button.classList.add('active'); mapCategory = button.dataset.mapCategory; refreshMap(); }));
     $('[data-back]')?.addEventListener('click', () => { history.length > 1 ? history.back() : location.assign('index.html'); });
     $$('[data-share]').forEach((button) => button.addEventListener('click', async () => { try { if (navigator.share) await navigator.share({ title: button.dataset.title || document.title, url: location.href }); else { await navigator.clipboard.writeText(location.href); toast(i18n.lang === 'en' ? 'Link copied' : 'ბმული დაკოპირდა'); } } catch { toast(i18n.lang === 'en' ? 'Share cancelled' : 'გაზიარება გაუქმდა'); } }));
     $('[data-book]')?.addEventListener('click', (event) => booking(event.currentTarget.dataset.book));
+    $('[data-business-form]')?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(event.currentTarget).entries());
+      const leads = JSON.parse(localStorage.getItem('wemo-business-leads') || '[]');
+      leads.push({ ...data, date: Date.now() });
+      localStorage.setItem('wemo-business-leads', JSON.stringify(leads));
+      const en = i18n.lang === 'en';
+      $('#app main').innerHTML = `<div class="business-success">${icon('check')}<h2>${en ? "You're on the list" : 'თქვენ დამატებული ხართ'}</h2><p>${en ? "We'll reach out to get your profile live. Usually within a couple of days." : 'მალე დაგიკავშირდებით პროფილის გასააქტიურებლად, ჩვეულებრივ რამდენიმე დღეში.'}</p><a class="primary" href="index.html">${en ? 'Back to Wemo' : 'დაბრუნება Wemo-ზე'}</a></div>`;
+    });
   }
 
   document.documentElement.lang = i18n.lang;

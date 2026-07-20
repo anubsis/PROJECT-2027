@@ -1,0 +1,24 @@
+.business-hero { position: relative; padding: 24px 20px; margin-bottom: 4px; overflow: hidden; border: 1px solid rgba(232,196,104,0.3); border-radius: var(--r-lg); background: radial-gradient(circle at 88% 6%, rgba(232,196,104,0.18), transparent 34%), linear-gradient(135deg, #251f38, #171824); }
+.business-hero .eyebrow { color: var(--gold); }
+.business-hero h1 { margin: 0; font: 800 26px/1.08 Syne, Inter, sans-serif; letter-spacing: -0.05em; }
+.business-hero p { margin: 9px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+.benefit-list { display: grid; gap: 10px; margin: 18px 0 26px; }
+.benefit { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.benefit span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 12px; background: rgba(232,196,104,0.14); color: var(--gold); }
+.benefit b { display: block; font-size: 13px; }
+.benefit small { color: var(--muted); font-size: 11px; }
+
+.business-form { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.business-form h2 { margin: 0 0 2px; font-size: 16px; }
+.business-form .field { display: grid; gap: 6px; }
+.business-form label { color: var(--muted); font-size: 11px; font-weight: 700; }
+.business-form input, .business-form select, .business-form textarea { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #101118; color: var(--text); font: inherit; }
+.business-form textarea { min-height: 80px; resize: vertical; }
+.business-form .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.business-form .primary { width: 100%; margin-top: 4px; padding: 14px; }
+
+.business-success { display: grid; justify-items: center; gap: 12px; padding: 40px 24px; text-align: center; }
+.business-success span { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 50%; background: rgba(110,224,155,0.15); color: #6ee09b; }
+.business-success h2 { margin: 0; font-size: 19px; }
+.business-success p { margin: 0; color: var(--muted); font-size: 12px; max-width: 260px; }

@@ -13,7 +13,8 @@
     sort: '<path d="M4 7h16M7 12h10M10 17h4"/>', target: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>', globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>', chevron: '<path d="m9 18 6-6-6-6"/>',
     wifi: '<path d="M3 9a14 14 0 0 1 18 0M6 12a9 9 0 0 1 12 0M9 15a4 4 0 0 1 6 0"/><circle cx="12" cy="19" r="1"/>', card: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>', users: '<circle cx="9" cy="8" r="3"/><path d="M3 21a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 21a5 5 0 0 0-3-4.6"/>', music: '<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>', camera: '<path d="M4 7h4l1-2h6l1 2h4v12H4z"/><circle cx="12" cy="13" r="3"/>',
-    play: '<path d="m9 7 8 5-8 5z"/>', phone: '<path d="M5 3h3l2 5-2 2c1.5 3 3 4.5 6 6l2-2 5 2v3c0 1-1 2-2 2C10 21 3 14 3 5c0-1 1-2 2-2z"/>', message: '<path d="M4 5h16v11H8l-4 4z"/>', plus: '<path d="M12 5v14M5 12h14"/>', close: '<path d="m6 6 12 12M18 6 6 18"/>'
+    play: '<path d="m9 7 8 5-8 5z"/>', phone: '<path d="M5 3h3l2 5-2 2c1.5 3 3 4.5 6 6l2-2 5 2v3c0 1-1 2-2 2C10 21 3 14 3 5c0-1 1-2 2-2z"/>', message: '<path d="M4 5h16v11H8l-4 4z"/>', plus: '<path d="M12 5v14M5 12h14"/>', close: '<path d="m6 6 12 12M18 6 6 18"/>',
+    briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/>', check: '<path d="M4 12l6 6L20 6"/>', building: '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 8h1M14 8h1M9 12h1M14 12h1M9 16h2"/>'
   };
   window.icon = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.spark}</svg>`;
   window.renderNav = () => {
