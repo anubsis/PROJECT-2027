@@ -140,12 +140,9 @@
     return `${topBar()}<main class="page utility-page"><p class="eyebrow">${i18n.lang === 'en' ? 'YOUR LIST' : 'თქვენი სია'}</p><h1 class="page-title">${text('saved')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'Keep every good idea close.' : 'შეინახეთ ყველა კარგი იდეა.'}</p><div class="listing-grid" data-saved-list></div></main>${renderNav()}`;
   }
 
-  function mapChips(active) {
-    return `<div class="chips">${categories.map((category) => `<button type="button" class="chip ${category === active ? 'active' : ''}" data-map-category="${category}">${text(category)}</button>`).join('')}</div>`;
-  }
-
   function map() {
-    return `${topBar()}<main class="page utility-page map-page"><p class="eyebrow">BATUMI</p><h1 class="page-title">${text('mapTitle')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'A small map for a good day out.' : 'პატარა რუკა კარგი დღისთვის.'}</p>${mapChips('all')}<section class="map-canvas" aria-label="Map of Batumi"><span class="map-label" style="left:34px;top:120px">Old Batumi</span><span class="map-label" style="left:150px;top:214px">Boulevard</span><span class="map-label" style="right:40px;top:80px">Seafront</span>${places.slice(0, 4).map((place, index) => `<button type="button" class="marker" style="left:${22 + index * 17}%;top:${38 + (index % 2) * 19}%" data-marker="${index}" aria-label="${escapeHtml(place.name.en)}"></button>`).join('')}<div class="map-controls"><button type="button" data-toast="Location is a demo feature" aria-label="Find my location">${icon('target')}</button><button type="button" data-marker-next aria-label="Next place">${icon('arrow')}</button></div><div class="map-sheet"><div class="map-sheet__handle"></div><div class="map-sheet__list" data-map-preview></div></div></section></main>${renderNav()}`;
+    const en = i18n.lang === 'en';
+    return `${topBar()}<main class="page utility-page map-page"><p class="eyebrow">BATUMI</p><h1 class="page-title">${text('mapTitle')}</h1><p class="page-subtitle">${en ? 'Places for today, and a live view of the shore.' : 'ადგილები დღისთვის და სანაპიროს ცოცხალი ხედი.'}</p><section class="wemo-map" aria-label="${en ? 'Interactive map of Batumi' : 'ბათუმის ინტერაქტიული რუკა'}"><div id="wemo-leaflet-map"></div><div class="map-layer-control"><button type="button" class="map-layer-toggle" data-map-layers aria-expanded="false">${icon('layers')}<span>${en ? 'Layers' : 'ფენები'}</span></button><div class="map-layer-menu" data-map-layer-menu hidden><button type="button" data-map-layer="places">${icon('map')}<span>${en ? 'Map' : 'რუკა'}</span><i></i></button><button type="button" data-map-layer="heat">${icon('sun')}<span>${en ? 'Beach heatmap' : 'პლაჟის დატვირთულობა'}</span><i></i></button></div></div><div class="map-sheet"><div class="map-sheet__handle"></div><div data-map-context></div></div></section></main>${renderNav()}`;
   }
 
   function profile() {
@@ -216,7 +213,7 @@
     bind();
     if (page === 'explore') refreshExplore();
     if (page === 'saved') refreshSaved();
-    if (page === 'map') refreshMap();
+    if (page === 'map') initializeMap();
     if (page === 'search') refreshSearch();
   }
 
@@ -235,20 +232,109 @@
     $('[data-saved-list]').innerHTML = list.length ? list.map((place) => placeCard(place)).join('') : `<section class="empty"><h2>${text('savedEmpty')}</h2><p>${text('savedEmptyText')}</p><a class="primary" href="explore.html">${text('explore')}</a></section>`;
   }
 
-  let mapIndex = 0;
-  let mapCategory = 'all';
-  function refreshMap() {
-    const preview = $('[data-map-preview]');
-    if (!preview) return;
-    const filtered = places.filter((place) => mapCategory === 'all' || place.category === mapCategory);
-    const list = filtered.length ? filtered : places;
-    if (!list.includes(places[mapIndex])) mapIndex = places.indexOf(list[0]);
-    preview.innerHTML = list.map((place) => `
-      <button type="button" class="map-sheet__card ${place.id === places[mapIndex]?.id ? 'active' : ''}" data-marker="${places.indexOf(place)}">
-        <img src="${place.image}" alt="">
-        <div><span class="tag">${text(place.category)}</span><h3>${escapeHtml(place.name[i18n.lang])}</h3><p>${place.rating} ★ · ${place.location[i18n.lang]}</p></div>
-      </button>`).join('');
-    $$('.marker').forEach((marker, index) => marker.classList.toggle('active', index === mapIndex));
+  let activeMapLayer = 'places';
+  let activeMapPlace = 'old-town-wine-house';
+  let wemoLeafletMap;
+  let wemoMapLayers = [];
+
+  const batumiBounds = [[41.625, 41.595], [41.675, 41.675]];
+  const georgiaCoastBounds = [[41.42, 40.68], [43.6, 42.28]];
+
+  function mapPlaces() {
+    return (window.WEMO_BATUMI_MAP_PLACES || []).map((entry) => ({
+      ...places.find((place) => place.id === entry.id), coordinates: entry.coordinates
+    })).filter((place) => place.id);
+  }
+
+  function clearMapLayers() {
+    wemoMapLayers.forEach((layer) => layer.remove());
+    wemoMapLayers = [];
+  }
+
+  function mapContext() {
+    const target = $('[data-map-context]');
+    if (!target) return;
+    const en = i18n.lang === 'en';
+    if (activeMapLayer === 'heat') {
+      target.innerHTML = `<div class="heat-context"><div><span class="map-context__eyebrow">${en ? 'BEACH HEATMAP' : 'პლაჟის დატვირთულობა'}</span><h2>${en ? 'Batumi shore, right now' : 'ბათუმის სანაპირო ახლა'}</h2><p>${en ? 'A smooth shoreline view of beach activity.' : 'სანაპიროს აქტივობის გლუვი ხედვა.'}</p></div><div class="heat-legend" aria-label="${en ? 'Crowd level legend' : 'დატვირთულობის ლეგენდა'}"><span>${en ? 'Quiet' : 'მშვიდი'}</span><i></i><span>${en ? 'Busy' : 'დატვირთული'}</span></div></div>`;
+      return;
+    }
+    const place = mapPlaces().find((item) => item.id === activeMapPlace) || mapPlaces()[0];
+    if (!place) return;
+    target.innerHTML = `<a class="map-place-card" href="${place.detailPage}?place=${place.id}"><img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}"><div><span class="tag">${text(place.category)}</span><h2>${escapeHtml(place.name[i18n.lang])}</h2><p>${place.rating} ★ · ${escapeHtml(place.location[i18n.lang])}</p></div>${icon('arrow')}</a>`;
+  }
+
+  function setMapLayer(layer) {
+    activeMapLayer = layer;
+    clearMapLayers();
+    if (layer === 'heat') renderBeachHeatmap(); else renderPlacesMap();
+    mapContext();
+    $$('[data-map-layer]').forEach((button) => button.classList.toggle('active', button.dataset.mapLayer === layer));
+  }
+
+  function renderPlacesMap() {
+    wemoLeafletMap.setMaxBounds(batumiBounds);
+    wemoLeafletMap.setMinZoom(12);
+    wemoLeafletMap.setMaxZoom(18);
+    wemoLeafletMap.fitBounds(batumiBounds, { padding: [28, 28] });
+    const placeLayer = window.L.layerGroup().addTo(wemoLeafletMap);
+    mapPlaces().forEach((place) => {
+      const marker = window.L.marker(place.coordinates, { icon: window.L.divIcon({ className: 'wemo-place-marker-wrap', html: `<button class="wemo-place-marker ${place.id === activeMapPlace ? 'active' : ''}" aria-label="${escapeHtml(place.name[i18n.lang])}"></button>`, iconSize: [34, 42], iconAnchor: [17, 42] }) }).addTo(placeLayer);
+      marker.on('click', () => { activeMapPlace = place.id; renderPlacesMap(); mapContext(); });
+    });
+    wemoMapLayers.push(placeLayer);
+  }
+
+  function interpolateCoastline(points, steps = 8) {
+    const output = [];
+    for (let index = 0; index < points.length - 1; index += 1) {
+      const before = points[Math.max(0, index - 1)];
+      const start = points[index];
+      const end = points[index + 1];
+      const after = points[Math.min(points.length - 1, index + 2)];
+      for (let step = 0; step < steps; step += 1) {
+        const t = step / steps; const t2 = t * t; const t3 = t2 * t;
+        const latitude = 0.5 * ((2 * start[0]) + (-before[0] + end[0]) * t + (2 * before[0] - 5 * start[0] + 4 * end[0] - after[0]) * t2 + (-before[0] + 3 * start[0] - 3 * end[0] + after[0]) * t3);
+        const longitude = 0.5 * ((2 * start[1]) + (-before[1] + end[1]) * t + (2 * before[1] - 5 * start[1] + 4 * end[1] - after[1]) * t2 + (-before[1] + 3 * start[1] - 3 * end[1] + after[1]) * t3);
+        output.push([latitude, longitude]);
+      }
+    }
+    return [...output, points[points.length - 1]];
+  }
+
+  function renderBeachHeatmap() {
+    const zones = window.WEMO_COAST_HEAT_ZONES || [];
+    const tierIntensity = { low: 0.45, medium: 0.66, high: 0.9 };
+    const coastlines = zones.map((zone) => interpolateCoastline(zone.shape));
+    const heatPoints = coastlines.flatMap((coast, zoneIndex) => coast.flatMap(([lat, lng], index) => {
+      const intensity = tierIntensity[zones[zoneIndex].tier] * (0.75 + (Math.sin(index * 0.51) + 1) * 0.13);
+      return [[lat, lng, intensity], [lat + 0.0012, lng - 0.0018, intensity * 0.72], [lat - 0.001, lng + 0.0012, intensity * 0.58]];
+    }));
+    const heatLayer = window.L.heatLayer(heatPoints, { radius: 34, blur: 27, maxZoom: 15, minOpacity: 0.34, gradient: { 0.2: '#0d3b4f', 0.45: '#4fd1a5', 0.7: '#ffb648', 1: '#ff3b3b' } }).addTo(wemoLeafletMap);
+    const shorelines = window.L.layerGroup(coastlines.map((coast) => window.L.polyline(coast, { color: '#e8c468', weight: 2, opacity: 0.72, dashArray: '2 8' }))).addTo(wemoLeafletMap);
+    const batumiCoast = coastlines[0];
+    const sensorPoint = batumiCoast[Math.floor(batumiCoast.length * 0.55)];
+    const sensor = window.L.marker(sensorPoint, { icon: window.L.divIcon({ className: 'wemo-heat-sensor-wrap', html: '<span class="wemo-heat-sensor"></span>', iconSize: [24, 24], iconAnchor: [12, 12] }) }).addTo(wemoLeafletMap);
+    wemoMapLayers.push(heatLayer, shorelines, sensor);
+    wemoLeafletMap.setMaxBounds(georgiaCoastBounds);
+    wemoLeafletMap.setMaxZoom(16);
+    const coastZoom = wemoLeafletMap.getBoundsZoom(georgiaCoastBounds, true, [32, 32]);
+    wemoLeafletMap.setMinZoom(coastZoom);
+    wemoLeafletMap.fitBounds(georgiaCoastBounds, { padding: [32, 32] });
+  }
+
+  function initializeMap() {
+    const mapElement = $('#wemo-leaflet-map');
+    if (!mapElement || !window.L) {
+      $('[data-map-context]').innerHTML = `<p class="map-error">${i18n.lang === 'en' ? 'The map needs an internet connection to load.' : 'რუკის ჩასატვირთად საჭიროა ინტერნეტთან კავშირი.'}</p>`;
+      return;
+    }
+    if (wemoLeafletMap) wemoLeafletMap.remove();
+    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25, maxBoundsViscosity: 1 });
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(wemoLeafletMap);
+    window.L.control.zoom({ position: 'bottomright' }).addTo(wemoLeafletMap);
+    setMapLayer(activeMapLayer);
+    requestAnimationFrame(() => wemoLeafletMap.invalidateSize());
   }
 
   function refreshSearch() {
@@ -278,9 +364,17 @@
     $$('[data-category]').forEach((button) => button.addEventListener('click', () => { $$('[data-category]').forEach((chip) => chip.classList.remove('active')); button.classList.add('active'); refreshExplore(); }));
     $('[data-open]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
     $('[data-sort]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
-    $('[data-marker-next]')?.addEventListener('click', () => { mapIndex = (mapIndex + 1) % places.length; refreshMap(); $(`[data-marker="${mapIndex}"].map-sheet__card`)?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' }); });
-    $$('[data-marker]').forEach((button) => button.addEventListener('click', () => { mapIndex = Number(button.dataset.marker); refreshMap(); }));
-    $$('[data-map-category]').forEach((button) => button.addEventListener('click', () => { $$('[data-map-category]').forEach((chip) => chip.classList.remove('active')); button.classList.add('active'); mapCategory = button.dataset.mapCategory; refreshMap(); }));
+    $('[data-map-layers]')?.addEventListener('click', (event) => {
+      const menu = $('[data-map-layer-menu]');
+      const open = menu.hidden;
+      menu.hidden = !open;
+      event.currentTarget.setAttribute('aria-expanded', String(open));
+    });
+    $$('[data-map-layer]').forEach((button) => button.addEventListener('click', () => {
+      $('[data-map-layer-menu]').hidden = true;
+      $('[data-map-layers]').setAttribute('aria-expanded', 'false');
+      setMapLayer(button.dataset.mapLayer);
+    }));
     $('[data-back]')?.addEventListener('click', () => { history.length > 1 ? history.back() : location.assign('index.html'); });
     $$('[data-share]').forEach((button) => button.addEventListener('click', async () => { try { if (navigator.share) await navigator.share({ title: button.dataset.title || document.title, url: location.href }); else { await navigator.clipboard.writeText(location.href); toast(i18n.lang === 'en' ? 'Link copied' : 'ბმული დაკოპირდა'); } } catch { toast(i18n.lang === 'en' ? 'Share cancelled' : 'გაზიარება გაუქმდა'); } }));
     $('[data-book]')?.addEventListener('click', (event) => booking(event.currentTarget.dataset.book));
