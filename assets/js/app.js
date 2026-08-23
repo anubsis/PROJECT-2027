@@ -9,23 +9,112 @@
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[character]));
 
+  const homePlanner = {
+    date: 'today',
+    customDate: '',
+    city: 'tbilisi',
+    intent: null
+  };
+
+  const homeCopy = {
+    en: {
+      title: 'Wemo — Discover Georgia', kicker: 'Your day, made simple', questionStart: 'What should we do', questionMiddle: 'in',
+      intro: 'Choose a time, place, and mood. Wemo will shape a simple plan from trusted local picks.',
+      ask: 'Ask Wemo for a place or plan…', food: 'Eat', fun: 'Go out', sights: 'See', stay: 'Stay',
+      recommendation: 'Wemo recommends', recommendationSub: 'One strong pick for your plan', popular: 'Popular now', popularSub: 'Places people are choosing today',
+      viewAll: 'View all', map: 'Explore the map', mapSub: 'See what is close to your plan', mapOpen: 'Open map', nearby: '12 places around you',
+      useful: 'Useful nearby', usefulSub: 'Everyday essentials, one tap away', medical: 'Pharmacy & hospital', bank: 'Bank & exchange', transport: 'Transport & fuel', wc: 'Public restroom',
+      near: 'nearby', open: 'Open now', planning: 'Planning mode', planFor: 'Your picks are tuned for', chooseDate: 'Choose a date', chooseCity: 'Choose a location', close: 'Close',
+      today: 'today', tomorrow: 'tomorrow', dayAfter: 'the day after', custom: 'another date', todayOption: 'Today', tomorrowOption: 'Tomorrow', dayAfterOption: 'Day after tomorrow', customOption: 'Choose a date',
+      confirm: 'Use this date', chooseOnMap: 'Choose on map', language: 'ქარ', saved: 'Saved', save: 'Save'
+    },
+    ka: {
+      title: 'Wemo — აღმოაჩინე საქართველო', kicker: 'შენი დღე, მარტივად', questionStart: '', questionMiddle: 'რას ვაკეთებთ',
+      intro: 'აირჩიე დრო, ადგილი და განწყობა — Wemo სანდო ადგილებიდან მარტივ გეგმას შეგირჩევს.',
+      ask: 'ჰკითხე Wemo-ს — სად წავიდეთ?', food: 'კვება', fun: 'გართობა', sights: 'ხედები', stay: 'ღამისთევა',
+      recommendation: 'Wemo-ს რჩევა', recommendationSub: 'ერთი კარგი არჩევანი შენი გეგმისთვის', popular: 'პოპულარული ახლა', popularSub: 'რას ირჩევენ სხვები დღეს',
+      viewAll: 'ყველას ნახვა', map: 'აღმოაჩინე რუკაზე', mapSub: 'ნახე, რა არის შენს გეგმასთან ახლოს', mapOpen: 'რუკის გახსნა', nearby: '12 ადგილი შენ გარშემო',
+      useful: 'სასარგებლო ახლოს', usefulSub: 'ყოველდღიური საჭიროებები ერთი შეხებით', medical: 'აფთიაქი და საავადმყოფო', bank: 'ბანკი და გადამცვლელი', transport: 'ტრანსპორტი და საწვავი', wc: 'საჯარო საპირფარეშო',
+      near: 'ახლოს', open: 'ღიაა ახლა', planning: 'დაგეგმვის რეჟიმი', planFor: 'შერჩევა მორგებულია:', chooseDate: 'აირჩიე თარიღი', chooseCity: 'აირჩიე ლოკაცია', close: 'დახურვა',
+      today: 'დღეს', tomorrow: 'ხვალ', dayAfter: 'ზეგ', custom: 'სხვა თარიღი', todayOption: 'დღეს', tomorrowOption: 'ხვალ', dayAfterOption: 'ზეგ', customOption: 'სხვა თარიღი',
+      confirm: 'ამ თარიღის არჩევა', chooseOnMap: 'ლოკაციის არჩევა რუკაზე', language: 'EN', saved: 'შენახულია', save: 'შენახვა'
+    }
+  };
+
+  const homeCities = {
+    tbilisi: { en: 'Tbilisi', ka: 'თბილისში', nameEn: 'Tbilisi', nameKa: 'თბილისი' },
+    batumi: { en: 'Batumi', ka: 'ბათუმში', nameEn: 'Batumi', nameKa: 'ბათუმი' },
+    kutaisi: { en: 'Kutaisi', ka: 'ქუთაისში', nameEn: 'Kutaisi', nameKa: 'ქუთაისი' },
+    kakheti: { en: 'Kakheti', ka: 'კახეთში', nameEn: 'Kakheti', nameKa: 'კახეთი' },
+    gudauri: { en: 'Gudauri', ka: 'გუდაურში', nameEn: 'Gudauri', nameKa: 'გუდაური' }
+  };
+
+  const homeImages = {
+    city: 'https://images.unsplash.com/photo-1565008576549-57569a49371d?auto=format&fit=crop&w=1000&q=82',
+    food: 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=900&q=82',
+    sea: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=82',
+    night: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=900&q=82',
+    stay: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=82',
+    activity: 'https://images.unsplash.com/photo-1532727965015-2e7aefc6a307?auto=format&fit=crop&w=900&q=82'
+  };
+
+  const homeCityItems = {
+    tbilisi: [
+      homePlannerItem('tbilisi-old-town', 'sights', 'Old Tbilisi at golden hour', 'ძველი თბილისი ოქროს საათზე', 'Sololaki · Tbilisi', 'სოლოლაკი · თბილისი', homeImages.city, 4.9, true),
+      homePlannerItem('tbilisi-kitchen', 'food', 'Ezo — Georgian kitchen', 'ეზო — ქართული სამზარეულო', 'Mtatsminda · Tbilisi', 'მთაწმინდა · თბილისი', homeImages.food, 4.8, true),
+      homePlannerItem('tbilisi-night', 'fun', 'Courtyard jazz evening', 'ჯაზის საღამო ეზოში', 'Chugureti · Tbilisi', 'ჩუღურეთი · თბილისი', homeImages.night, 4.7, true),
+      homePlannerItem('tbilisi-stay', 'stay', 'Design stay near Rustaveli', 'დიზაინ-სასტუმრო რუსთაველთან', 'Vera · Tbilisi', 'ვერა · თბილისი', homeImages.stay, 4.8, false),
+      homePlannerItem('tbilisi-lake', 'sights', 'Lisi lake sunset walk', 'ლისის ტბა მზის ჩასვლისას', 'Lisi · Tbilisi', 'ლისი · თბილისი', homeImages.activity, 4.7, true)
+    ],
+    batumi: [
+      homePlannerItem('lighthouse-beach-bar', 'food', 'Lighthouse Beach Bar', 'Lighthouse Beach Bar', 'Kvariati · Batumi', 'კვარიათი · ბათუმი', homeImages.sea, 4.9, true, 'place-pro.html?place=lighthouse-beach-bar'),
+      homePlannerItem('old-town-wine-house', 'food', 'Old Town Wine House', 'ძველი ქალაქის ღვინის სახლი', 'Old Batumi', 'ძველი ბათუმი', homeImages.food, 4.8, true, 'place.html?place=old-town-wine-house'),
+      homePlannerItem('boulevard-rooftop', 'fun', 'Boulevard rooftop evening', 'საღამო ბულვარის რუფტოპზე', 'Old Boulevard · Batumi', 'ძველი ბულვარი · ბათუმი', homeImages.night, 4.7, true, 'place-pro.html?place=boulevard-rooftop'),
+      homePlannerItem('san-remo', 'stay', 'San Remo city stay', 'San Remo — ქალაქში დარჩენა', 'Rustaveli Ave · Batumi', 'რუსთაველის გამზირი · ბათუმი', homeImages.stay, 4.7, false, 'place-pro.html?place=san-remo'),
+      homePlannerItem('kobuleti-jet-ski', 'sights', 'Kobuleti coast escape', 'ქობულეთის სანაპირო', 'Kobuleti seafront', 'ქობულეთის სანაპირო', homeImages.activity, 4.7, true, 'place.html?place=kobuleti-jet-ski')
+    ],
+    kutaisi: [
+      homePlannerItem('kutaisi-bagrati', 'sights', 'Bagrati & old Kutaisi', 'ბაგრატი და ძველი ქუთაისი', 'Central Kutaisi', 'ქუთაისის ცენტრი', homeImages.city, 4.8, true),
+      homePlannerItem('kutaisi-table', 'food', 'Imeretian family table', 'იმერული საოჯახო სუფრა', 'White Bridge · Kutaisi', 'თეთრი ხიდი · ქუთაისი', homeImages.food, 4.8, true),
+      homePlannerItem('kutaisi-cave', 'sights', 'Prometheus cave day trip', 'პრომეთეს მღვიმის ტური', 'Tskaltubo', 'წყალტუბო', homeImages.activity, 4.7, true),
+      homePlannerItem('kutaisi-music', 'fun', 'Riverside live music', 'ცოცხალი მუსიკა რიონის პირას', 'Rioni · Kutaisi', 'რიონი · ქუთაისი', homeImages.night, 4.6, true),
+      homePlannerItem('kutaisi-stay', 'stay', 'Old house guestroom', 'ძველი სახლის საოჯახო სასტუმრო', 'Historic Kutaisi', 'ძველი ქუთაისი', homeImages.stay, 4.8, false)
+    ],
+    kakheti: [
+      homePlannerItem('kakheti-wine', 'food', 'Family cellar tasting', 'საოჯახო მარნის დეგუსტაცია', 'Telavi · Kakheti', 'თელავი · კახეთი', homeImages.food, 4.9, true),
+      homePlannerItem('kakheti-sighnaghi', 'sights', 'Sighnaghi wall walk', 'სიღნაღის გალავანზე სეირნობა', 'Sighnaghi · Kakheti', 'სიღნაღი · კახეთი', homeImages.city, 4.8, true),
+      homePlannerItem('kakheti-supra', 'fun', 'Vineyard sunset supra', 'სუფრა ვენახში მზის ჩასვლისას', 'Kvareli · Kakheti', 'ყვარელი · კახეთი', homeImages.night, 4.9, true),
+      homePlannerItem('kakheti-stay', 'stay', 'Wine estate guesthouse', 'მარნის საოჯახო სასტუმრო', 'Tsinandali · Kakheti', 'წინანდალი · კახეთი', homeImages.stay, 4.8, false),
+      homePlannerItem('kakheti-view', 'sights', 'Alazani valley viewpoint', 'ალაზნის ველის ხედი', 'Gombori pass', 'გომბორის უღელტეხილი', homeImages.activity, 4.9, true)
+    ],
+    gudauri: [
+      homePlannerItem('gudauri-view', 'sights', 'Caucasus panorama', 'კავკასიონის პანორამა', 'Upper Gudauri', 'ზემო გუდაური', homeImages.activity, 4.9, true),
+      homePlannerItem('gudauri-table', 'food', 'Warm mountain table', 'თბილი მთის სუფრა', 'New Gudauri', 'ახალი გუდაური', homeImages.food, 4.7, true),
+      homePlannerItem('gudauri-flight', 'fun', 'Paragliding over Gudauri', 'პარაგლაიდინგი გუდაურზე', 'Kobi pass', 'კობის უღელტეხილი', homeImages.city, 4.9, true),
+      homePlannerItem('gudauri-stay', 'stay', 'Alpine lodge with a view', 'ალპური სასტუმრო ხედით', 'Upper Gudauri', 'ზემო გუდაური', homeImages.stay, 4.8, false),
+      homePlannerItem('gudauri-night', 'fun', 'Après-ski fireside', 'საღამო ბუხართან', 'New Gudauri', 'ახალი გუდაური', homeImages.night, 4.6, true)
+    ]
+  };
+
+  function homePlannerItem(id, category, en, ka, subEn, subKa, image, rating, open, href) {
+    return { id, category, name: { en, ka }, sub: { en: subEn, ka: subKa }, image, rating, open, href: href || `search-results.html?q=${encodeURIComponent(en)}` };
+  }
+
   function icon(name) {
     return window.icon(name);
   }
 
-  function topBar() {
+  function topBar(location = 'Batumi', locationControl = false) {
+    const locationMarkup = locationControl
+      ? `<button type="button" class="location-pill" data-planner-open="city-dialog" aria-haspopup="dialog" aria-controls="city-dialog">${icon('pin')}<span>${escapeHtml(location)}</span></button>`
+      : `<div class="location-pill" aria-label="Current location">${icon('pin')}<span>${escapeHtml(location)}</span></div>`;
     return `
       <header class="topbar">
         <a class="brand" href="index.html" aria-label="Wemo home">wemo<span>.</span></a>
-        <div class="location-pill" aria-label="Current location">
-          ${icon('pin')}<span>Batumi</span>
-        </div>
+        ${locationMarkup}
         <div class="top-actions">
-          <button type="button" class="lang-button" data-language aria-label="Change language">
+          <button type="button" class="lang-button" data-language aria-label="${i18n.lang === 'en' ? 'ქართულ ენაზე გადასვლა' : 'Switch to English'}">
             ${i18n.lang === 'en' ? 'ქარ' : 'EN'}
-          </button>
-          <button type="button" class="icon-btn" data-toast="Notifications are a demo feature" aria-label="Notifications">
-            ${icon('bell')}
           </button>
         </div>
       </header>`;
@@ -78,47 +167,94 @@
     return `<div class="section-head"><h2>${title}</h2>${href ? `<a href="${href}">${label} ${icon('arrow')}</a>` : ''}</div>`;
   }
 
+  function homeT(key) { return homeCopy[i18n.lang][key]; }
+
+  function homeDateLabel() {
+    if (homePlanner.date !== 'custom') return homeT(homePlanner.date);
+    if (!homePlanner.customDate) return homeT('custom');
+    const date = new Date(`${homePlanner.customDate}T12:00:00`);
+    if (i18n.lang === 'ka') {
+      const months = ['იან', 'თებ', 'მარ', 'აპრ', 'მაი', 'ივნ', 'ივლ', 'აგვ', 'სექ', 'ოქტ', 'ნოე', 'დეკ'];
+      return `${date.getDate()} ${months[date.getMonth()]}`;
+    }
+    return new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short' }).format(date);
+  }
+
+  function homeCityName(locative = true) {
+    const city = homeCities[homePlanner.city] || homeCities.tbilisi;
+    return i18n.lang === 'ka' ? (locative ? city.ka : city.nameKa) : city.nameEn;
+  }
+
+  function homePlanningMode() { return homePlanner.date !== 'today' || homePlanner.city !== 'tbilisi'; }
+
+  function homeFilteredItems() {
+    const items = homeCityItems[homePlanner.city] || homeCityItems.tbilisi;
+    if (!homePlanner.intent) return items;
+    const matches = items.filter((place) => place.category === homePlanner.intent);
+    return matches.length ? [...matches, ...items.filter((place) => place.category !== homePlanner.intent)] : items;
+  }
+
+  function homeQuestion() {
+    const date = `<button type="button" class="planner-chip" data-planner-open="date-dialog" aria-haspopup="dialog" aria-controls="date-dialog">${escapeHtml(homeDateLabel())}${icon('chevron')}</button>`;
+    const city = `<button type="button" class="planner-chip" data-planner-open="city-dialog" aria-haspopup="dialog" aria-controls="city-dialog">${escapeHtml(homeCityName())}${icon('chevron')}</button>`;
+    return i18n.lang === 'ka' ? `${date} ${homeT('questionMiddle')} ${city}?` : `${homeT('questionStart')} ${date} ${homeT('questionMiddle')} ${city}?`;
+  }
+
+  function homePlaceCard(place, compact = false) {
+    const name = place.name[i18n.lang];
+    const subtitle = place.sub[i18n.lang];
+    const saved = WemoStorage.has(place.id);
+    return `<article class="${compact ? 'planner-place planner-place--compact' : 'planner-place planner-place--feature'}">
+      <img src="${place.image}" alt="${escapeHtml(name)}">
+      <div class="planner-place__badges"><span>${icon('star')}${place.rating}</span>${place.open && homePlanner.date === 'today' ? `<span class="is-open">${homeT('open')}</span>` : ''}</div>
+      <button type="button" class="planner-save ${saved ? 'saved' : ''}" data-save="${place.id}" aria-label="${saved ? homeT('saved') : homeT('save')} ${escapeHtml(name)}" aria-pressed="${saved}">${icon('heart')}</button>
+      <a class="planner-place__content" href="${place.href}"><h3>${escapeHtml(name)}</h3><p>${icon('pin')}${escapeHtml(subtitle)}</p></a>
+    </article>`;
+  }
+
+  function homeDateDialog() {
+    const options = [['today', homeT('todayOption'), 'calendar'], ['tomorrow', homeT('tomorrowOption'), 'sun'], ['dayAfter', homeT('dayAfterOption'), 'spark']];
+    return `<dialog class="planner-dialog" id="date-dialog" data-planner-dialog aria-labelledby="date-dialog-title">
+      <div class="planner-dialog__head"><h2 id="date-dialog-title">${homeT('chooseDate')}</h2><button type="button" class="planner-dialog__close" data-planner-close aria-label="${homeT('close')}">${icon('close')}</button></div>
+      <div class="planner-options">${options.map(([key, label, iconName]) => `<button type="button" class="planner-option ${homePlanner.date === key ? 'active' : ''}" data-planner-date="${key}"><span>${icon(iconName)}${label}</span><i></i></button>`).join('')}
+        <button type="button" class="planner-option ${homePlanner.date === 'custom' ? 'active' : ''}" data-planner-custom><span>${icon('calendar')}${homeT('customOption')}</span><i></i></button>
+      </div>
+      <div class="planner-custom-date" data-planner-custom-box ${homePlanner.date === 'custom' ? '' : 'hidden'}><label>${homeT('chooseDate')}<input type="date" data-planner-date-input min="${new Date().toISOString().slice(0, 10)}" value="${homePlanner.customDate}"></label><button type="button" class="primary" data-planner-date-confirm>${homeT('confirm')}</button></div>
+    </dialog>`;
+  }
+
+  function homeCityDialog() {
+    return `<dialog class="planner-dialog" id="city-dialog" data-planner-dialog aria-labelledby="city-dialog-title">
+      <div class="planner-dialog__head"><h2 id="city-dialog-title">${homeT('chooseCity')}</h2><button type="button" class="planner-dialog__close" data-planner-close aria-label="${homeT('close')}">${icon('close')}</button></div>
+      <div class="planner-options"><a class="planner-option planner-map-option" href="map.html"><span>${icon('map')}${homeT('chooseOnMap')}</span>${icon('arrow')}</a>
+        ${Object.entries(homeCities).map(([key, city]) => `<button type="button" class="planner-option ${homePlanner.city === key ? 'active' : ''}" data-planner-city="${key}"><span>${icon('pin')}${i18n.lang === 'ka' ? city.nameKa : city.nameEn}</span><i></i></button>`).join('')}
+      </div>
+    </dialog>`;
+  }
+
   function home() {
-    const pro = places.filter((place) => place.isPro).slice(0, 2);
-    const nearby = places.filter((place) => place.isOpen).slice(1, 4);
+    const items = homeFilteredItems();
+    const featured = items[0];
+    const popular = [...items.slice(1), featured].slice(0, 3);
+    const category = homePlanner.intent ? homeT(homePlanner.intent) : '';
+    document.title = homeT('title');
     return `
-      ${topBar()}
-      <main class="page home-page">
-        <section class="city-hero">
-          <img src="https://images.unsplash.com/photo-1565008576549-57569a49371d?auto=format&fit=crop&w=1200&q=85" alt="Batumi skyline at dusk">
-          <div class="city-hero__wash"></div>
-          <div class="city-hero__content">
-            <p class="eyebrow"><i></i>${i18n.lang === 'en' ? 'LIVE IN BATUMI' : 'ბათუმი ახლა'}</p>
-            <h1>${i18n.lang === 'en' ? 'A better way to<br>feel <em>Georgia.</em>' : 'აღმოაჩინე<br><em>საქართველო.</em>'}</h1>
-            <p>${i18n.lang === 'en' ? 'Local tables, sunlit shores and plans worth making.' : 'საყვარელი ადგილები, სანაპირო და ახალი შთაბეჭდილებები.'}</p>
-            <a class="hero-link" href="explore.html">${i18n.lang === 'en' ? 'Explore nearby' : 'აღმოაჩინე ახლოს'} ${icon('arrow')}</a>
-          </div>
-          <div class="city-hero__stats"><strong>24</strong><span>${i18n.lang === 'en' ? 'places open now' : 'ადგილი ღიაა'}</span></div>
+      ${topBar(homeCityName(false), true)}
+      <main class="page home-page planner-home">
+        <section class="planner-hero">
+          <p class="planner-kicker"><i></i>${homeT('kicker')}</p>
+          <h1 class="planner-question">${homeQuestion()}</h1>
+          <p class="planner-copy">${homeT('intro')}</p>
         </section>
-        ${searchField()}
-        ${categoryStrip()}
-        ${sectionHead(text('popular'), 'explore.html')}
-        <div class="listing-grid">${places.slice(0, 3).map((place) => placeCard(place)).join('')}</div>
-        ${sectionHead(i18n.lang === 'en' ? 'Wemo Pro picks' : 'Wemo Pro არჩევანი', 'explore.html')}
-        <section class="editorial-row">${pro.map((place) => `
-          <a class="editorial-card" href="${place.detailPage}?place=${place.id}">
-            <img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}">
-            <div><span>Wemo Pro</span><h3>${escapeHtml(place.name[i18n.lang])}</h3><p>${place.rating} ★ · ${place.location[i18n.lang]}</p></div>
-          </a>`).join('')}</section>
-        ${sectionHead(i18n.lang === 'en' ? 'This weekend' : 'ამ შაბათ-კვირას', 'events.html')}
-        <a href="events.html" class="event-feature">
-          <span class="event-date"><b>19</b> JUL</span>
-          <span><small>${i18n.lang === 'en' ? 'SUNSET SERIES' : 'მზის ჩასვლის სერია'}</small><strong>${i18n.lang === 'en' ? 'Music by the sea' : 'მუსიკა ზღვასთან'}</strong><em>${i18n.lang === 'en' ? 'See event' : 'ივენთის ნახვა'} ${icon('arrow')}</em></span>
-        </a>
-        <a href="deals.html" class="deal-feature">
-          <small>${i18n.lang === 'en' ? 'WEMO WEEKEND' : 'WEMO შაბათ-კვირა'}</small>
-          <h2>${i18n.lang === 'en' ? '20% off<br>beach beds.' : '20% ფასდაკლება<br>შეზლონგებზე.'}</h2>
-          <p>${i18n.lang === 'en' ? 'At selected Batumi beach clubs.' : 'ბათუმის შერჩეულ ბიჩ კლუბებში.'}</p>
-          <span>${i18n.lang === 'en' ? 'See all deals' : 'შეთავაზებების ნახვა'} ${icon('arrow')}</span>
-        </a>
-        <a href="business.html" class="business-banner">${icon('briefcase')}<div><b>${i18n.lang === 'en' ? 'Own a business?' : 'გაქვთ ბიზნესი?'}</b><small>${i18n.lang === 'en' ? 'Get listed on Wemo — free' : 'დაემატეთ Wemo-ს — უფასოდ'}</small></div>${icon('arrow')}</a>
+        <form class="planner-search" data-search>${icon('search')}<label class="sr-only" for="planner-search">${homeT('ask')}</label><input id="planner-search" name="q" placeholder="${homeT('ask')}" autocomplete="off"><button type="submit" aria-label="${homeT('ask')}">${icon('arrow')}</button></form>
+        <div class="planner-intents" aria-label="${i18n.lang === 'ka' ? 'აირჩიე განწყობა' : 'Choose a mood'}">${[['food', 'utensils'], ['fun', 'music'], ['sights', 'mountain'], ['stay', 'bed']].map(([key, iconName]) => `<button type="button" class="planner-intent ${homePlanner.intent === key ? 'active' : ''}" data-planner-intent="${key}" aria-pressed="${homePlanner.intent === key}"><span class="planner-intent__icon">${icon(iconName)}</span><span>${homeT(key)}</span><i>${icon('check')}</i></button>`).join('')}</div>
+        <div class="planner-mode" ${homePlanningMode() || category ? '' : 'hidden'}>${icon('calendar')}<span><strong>${homeT('planning')}</strong> · ${escapeHtml(homeDateLabel())}, ${escapeHtml(homeCityName(false))}${category ? ` · ${escapeHtml(category)}` : ''}</span></div>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('recommendation')}</h2><p>${homeT('recommendationSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div>${homePlaceCard(featured)}</section>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('popular')}</h2><p>${homeT('popularSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail">${popular.map((place) => homePlaceCard(place, true)).join('')}</div></section>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('map')}</h2><p>${homeT('mapSub')}</p></div></div><a class="planner-map" href="map.html" aria-label="${homeT('mapOpen')}"><span class="planner-map__grid"></span><span class="planner-map__route"></span><span class="planner-map__pin pin-one">${icon('pin')}</span><span class="planner-map__pin pin-two">${icon('pin')}</span><span class="planner-map__pin pin-three">${icon('pin')}</span><span class="planner-map__info">${homeT('nearby')}</span><span class="planner-map__cta">${icon('map')}${homeT('mapOpen')}</span></a></section>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('useful')}</h2><p>${homeT('usefulSub')}</p></div></div><div class="planner-utilities">${[['medical', 'medical'], ['bank', 'bank'], ['transport', 'fuel'], ['wc', 'toilet']].map(([key, iconName]) => `<a class="planner-utility planner-utility--${key}" href="search-results.html?q=${encodeURIComponent(homeT(key))}"><span>${icon(iconName)}</span><div><strong>${homeT(key)}</strong><small>${homeT('near')}</small></div></a>`).join('')}</div></section>
       </main>
-      ${renderNav()}`;
+      ${homeDateDialog()}${homeCityDialog()}${renderNav()}`;
   }
 
   function chips(active) {
@@ -233,7 +369,12 @@
   }
 
   function refreshSaved() {
-    const list = places.filter((place) => WemoStorage.has(place.id));
+    const categoryMap = { food: 'restaurants', fun: 'activities', sights: 'tours', stay: 'hotels' };
+    const plannerPlaces = Object.values(homeCityItems).flat().filter((item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index).map((item) => ({
+      id: item.id, name: item.name, category: categoryMap[item.category], location: item.sub, rating: item.rating, reviews: 0, price: '', image: item.image, detailPage: 'explore.html', isPro: false, isOpen: item.open
+    }));
+    const catalog = [...places, ...plannerPlaces.filter((item) => !places.some((place) => place.id === item.id))];
+    const list = catalog.filter((place) => WemoStorage.has(place.id));
     $('[data-saved-list]').innerHTML = list.length ? list.map((place) => placeCard(place)).join('') : `<section class="empty"><h2>${text('savedEmpty')}</h2><p>${text('savedEmptyText')}</p><a class="primary" href="explore.html">${text('explore')}</a></section>`;
   }
 
@@ -363,6 +504,44 @@
 
   function bind() {
     window.WemoTheme?.bind();
+    $$('[data-planner-open]').forEach((button) => button.addEventListener('click', () => {
+      const dialog = document.getElementById(button.dataset.plannerOpen);
+      if (typeof dialog?.showModal === 'function') dialog.showModal();
+      else dialog?.setAttribute('open', '');
+    }));
+    $$('[data-planner-dialog]').forEach((dialog) => dialog.addEventListener('click', (event) => {
+      if (event.target !== dialog) return;
+      if (typeof dialog.close === 'function') dialog.close();
+      else dialog.removeAttribute('open');
+    }));
+    $$('[data-planner-close]').forEach((button) => button.addEventListener('click', () => button.closest('dialog')?.close()));
+    $$('[data-planner-date]').forEach((button) => button.addEventListener('click', () => {
+      homePlanner.date = button.dataset.plannerDate;
+      homePlanner.customDate = '';
+      button.closest('dialog')?.close();
+      render();
+    }));
+    $('[data-planner-custom]')?.addEventListener('click', () => {
+      $('[data-planner-custom-box]').hidden = false;
+      $('[data-planner-date-input]')?.focus();
+    });
+    $('[data-planner-date-confirm]')?.addEventListener('click', () => {
+      const input = $('[data-planner-date-input]');
+      if (!input?.value) { input?.focus(); return; }
+      homePlanner.date = 'custom';
+      homePlanner.customDate = input.value;
+      input.closest('dialog')?.close();
+      render();
+    });
+    $$('[data-planner-city]').forEach((button) => button.addEventListener('click', () => {
+      homePlanner.city = button.dataset.plannerCity;
+      button.closest('dialog')?.close();
+      render();
+    }));
+    $$('[data-planner-intent]').forEach((button) => button.addEventListener('click', () => {
+      homePlanner.intent = homePlanner.intent === button.dataset.plannerIntent ? null : button.dataset.plannerIntent;
+      render();
+    }));
     $$('[data-save]').forEach((button) => button.addEventListener('click', () => { WemoStorage.toggle(button.dataset.save); render(); }));
     $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.className = `lang-${i18n.lang}`; render(); }));
     $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
