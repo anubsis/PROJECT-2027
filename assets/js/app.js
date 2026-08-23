@@ -21,10 +21,10 @@
       title: 'Wemo — Discover Georgia', kicker: 'Your day, made simple', questionStart: 'What should we do', questionMiddle: 'in',
       intro: 'Choose a time, place, and mood. Wemo will shape a simple plan from trusted local picks.',
       ask: 'Ask Wemo for a place or plan…', food: 'Eat', fun: 'Go out', sights: 'See', stay: 'Stay',
-      recommendation: 'Wemo recommends', recommendationSub: 'One strong pick for your plan', popular: 'Popular now', popularSub: 'Places people are choosing today',
+      recommendation: 'Wemo recommends', recommendationSub: 'Curated choices for your plan', popular: 'Popular now', popularSub: 'Places people are choosing today',
       viewAll: 'View all', map: 'Explore the map', mapSub: 'See what is close to your plan', mapOpen: 'Open map', nearby: '12 places around you',
       useful: 'Useful nearby', usefulSub: 'Everyday essentials, one tap away', medical: 'Pharmacy & hospital', bank: 'Bank & exchange', transport: 'Transport & fuel', wc: 'Public restroom',
-      near: 'nearby', open: 'Open now', planning: 'Planning mode', planFor: 'Your picks are tuned for', chooseDate: 'Choose a date', chooseCity: 'Choose a location', close: 'Close',
+      near: 'nearby', cityTitle: 'Discover everything in', citySub: 'Food, culture, sights, stays and more', cityCta: 'Explore', open: 'Open now', planning: 'Planning mode', planFor: 'Your picks are tuned for', chooseDate: 'Choose a date', chooseCity: 'Choose a location', close: 'Close',
       today: 'today', tomorrow: 'tomorrow', dayAfter: 'the day after', custom: 'another date', todayOption: 'Today', tomorrowOption: 'Tomorrow', dayAfterOption: 'Day after tomorrow', customOption: 'Choose a date',
       confirm: 'Use this date', chooseOnMap: 'Choose on map', language: 'ქარ', saved: 'Saved', save: 'Save'
     },
@@ -32,10 +32,10 @@
       title: 'Wemo — აღმოაჩინე საქართველო', kicker: 'შენი დღე, მარტივად', questionStart: '', questionMiddle: 'რას ვაკეთებთ',
       intro: 'აირჩიე დრო, ადგილი და განწყობა — Wemo სანდო ადგილებიდან მარტივ გეგმას შეგირჩევს.',
       ask: 'ჰკითხე Wemo-ს — სად წავიდეთ?', food: 'კვება', fun: 'გართობა', sights: 'ხედები', stay: 'ღამისთევა',
-      recommendation: 'Wemo-ს რჩევა', recommendationSub: 'ერთი კარგი არჩევანი შენი გეგმისთვის', popular: 'პოპულარული ახლა', popularSub: 'რას ირჩევენ სხვები დღეს',
+      recommendation: 'Wemo-ს რჩევები', recommendationSub: 'შენთვის შერჩეული არჩევანი', popular: 'პოპულარული ახლა', popularSub: 'რას ირჩევენ სხვები დღეს',
       viewAll: 'ყველას ნახვა', map: 'აღმოაჩინე რუკაზე', mapSub: 'ნახე, რა არის შენს გეგმასთან ახლოს', mapOpen: 'რუკის გახსნა', nearby: '12 ადგილი შენ გარშემო',
       useful: 'სასარგებლო ახლოს', usefulSub: 'ყოველდღიური საჭიროებები ერთი შეხებით', medical: 'აფთიაქი და საავადმყოფო', bank: 'ბანკი და გადამცვლელი', transport: 'ტრანსპორტი და საწვავი', wc: 'საჯარო საპირფარეშო',
-      near: 'ახლოს', open: 'ღიაა ახლა', planning: 'დაგეგმვის რეჟიმი', planFor: 'შერჩევა მორგებულია:', chooseDate: 'აირჩიე თარიღი', chooseCity: 'აირჩიე ლოკაცია', close: 'დახურვა',
+      near: 'ახლოს', cityTitle: 'აღმოაჩინე ყველაფერი', citySub: 'კვება, გართობა, სანახავი, განთავსება და სხვა', cityCta: 'აღმოაჩინე', open: 'ღიაა ახლა', planning: 'დაგეგმვის რეჟიმი', planFor: 'შერჩევა მორგებულია:', chooseDate: 'აირჩიე თარიღი', chooseCity: 'აირჩიე ლოკაცია', close: 'დახურვა',
       today: 'დღეს', tomorrow: 'ხვალ', dayAfter: 'ზეგ', custom: 'სხვა თარიღი', todayOption: 'დღეს', tomorrowOption: 'ხვალ', dayAfterOption: 'ზეგ', customOption: 'სხვა თარიღი',
       confirm: 'ამ თარიღის არჩევა', chooseOnMap: 'ლოკაციის არჩევა რუკაზე', language: 'EN', saved: 'შენახულია', save: 'შენახვა'
     }
@@ -55,7 +55,7 @@
     sea: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=82',
     night: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=900&q=82',
     stay: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=82',
-    activity: 'https://images.unsplash.com/photo-1532727965015-2e7aefc6a307?auto=format&fit=crop&w=900&q=82'
+    activity: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=82'
   };
 
   const homeCityItems = {
@@ -204,7 +204,7 @@
     const name = place.name[i18n.lang];
     const subtitle = place.sub[i18n.lang];
     const saved = WemoStorage.has(place.id);
-    return `<article class="${compact ? 'planner-place planner-place--compact' : 'planner-place planner-place--feature'}">
+    return `<article class="${compact ? 'planner-place planner-place--compact' : 'planner-place planner-place--feature'}"${compact ? ' role="listitem"' : ''}>
       <img src="${place.image}" alt="${escapeHtml(name)}">
       <div class="planner-place__badges"><span>${icon('star')}${place.rating}</span>${place.open && homePlanner.date === 'today' ? `<span class="is-open">${homeT('open')}</span>` : ''}</div>
       <button type="button" class="planner-save ${saved ? 'saved' : ''}" data-save="${place.id}" aria-label="${saved ? homeT('saved') : homeT('save')} ${escapeHtml(name)}" aria-pressed="${saved}">${icon('heart')}</button>
@@ -234,9 +234,11 @@
 
   function home() {
     const items = homeFilteredItems();
-    const featured = items[0];
-    const popular = [...items.slice(1), featured].slice(0, 3);
+    const recommended = items.slice(0, 3);
+    const popular = [...items.slice(2), ...items.slice(0, 2)].slice(0, 3);
     const category = homePlanner.intent ? homeT(homePlanner.intent) : '';
+    const cityTitle = i18n.lang === 'ka' ? `${homeT('cityTitle')} ${homeCityName()}` : `${homeT('cityTitle')} ${homeCityName(false)}`;
+    const cityCta = `${homeT('cityCta')} ${homeCityName(false)}`;
     document.title = homeT('title');
     return `
       ${topBar(homeCityName(false), true)}
@@ -249,9 +251,9 @@
         <form class="planner-search" data-search>${icon('search')}<label class="sr-only" for="planner-search">${homeT('ask')}</label><input id="planner-search" name="q" placeholder="${homeT('ask')}" autocomplete="off"><button type="submit" aria-label="${homeT('ask')}">${icon('arrow')}</button></form>
         <div class="planner-intents" aria-label="${i18n.lang === 'ka' ? 'აირჩიე განწყობა' : 'Choose a mood'}">${[['food', 'utensils'], ['fun', 'music'], ['sights', 'mountain'], ['stay', 'bed']].map(([key, iconName]) => `<button type="button" class="planner-intent ${homePlanner.intent === key ? 'active' : ''}" data-planner-intent="${key}" aria-pressed="${homePlanner.intent === key}"><span class="planner-intent__icon">${icon(iconName)}</span><span>${homeT(key)}</span><i>${icon('check')}</i></button>`).join('')}</div>
         <div class="planner-mode" ${homePlanningMode() || category ? '' : 'hidden'}>${icon('calendar')}<span><strong>${homeT('planning')}</strong> · ${escapeHtml(homeDateLabel())}, ${escapeHtml(homeCityName(false))}${category ? ` · ${escapeHtml(category)}` : ''}</span></div>
-        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('recommendation')}</h2><p>${homeT('recommendationSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div>${homePlaceCard(featured)}</section>
-        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('popular')}</h2><p>${homeT('popularSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail">${popular.map((place) => homePlaceCard(place, true)).join('')}</div></section>
-        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('map')}</h2><p>${homeT('mapSub')}</p></div></div><a class="planner-map" href="map.html" aria-label="${homeT('mapOpen')}"><span class="planner-map__grid"></span><span class="planner-map__route"></span><span class="planner-map__pin pin-one">${icon('pin')}</span><span class="planner-map__pin pin-two">${icon('pin')}</span><span class="planner-map__pin pin-three">${icon('pin')}</span><span class="planner-map__info">${homeT('nearby')}</span><span class="planner-map__cta">${icon('map')}${homeT('mapOpen')}</span></a></section>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('recommendation')}</h2><p>${homeT('recommendationSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail planner-rail--recommendations" role="list" aria-label="${homeT('recommendation')}">${recommended.map((place) => homePlaceCard(place, true)).join('')}</div></section>
+        <section class="planner-city-section"><a class="planner-city-viewer" href="map.html?city=${encodeURIComponent(homePlanner.city)}" aria-label="${escapeHtml(cityTitle)}"><span class="planner-city-viewer__content"><strong>${escapeHtml(cityTitle)}</strong><small>${homeT('citySub')}</small><i>${escapeHtml(cityCta)}${icon('arrow')}</i></span><span class="planner-city-viewer__map" aria-hidden="true"><b class="city-route route-one"></b><b class="city-route route-two"></b><b class="city-route route-three"></b><em>${icon('pin')}</em></span></a></section>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('popular')}</h2><p>${homeT('popularSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail" role="list" aria-label="${homeT('popular')}">${popular.map((place) => homePlaceCard(place, true)).join('')}</div></section>
         <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('useful')}</h2><p>${homeT('usefulSub')}</p></div></div><div class="planner-utilities">${[['medical', 'medical'], ['bank', 'bank'], ['transport', 'fuel'], ['wc', 'toilet']].map(([key, iconName]) => `<a class="planner-utility planner-utility--${key}" href="search-results.html?q=${encodeURIComponent(homeT(key))}"><span>${icon(iconName)}</span><div><strong>${homeT(key)}</strong><small>${homeT('near')}</small></div></a>`).join('')}</div></section>
       </main>
       ${homeDateDialog()}${homeCityDialog()}${renderNav()}`;
