@@ -22,9 +22,9 @@
       intro: 'Choose a time, place, and mood. Wemo will shape a simple plan from trusted local picks.',
       ask: 'Ask Wemo for a place or plan…', food: 'Eat', fun: 'Go out', sights: 'See', stay: 'Stay',
       recommendation: 'Wemo recommends', recommendationSub: 'Curated choices for your plan', popular: 'Popular now', popularSub: 'Places people are choosing today',
-      viewAll: 'View all', map: 'Explore the map', mapSub: 'See what is close to your plan', mapOpen: 'Open map', nearby: '12 places around you',
+      viewAll: 'View all', map: 'Open the map', mapSub: 'See what is close to your plan', mapOpen: 'Open map', nearby: '12 places around you',
       useful: 'Useful nearby', usefulSub: 'Everyday essentials, one tap away', medical: 'Pharmacy & hospital', bank: 'Bank & exchange', transport: 'Transport & fuel', wc: 'Public restroom',
-      near: 'nearby', cityTitle: 'Discover everything in', citySub: 'Food, culture, sights, stays and more', cityCta: 'Explore', open: 'Open now', planning: 'Planning mode', planFor: 'Your picks are tuned for', chooseDate: 'Choose a date', chooseCity: 'Choose a location', close: 'Close',
+      near: 'nearby', cityTitle: 'Discover everything in', citySub: 'Food, culture, sights, stays and more', cityCta: 'Open', open: 'Open now', planning: 'Planning mode', planFor: 'Your picks are tuned for', chooseDate: 'Choose a date', chooseCity: 'Choose a location', close: 'Close',
       today: 'today', tomorrow: 'tomorrow', dayAfter: 'the day after', custom: 'another date', todayOption: 'Today', tomorrowOption: 'Tomorrow', dayAfterOption: 'Day after tomorrow', customOption: 'Choose a date',
       confirm: 'Use this date', chooseOnMap: 'Choose on map', language: 'ქარ', saved: 'Saved', save: 'Save'
     },
@@ -152,17 +152,6 @@
       </article>`;
   }
 
-  function categoryStrip(active = 'all') {
-    return `
-      <div class="category-strip">
-        ${categories.slice(0, 6).map((category) => `
-          <a class="category-tile ${category === active ? 'active' : ''}" href="explore.html?category=${category}">
-            <span>${icon(category === 'beach-clubs' ? 'sun' : category === 'restaurants' ? 'utensils' : 'spark')}</span>
-            ${text(category)}
-          </a>`).join('')}
-      </div>`;
-  }
-
   function sectionHead(title, href, label = text('seeAll')) {
     return `<div class="section-head"><h2>${title}</h2>${href ? `<a href="${href}">${label} ${icon('arrow')}</a>` : ''}</div>`;
   }
@@ -251,31 +240,12 @@
         <form class="planner-search" data-search>${icon('search')}<label class="sr-only" for="planner-search">${homeT('ask')}</label><input id="planner-search" name="q" placeholder="${homeT('ask')}" autocomplete="off"><button type="submit" aria-label="${homeT('ask')}">${icon('arrow')}</button></form>
         <div class="planner-intents" aria-label="${i18n.lang === 'ka' ? 'აირჩიე განწყობა' : 'Choose a mood'}">${[['food', 'utensils'], ['fun', 'music'], ['sights', 'mountain'], ['stay', 'bed']].map(([key, iconName]) => `<button type="button" class="planner-intent ${homePlanner.intent === key ? 'active' : ''}" data-planner-intent="${key}" aria-pressed="${homePlanner.intent === key}"><span class="planner-intent__icon">${icon(iconName)}</span><span>${homeT(key)}</span><i>${icon('check')}</i></button>`).join('')}</div>
         <div class="planner-mode" ${homePlanningMode() || category ? '' : 'hidden'}>${icon('calendar')}<span><strong>${homeT('planning')}</strong> · ${escapeHtml(homeDateLabel())}, ${escapeHtml(homeCityName(false))}${category ? ` · ${escapeHtml(category)}` : ''}</span></div>
-        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('recommendation')}</h2><p>${homeT('recommendationSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail planner-rail--recommendations" role="list" aria-label="${homeT('recommendation')}">${recommended.map((place) => homePlaceCard(place, true)).join('')}</div></section>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('recommendation')}</h2><p>${homeT('recommendationSub')}</p></div><a href="map.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail planner-rail--recommendations" role="list" aria-label="${homeT('recommendation')}">${recommended.map((place) => homePlaceCard(place, true)).join('')}</div></section>
         <section class="planner-city-section"><a class="planner-city-viewer" href="map.html?city=${encodeURIComponent(homePlanner.city)}" aria-label="${escapeHtml(cityTitle)}"><span class="planner-city-viewer__content"><strong>${escapeHtml(cityTitle)}</strong><small>${homeT('citySub')}</small><i>${escapeHtml(cityCta)}${icon('arrow')}</i></span><span class="planner-city-viewer__map" aria-hidden="true"><b class="city-route route-one"></b><b class="city-route route-two"></b><b class="city-route route-three"></b><em>${icon('pin')}</em></span></a></section>
-        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('popular')}</h2><p>${homeT('popularSub')}</p></div><a href="explore.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail" role="list" aria-label="${homeT('popular')}">${popular.map((place) => homePlaceCard(place, true)).join('')}</div></section>
+        <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('popular')}</h2><p>${homeT('popularSub')}</p></div><a href="map.html">${homeT('viewAll')}${icon('arrow')}</a></div><div class="planner-rail" role="list" aria-label="${homeT('popular')}">${popular.map((place) => homePlaceCard(place, true)).join('')}</div></section>
         <section class="planner-section"><div class="planner-section__head"><div><h2>${homeT('useful')}</h2><p>${homeT('usefulSub')}</p></div></div><div class="planner-utilities">${[['medical', 'medical'], ['bank', 'bank'], ['transport', 'fuel'], ['wc', 'toilet']].map(([key, iconName]) => `<a class="planner-utility planner-utility--${key}" href="search-results.html?q=${encodeURIComponent(homeT(key))}"><span>${icon(iconName)}</span><div><strong>${homeT(key)}</strong><small>${homeT('near')}</small></div></a>`).join('')}</div></section>
       </main>
       ${homeDateDialog()}${homeCityDialog()}${renderNav()}`;
-  }
-
-  function chips(active) {
-    return `<div class="chips">${categories.map((category) => `<button type="button" class="chip ${category === active ? 'active' : ''}" data-category="${category}">${text(category)}</button>`).join('')}</div>`;
-  }
-
-  function explore() {
-    const category = new URLSearchParams(location.search).get('category') || 'all';
-    return `${topBar()}<main class="page utility-page">
-      <p class="eyebrow">${i18n.lang === 'en' ? 'DISCOVER' : 'აღმოაჩინე'}</p><h1 class="page-title">${text('exploreTitle')}</h1>
-      <p class="page-subtitle">${i18n.lang === 'en' ? 'Thoughtful places, one good plan at a time.' : 'ადგილები, რომლებიც კარგ დღეს ქმნის.'}</p>
-      ${searchField()}${chips(categories.includes(category) ? category : 'all')}
-      <div class="filter-row"><button type="button" class="filter-button" data-open>${icon('clock')}${text('open')}</button><button type="button" class="filter-button" data-sort>${icon('sort')}${i18n.lang === 'en' ? 'Top rated' : 'რეიტინგით'}</button></div>
-      ${sectionHead(`<span data-result-title>${text(category)}</span>`, null)}<span class="result-count" data-result-count></span><div class="listing-grid" data-listings></div>
-    </main>${renderNav()}`;
-  }
-
-  function saved() {
-    return `${topBar()}<main class="page utility-page"><p class="eyebrow">${i18n.lang === 'en' ? 'YOUR LIST' : 'თქვენი სია'}</p><h1 class="page-title">${text('saved')}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'Keep every good idea close.' : 'შეინახეთ ყველა კარგი იდეა.'}</p><div class="listing-grid" data-saved-list></div></main>${renderNav()}`;
   }
 
   function map() {
@@ -337,7 +307,7 @@
   }
 
   function basicSections(place) {
-    return `<section class="detail-section"><h2>${i18n.lang === 'en' ? 'Recent reviews' : 'ბოლო შეფასებები'}</h2><article class="review"><span>M</span><div><b>Mari K.</b><small>★★★★★ · 3 ${i18n.lang === 'en' ? 'days ago' : 'დღის წინ'}</small><p>${i18n.lang === 'en' ? 'Beautiful local favourite with thoughtful service.' : 'ულამაზესი ადგილობრივი ადგილი ყურადღებიანი მომსახურებით.'}</p></div></article><a class="text-link" href="search-results.html?q=${encodeURIComponent(place.name.en)}">${i18n.lang === 'en' ? 'Explore similar places' : 'მსგავსი ადგილების ნახვა'} ${icon('arrow')}</a></section>`;
+    return `<section class="detail-section"><h2>${i18n.lang === 'en' ? 'Recent reviews' : 'ბოლო შეფასებები'}</h2><article class="review"><span>M</span><div><b>Mari K.</b><small>★★★★★ · 3 ${i18n.lang === 'en' ? 'days ago' : 'დღის წინ'}</small><p>${i18n.lang === 'en' ? 'Beautiful local favourite with thoughtful service.' : 'ულამაზესი ადგილობრივი ადგილი ყურადღებიანი მომსახურებით.'}</p></div></article><a class="text-link" href="search-results.html?q=${encodeURIComponent(place.name.en)}">${i18n.lang === 'en' ? 'See similar places' : 'მსგავსი ადგილების ნახვა'} ${icon('arrow')}</a></section>`;
   }
 
   function proSections(place) {
@@ -351,33 +321,11 @@
   function render() {
     const page = document.body.dataset.page;
     const app = $('#app');
-    const output = page === 'home' ? home() : page === 'explore' ? explore() : page === 'saved' ? saved() : page === 'map' ? map() : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'business' ? business() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
+    const output = page === 'home' ? home() : page === 'map' ? map() : page === 'wemo' ? window.WemoMvp.wemoPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'atlas' ? window.WemoMvp.atlasPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'business' ? business() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
     app.innerHTML = output;
     bind();
-    if (page === 'explore') refreshExplore();
-    if (page === 'saved') refreshSaved();
     if (page === 'map') initializeMap();
     if (page === 'search') refreshSearch();
-  }
-
-  function refreshExplore() {
-    const active = $('.chip.active')?.dataset.category || 'all';
-    const open = $('[data-open]')?.classList.contains('active');
-    const sorted = $('[data-sort]')?.classList.contains('active');
-    const list = places.filter((place) => (active === 'all' || place.category === active) && (!open || place.isOpen));
-    if (sorted) list.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews);
-    $('[data-listings]').innerHTML = list.length ? list.map((place) => placeCard(place)).join('') : `<div class="empty"><h2>${i18n.lang === 'en' ? 'No places match these filters.' : 'ამ ფილტრებს ადგილი არ ემთხვევა.'}</h2></div>`;
-    $('[data-result-count]').textContent = `${list.length} ${i18n.lang === 'en' ? 'places' : 'ადგილი'}`;
-  }
-
-  function refreshSaved() {
-    const categoryMap = { food: 'restaurants', fun: 'activities', sights: 'tours', stay: 'hotels' };
-    const plannerPlaces = Object.values(homeCityItems).flat().filter((item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index).map((item) => ({
-      id: item.id, name: item.name, category: categoryMap[item.category], location: item.sub, rating: item.rating, reviews: 0, price: '', image: item.image, detailPage: 'explore.html', isPro: false, isOpen: item.open
-    }));
-    const catalog = [...places, ...plannerPlaces.filter((item) => !places.some((place) => place.id === item.id))];
-    const list = catalog.filter((place) => WemoStorage.has(place.id));
-    $('[data-saved-list]').innerHTML = list.length ? list.map((place) => placeCard(place)).join('') : `<section class="empty"><h2>${text('savedEmpty')}</h2><p>${text('savedEmptyText')}</p><a class="primary" href="explore.html">${text('explore')}</a></section>`;
   }
 
   let activeMapLayer = 'places';
@@ -545,12 +493,10 @@
       render();
     }));
     $$('[data-save]').forEach((button) => button.addEventListener('click', () => { WemoStorage.toggle(button.dataset.save); render(); }));
+    window.WemoMvp?.bind(document.body.dataset.page, { render, toast });
     $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.className = `lang-${i18n.lang}`; render(); }));
     $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
     $('[data-search]')?.addEventListener('submit', (event) => { event.preventDefault(); location.href = `search-results.html?q=${encodeURIComponent(new FormData(event.currentTarget).get('q').trim())}`; });
-    $$('[data-category]').forEach((button) => button.addEventListener('click', () => { $$('[data-category]').forEach((chip) => chip.classList.remove('active')); button.classList.add('active'); refreshExplore(); }));
-    $('[data-open]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
-    $('[data-sort]')?.addEventListener('click', (event) => { event.currentTarget.classList.toggle('active'); refreshExplore(); });
     $('[data-map-layers]')?.addEventListener('click', (event) => {
       const menu = $('[data-map-layer-menu]');
       const open = menu.hidden;
