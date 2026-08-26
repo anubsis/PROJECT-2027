@@ -1,0 +1,8 @@
+.git
+.git/**
+.wrangler
+.wrangler/**
+wemo backup 0.5v
+wemo backup 0.5v/**
+.assetsignore
+*.tmp
