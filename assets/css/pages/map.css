@@ -25,11 +25,11 @@
 .map-layer-menu:not([hidden]), .map-priority-control.open .map-priority-list { max-height: 240px; opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
 .map-layer-menu[hidden] { display: flex; visibility: hidden; }
 .map-layer-menu button, .map-priority-list button { position: relative; padding: 0; transition: width .28s var(--ease), background .2s ease, color .2s ease, transform .28s var(--ease); }
-.map-layer-menu button span, .map-priority-list button span { width: max-content; max-width: 0; overflow: hidden; color: #fff; font: 700 11px/1 Inter, sans-serif; white-space: nowrap; opacity: 0; transition: max-width .3s var(--ease), opacity .2s ease; }
-.map-layer-menu button span { position: absolute; right: 47px; }
+.map-layer-menu button span, .map-priority-list button span { position: absolute; left: 47px; width: max-content; max-width: 0; padding: 0; overflow: hidden; color: #fff; font: 700 11px/1 Inter, sans-serif; white-space: nowrap; opacity: 0; transition: max-width .3s var(--ease), padding .3s var(--ease), opacity .2s ease; }
+.map-layer-menu button span { right: 47px; left: auto; }
 .map-layer-menu button.active, .map-priority-list button.selected { background: var(--nav-active); color: var(--nav-active-ink); }
-.map-priority-list button.revealed { display: flex; width: auto; max-width: calc(100vw - 32px); justify-content: flex-start; gap: 10px; padding: 0 16px 0 13px; }
-.map-priority-list button.revealed span { max-width: 230px; color: inherit; opacity: 1; }
+.map-priority-list button.revealed { width: 48px; }
+.map-priority-list button.revealed span { max-width: 210px; padding: 13px 15px; border: 1px solid rgba(255,255,255,.18); border-radius: 0 16px 16px 0; background: rgba(18,19,27,.9); opacity: 1; backdrop-filter: blur(16px); }
 .map-priority-control.compact .map-priority-toggle { display: none; }
 .map-priority-control.compact .map-priority-list { max-height: 48px; margin: 0; opacity: 1; pointer-events: auto; transform: none; }
 .map-priority-control.compact .map-priority-list button:not(.selected) { display: none; }

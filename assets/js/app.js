@@ -449,13 +449,22 @@
       return;
     }
     if (wemoLeafletMap) wemoLeafletMap.remove();
-    wemoLeafletMap = window.L.map(mapElement, {
-      zoomControl: false, attributionControl: false, maxBoundsViscosity: 1,
-      scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false,
-      boxZoom: false, keyboard: false
-    });
+    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25, maxBoundsViscosity: 1 });
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(wemoLeafletMap);
+    window.L.control.zoom({ position: 'bottomright' }).addTo(wemoLeafletMap);
     setMapLayer(activeMapLayer);
+    wemoLeafletMap.on('click', () => {
+      const control = $('[data-priority-control]');
+      if (activePriority && control) {
+        control.classList.remove('open');
+        control.classList.add('compact');
+        $('[data-priority-toggle]')?.setAttribute('aria-expanded', 'false');
+        $$('[data-priority]').forEach((button) => button.classList.remove('revealed'));
+      }
+      const layerMenu = $('[data-map-layer-menu]');
+      if (layerMenu) layerMenu.hidden = true;
+      $('[data-map-layers]')?.setAttribute('aria-expanded', 'false');
+    });
     requestAnimationFrame(() => wemoLeafletMap.invalidateSize());
   }
 
@@ -480,14 +489,6 @@
 
   function bind() {
     window.WemoTheme?.bind();
-    const collapsePriorities = () => {
-      const control = $('[data-priority-control]');
-      if (!control || (!control.classList.contains('open') && !control.querySelector('.revealed'))) return;
-      control.classList.remove('open');
-      control.classList.toggle('compact', Boolean(activePriority));
-      $('[data-priority-toggle]')?.setAttribute('aria-expanded', 'false');
-      $$('[data-priority]').forEach((button) => button.classList.remove('revealed'));
-    };
     $$('[data-planner-open]').forEach((button) => button.addEventListener('click', () => {
       const dialog = document.getElementById(button.dataset.plannerOpen);
       if (typeof dialog?.showModal === 'function') dialog.showModal();
@@ -533,7 +534,6 @@
     $('[data-search]')?.addEventListener('submit', (event) => { event.preventDefault(); location.href = `search-results.html?q=${encodeURIComponent(new FormData(event.currentTarget).get('q').trim())}`; });
     $('[data-map-search]')?.addEventListener('submit', (event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('q').trim(); if (query) location.href = `search-results.html?q=${encodeURIComponent(query)}`; });
     $$('[data-map-category]').forEach((button) => button.addEventListener('click', () => {
-      collapsePriorities();
       activeMapCategory = button.dataset.mapCategory;
       $$('[data-map-category]').forEach((item) => item.classList.toggle('active', item === button));
       setMapLayer('places');
@@ -546,34 +546,21 @@
       event.currentTarget.setAttribute('aria-expanded', String(open));
     });
     $$('[data-priority]').forEach((button) => button.addEventListener('click', () => {
-      const control = $('[data-priority-control]');
-      if (control?.classList.contains('compact')) {
-        control.classList.remove('compact');
-        control.classList.add('open');
-        $('[data-priority-toggle]')?.setAttribute('aria-expanded', 'true');
-        return;
-      }
       activePriority = button.dataset.priority;
       $$('[data-priority]').forEach((item) => { item.classList.toggle('selected', item === button); item.classList.toggle('revealed', item === button); });
       if (activeMapLayer !== 'places') setMapLayer('places'); else { clearMapLayers(); renderPlacesMap(); }
     }));
     $('[data-map-layers]')?.addEventListener('click', (event) => {
-      collapsePriorities();
       const menu = $('[data-map-layer-menu]');
       const open = menu.hidden;
       menu.hidden = !open;
       event.currentTarget.setAttribute('aria-expanded', String(open));
     });
     $$('[data-map-layer]').forEach((button) => button.addEventListener('click', () => {
-      collapsePriorities();
       $('[data-map-layer-menu]').hidden = true;
       $('[data-map-layers]').setAttribute('aria-expanded', 'false');
       setMapLayer(button.dataset.mapLayer);
     }));
-    wemoLeafletMap?.on('click zoomstart', collapsePriorities);
-    $('.map-page')?.addEventListener('pointerdown', (event) => {
-      if (!event.target.closest('[data-priority-control]')) collapsePriorities();
-    });
     $('[data-back]')?.addEventListener('click', () => { history.length > 1 ? history.back() : location.assign('index.html'); });
     $$('[data-share]').forEach((button) => button.addEventListener('click', async () => { try { if (navigator.share) await navigator.share({ title: button.dataset.title || document.title, url: location.href }); else { await navigator.clipboard.writeText(location.href); toast(i18n.lang === 'en' ? 'Link copied' : 'ბმული დაკოპირდა'); } } catch { toast(i18n.lang === 'en' ? 'Share cancelled' : 'გაზიარება გაუქმდა'); } }));
     $('[data-book]')?.addEventListener('click', (event) => booking(event.currentTarget.dataset.book));
