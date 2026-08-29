@@ -250,7 +250,18 @@
 
   function map() {
     const en = i18n.lang === 'en';
-    return `${topBar()}<main class="page utility-page map-page"><p class="eyebrow">BATUMI</p><h1 class="page-title">${text('mapTitle')}</h1><p class="page-subtitle">${en ? 'Places for today, and a live view of the shore.' : 'ადგილები დღისთვის და სანაპიროს ცოცხალი ხედი.'}</p><section class="wemo-map" aria-label="${en ? 'Interactive map of Batumi' : 'ბათუმის ინტერაქტიული რუკა'}"><div id="wemo-leaflet-map"></div><div class="map-layer-control"><button type="button" class="map-layer-toggle" data-map-layers aria-expanded="false">${icon('layers')}<span>${en ? 'Layers' : 'ფენები'}</span></button><div class="map-layer-menu" data-map-layer-menu hidden><button type="button" data-map-layer="places">${icon('map')}<span>${en ? 'Map' : 'რუკა'}</span><i></i></button><button type="button" data-map-layer="heat">${icon('sun')}<span>${en ? 'Beach heatmap' : 'პლაჟის დატვირთულობა'}</span><i></i></button></div></div><div class="map-sheet"><div class="map-sheet__handle"></div><div data-map-context></div></div></section></main>${renderNav()}`;
+    const mapCategories = [
+      ['all', 'grid', en ? 'All' : 'ყველა'], ['restaurants', 'utensils', en ? 'Food' : 'კვება'],
+      ['events', 'star', en ? 'Events' : 'გართობა'], ['activities', 'eye', en ? 'See' : 'სანახავი'],
+      ['hotels', 'bed', en ? 'Stay' : 'დარჩენა']
+    ];
+    const priorities = [
+      ['medical', 'medical', en ? 'Emergency & health' : 'სასწრაფო და ჯანმრთელობა'],
+      ['bank', 'bank', en ? 'ATM & banks' : 'ბანკები და ბანკომატები'],
+      ['transport', 'fuel', en ? 'Transport, fuel & charging' : 'ტრანსპორტი, საწვავი და დამუხტვა'],
+      ['toilet', 'toilet', en ? 'Public facilities' : 'საზოგადოებრივი სერვისები']
+    ];
+    return `<main class="map-page"><section class="map-discovery" aria-label="${en ? 'Search and map categories' : 'ძიება და რუკის კატეგორიები'}"><form class="map-search" data-map-search>${icon('search')}<input name="q" placeholder="${en ? 'Search this area' : 'მოძებნე ამ არეში'}" autocomplete="off"><button type="submit" aria-label="${en ? 'Search' : 'ძიება'}">${icon('arrow')}</button></form><div class="map-categories" role="group" aria-label="${en ? 'Categories' : 'კატეგორიები'}">${mapCategories.map(([key, iconName, label], index) => `<button type="button" class="${index === 0 ? 'active' : ''}" data-map-category="${key}">${icon(iconName)}<span>${label}</span></button>`).join('')}</div></section><section class="wemo-map" aria-label="${en ? 'Interactive map of Batumi' : 'ბათუმის ინტერაქტიული რუკა'}"><div id="wemo-leaflet-map"></div><div class="map-priority-control" data-priority-control><div class="map-priority-list" data-priority-list>${priorities.map(([key, iconName, label]) => `<button type="button" data-priority="${key}" aria-label="${label}" title="${label}">${icon(iconName)}<span>${label}</span></button>`).join('')}</div><button type="button" class="map-priority-toggle" data-priority-toggle aria-expanded="false" aria-label="${en ? 'Needed priorities' : 'საჭირო სერვისები'}">${icon('medical')}</button></div><div class="map-layer-control"><div class="map-layer-menu" data-map-layer-menu hidden><button type="button" data-map-layer="places" aria-label="${en ? 'Places map' : 'ადგილების რუკა'}">${icon('map')}<span>${en ? 'Places' : 'ადგილები'}</span></button><button type="button" data-map-layer="heat" aria-label="${en ? 'Beach heatmap' : 'პლაჟის დატვირთულობა'}">${icon('sun')}<span>${en ? 'Heatmap' : 'დატვირთულობა'}</span></button></div><button type="button" class="map-layer-toggle" data-map-layers aria-expanded="false" aria-label="${en ? 'Map layers' : 'რუკის ფენები'}">${icon('layers')}</button></div><div class="map-sheet"><div class="map-sheet__handle"></div><div data-map-context></div></div></section></main>${renderNav()}`;
   }
 
   function profile() {
@@ -330,6 +341,8 @@
 
   let activeMapLayer = 'places';
   let activeMapPlace = 'old-town-wine-house';
+  let activeMapCategory = 'all';
+  let activePriority = null;
   let wemoLeafletMap;
   let wemoMapLayers = [];
 
@@ -339,7 +352,7 @@
   function mapPlaces() {
     return (window.WEMO_BATUMI_MAP_PLACES || []).map((entry) => ({
       ...places.find((place) => place.id === entry.id), coordinates: entry.coordinates
-    })).filter((place) => place.id);
+    })).filter((place) => place.id && (activeMapCategory === 'all' || place.category === activeMapCategory));
   }
 
   function clearMapLayers() {
@@ -379,6 +392,16 @@
       marker.on('click', () => { activeMapPlace = place.id; renderPlacesMap(); mapContext(); });
     });
     wemoMapLayers.push(placeLayer);
+    if (activePriority) {
+      const priorityIcons = { medical: 'medical', bank: 'bank', transport: 'fuel', toilet: 'toilet' };
+      const priorityPoints = {
+        medical: [[41.6497, 41.6358], [41.6439, 41.6218]], bank: [[41.6515, 41.6388], [41.6472, 41.6296]],
+        transport: [[41.6554, 41.6428], [41.6388, 41.6119]], toilet: [[41.6531, 41.6324], [41.6462, 41.6251]]
+      };
+      const utilityLayer = window.L.layerGroup().addTo(wemoLeafletMap);
+      (priorityPoints[activePriority] || []).forEach((coordinates) => window.L.marker(coordinates, { icon: window.L.divIcon({ className: 'wemo-utility-marker-wrap', html: `<span class="wemo-utility-marker">${icon(priorityIcons[activePriority])}</span>`, iconSize: [38, 38], iconAnchor: [19, 19] }) }).addTo(utilityLayer));
+      wemoMapLayers.push(utilityLayer);
+    }
   }
 
   function interpolateCoastline(points, steps = 8) {
@@ -430,6 +453,18 @@
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(wemoLeafletMap);
     window.L.control.zoom({ position: 'bottomright' }).addTo(wemoLeafletMap);
     setMapLayer(activeMapLayer);
+    wemoLeafletMap.on('click', () => {
+      const control = $('[data-priority-control]');
+      if (activePriority && control) {
+        control.classList.remove('open');
+        control.classList.add('compact');
+        $('[data-priority-toggle]')?.setAttribute('aria-expanded', 'false');
+        $$('[data-priority]').forEach((button) => button.classList.remove('revealed'));
+      }
+      const layerMenu = $('[data-map-layer-menu]');
+      if (layerMenu) layerMenu.hidden = true;
+      $('[data-map-layers]')?.setAttribute('aria-expanded', 'false');
+    });
     requestAnimationFrame(() => wemoLeafletMap.invalidateSize());
   }
 
@@ -497,6 +532,24 @@
     $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.className = `lang-${i18n.lang}`; render(); }));
     $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
     $('[data-search]')?.addEventListener('submit', (event) => { event.preventDefault(); location.href = `search-results.html?q=${encodeURIComponent(new FormData(event.currentTarget).get('q').trim())}`; });
+    $('[data-map-search]')?.addEventListener('submit', (event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('q').trim(); if (query) location.href = `search-results.html?q=${encodeURIComponent(query)}`; });
+    $$('[data-map-category]').forEach((button) => button.addEventListener('click', () => {
+      activeMapCategory = button.dataset.mapCategory;
+      $$('[data-map-category]').forEach((item) => item.classList.toggle('active', item === button));
+      setMapLayer('places');
+    }));
+    $('[data-priority-toggle]')?.addEventListener('click', (event) => {
+      const control = $('[data-priority-control]');
+      const open = !control.classList.contains('open');
+      control.classList.toggle('open', open);
+      control.classList.remove('compact');
+      event.currentTarget.setAttribute('aria-expanded', String(open));
+    });
+    $$('[data-priority]').forEach((button) => button.addEventListener('click', () => {
+      activePriority = button.dataset.priority;
+      $$('[data-priority]').forEach((item) => { item.classList.toggle('selected', item === button); item.classList.toggle('revealed', item === button); });
+      if (activeMapLayer !== 'places') setMapLayer('places'); else { clearMapLayers(); renderPlacesMap(); }
+    }));
     $('[data-map-layers]')?.addEventListener('click', (event) => {
       const menu = $('[data-map-layer-menu]');
       const open = menu.hidden;
