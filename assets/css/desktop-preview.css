@@ -11,8 +11,8 @@
   .desktop-phone::before, .desktop-phone::after { content: ''; position: absolute; width: 4px; border-radius: 3px; background: linear-gradient(90deg, #252527, #77777b, #29292b); }
   .desktop-phone::before { left: -5px; top: 135px; height: 30px; box-shadow: 0 54px #454548, 0 98px #454548; }
   .desktop-phone::after { right: -5px; top: 208px; height: 78px; }
-  .desktop-phone__screen { position: relative; height: 100%; padding: 54px 0 24px; overflow: hidden; border-radius: 49px; background: var(--bg); transform: translateZ(0); }
-  .desktop-phone-active .shell { height: 100%; min-height: 0; overflow: auto; overscroll-behavior-y: contain; scrollbar-width: none; }
+  .desktop-phone__screen { position: relative; height: 100%; padding: 50px 0 0; overflow: hidden; border-radius: 49px; background: var(--bg); transform: translateZ(0); }
+  .desktop-phone-active .shell { height: 100%; min-height: 0; padding-bottom: 0; overflow: auto; overscroll-behavior-y: contain; scrollbar-width: none; }
   .desktop-phone-active .shell::-webkit-scrollbar { display: none; }
   .desktop-phone__status { position: absolute; z-index: 80; top: 0; left: 0; right: 0; height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; color: var(--text); font: 700 14px/1 Inter, sans-serif; pointer-events: none; }
   .desktop-phone__island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 116px; height: 32px; border-radius: 30px; background: #000; }
@@ -23,8 +23,9 @@
   .desktop-phone__battery::before { content: ''; display: block; height: 100%; border-radius: 1px; background: currentColor; }
   .desktop-phone__battery::after { content: ''; position: absolute; right: -3px; top: 3px; width: 2px; height: 4px; background: currentColor; border-radius: 1px; }
   .desktop-phone__home { position: absolute; z-index: 80; bottom: 8px; left: 50%; transform: translateX(-50%); width: 132px; height: 5px; border-radius: 99px; background: var(--text); pointer-events: none; }
-  .desktop-phone-active .bottom-nav { bottom: 30px; }
-  .desktop-phone-active .sticky-cta { bottom: 24px; }
+  .desktop-phone-active .topbar { min-height: 58px; padding-top: 6px; padding-bottom: 6px; }
+  .desktop-phone-active .bottom-nav { bottom: 0; width: 100%; max-width: none; height: 100px; padding: 7px 14px 27px; border-width: 1px 0 0; border-radius: 0; box-shadow: none; }
+  .desktop-phone-active .sticky-cta { bottom: 0; padding-bottom: 28px; }
   .desktop-phone-active .map-page { min-height: 100%; }
   .desktop-phone-active .wemo-map { height: calc(clamp(680px, 100dvh - 48px, 932px) - 330px); min-height: 350px; border-radius: 0; }
 }
