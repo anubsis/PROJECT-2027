@@ -382,8 +382,6 @@
   }
 
   function renderPlacesMap() {
-    wemoLeafletMap.setMaxBounds(batumiBounds);
-    wemoLeafletMap.setMinZoom(12);
     wemoLeafletMap.setMaxZoom(18);
     wemoLeafletMap.fitBounds(batumiBounds, { padding: [28, 28] });
     const placeLayer = window.L.layerGroup().addTo(wemoLeafletMap);
@@ -435,10 +433,7 @@
     const sensorPoint = batumiCoast[Math.floor(batumiCoast.length * 0.55)];
     const sensor = window.L.marker(sensorPoint, { icon: window.L.divIcon({ className: 'wemo-heat-sensor-wrap', html: '<span class="wemo-heat-sensor"></span>', iconSize: [24, 24], iconAnchor: [12, 12] }) }).addTo(wemoLeafletMap);
     wemoMapLayers.push(heatLayer, shorelines, sensor);
-    wemoLeafletMap.setMaxBounds(georgiaCoastBounds);
     wemoLeafletMap.setMaxZoom(16);
-    const coastZoom = wemoLeafletMap.getBoundsZoom(georgiaCoastBounds, true, [32, 32]);
-    wemoLeafletMap.setMinZoom(coastZoom);
     wemoLeafletMap.fitBounds(georgiaCoastBounds, { padding: [32, 32] });
   }
 
@@ -449,7 +444,7 @@
       return;
     }
     if (wemoLeafletMap) wemoLeafletMap.remove();
-    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25, maxBoundsViscosity: 1 });
+    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25 });
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(wemoLeafletMap);
     window.L.control.zoom({ position: 'bottomright' }).addTo(wemoLeafletMap);
     setMapLayer(activeMapLayer);
