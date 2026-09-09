@@ -332,9 +332,11 @@
   function render() {
     const page = document.body.dataset.page;
     const app = $('#app');
+    const motionBefore = window.WemoMotion.capture(app);
     const output = page === 'home' ? home() : page === 'map' ? map() : page === 'wemo' ? window.WemoMvp.wemoPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'atlas' ? window.WemoMvp.atlasPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'business' ? business() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
     app.innerHTML = output;
     bind();
+    window.WemoMotion.rendered(app, motionBefore);
     if (page === 'map') initializeMap();
     if (page === 'search') refreshSearch();
   }
@@ -471,35 +473,32 @@
   }
 
   function toast(message) {
-    const notice = document.createElement('div'); notice.className = 'toast'; notice.textContent = message; document.body.append(notice); setTimeout(() => notice.remove(), 2600);
+    const notice = document.createElement('div'); notice.className = 'toast'; notice.textContent = message; document.body.append(notice); setTimeout(() => window.WemoMotion.dismiss(notice), 2600);
   }
 
   function booking(name) {
     const modal = document.createElement('div'); modal.className = 'modal';
     modal.innerHTML = `<form class="modal-box" data-book-form><button type="button" class="modal-close" data-close aria-label="Close">${icon('close')}</button><p class="eyebrow">${i18n.lang === 'en' ? 'BOOKING REQUEST' : 'დაჯავშნის მოთხოვნა'}</p><h2>${escapeHtml(name)}</h2><div class="form-grid"><label>Date<input required type="date"></label><label>Time<input required type="time"></label><label>${i18n.lang === 'en' ? 'People' : 'სტუმრები'}<input required type="number" min="1" value="2"></label><label>${i18n.lang === 'en' ? 'Name' : 'სახელი'}<input required></label></div><button class="primary">${i18n.lang === 'en' ? 'Save demo request' : 'დემო მოთხოვნის შენახვა'}</button></form>`;
     document.body.append(modal);
-    modal.addEventListener('click', (event) => { if (event.target === modal || event.target.closest('[data-close]')) modal.remove(); });
-    $('[data-book-form]', modal).addEventListener('submit', (event) => { event.preventDefault(); const requests = JSON.parse(localStorage.getItem('wemo-booking-requests') || '[]'); requests.push({ name, date: Date.now() }); localStorage.setItem('wemo-booking-requests', JSON.stringify(requests)); modal.remove(); toast(text('requestSaved')); });
+    modal.addEventListener('click', (event) => { if (event.target === modal || event.target.closest('[data-close]')) window.WemoMotion.dismiss(modal); });
+    $('[data-book-form]', modal).addEventListener('submit', (event) => { event.preventDefault(); const requests = JSON.parse(localStorage.getItem('wemo-booking-requests') || '[]'); requests.push({ name, date: Date.now() }); localStorage.setItem('wemo-booking-requests', JSON.stringify(requests)); window.WemoMotion.dismiss(modal); toast(text('requestSaved')); });
   }
 
   function bind() {
     window.WemoTheme?.bind();
     $$('[data-planner-open]').forEach((button) => button.addEventListener('click', () => {
       const dialog = document.getElementById(button.dataset.plannerOpen);
-      if (typeof dialog?.showModal === 'function') dialog.showModal();
-      else dialog?.setAttribute('open', '');
+      window.WemoMotion.open(dialog);
     }));
     $$('[data-planner-dialog]').forEach((dialog) => dialog.addEventListener('click', (event) => {
       if (event.target !== dialog) return;
-      if (typeof dialog.close === 'function') dialog.close();
-      else dialog.removeAttribute('open');
+      window.WemoMotion.close(dialog);
     }));
-    $$('[data-planner-close]').forEach((button) => button.addEventListener('click', () => button.closest('dialog')?.close()));
+    $$('[data-planner-close]').forEach((button) => button.addEventListener('click', () => window.WemoMotion.close(button.closest('dialog'))));
     $$('[data-planner-date]').forEach((button) => button.addEventListener('click', () => {
       homePlanner.date = button.dataset.plannerDate;
       homePlanner.customDate = '';
-      button.closest('dialog')?.close();
-      render();
+      window.WemoMotion.close(button.closest('dialog'), render);
     }));
     $('[data-planner-custom]')?.addEventListener('click', () => {
       $('[data-planner-custom-box]').hidden = false;
@@ -510,13 +509,11 @@
       if (!input?.value) { input?.focus(); return; }
       homePlanner.date = 'custom';
       homePlanner.customDate = input.value;
-      input.closest('dialog')?.close();
-      render();
+      window.WemoMotion.close(input.closest('dialog'), render);
     });
     $$('[data-planner-city]').forEach((button) => button.addEventListener('click', () => {
       homePlanner.city = button.dataset.plannerCity;
-      button.closest('dialog')?.close();
-      render();
+      window.WemoMotion.close(button.closest('dialog'), render);
     }));
     $$('[data-planner-intent]').forEach((button) => button.addEventListener('click', () => {
       homePlanner.intent = homePlanner.intent === button.dataset.plannerIntent ? null : button.dataset.plannerIntent;
@@ -524,7 +521,7 @@
     }));
     $$('[data-save]').forEach((button) => button.addEventListener('click', () => { WemoStorage.toggle(button.dataset.save); render(); }));
     window.WemoMvp?.bind(document.body.dataset.page, { render, toast });
-    $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.className = `lang-${i18n.lang}`; render(); }));
+    $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.classList.remove('lang-en', 'lang-ka'); document.body.classList.add(`lang-${i18n.lang}`); render(); }));
     $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
     $('[data-search]')?.addEventListener('submit', (event) => { event.preventDefault(); location.href = `search-results.html?q=${encodeURIComponent(new FormData(event.currentTarget).get('q').trim())}`; });
     $('[data-map-search]')?.addEventListener('submit', (event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('q').trim(); if (query) location.href = `search-results.html?q=${encodeURIComponent(query)}`; });
@@ -571,6 +568,6 @@
   }
 
   document.documentElement.lang = i18n.lang;
-  document.body.className = `lang-${i18n.lang}`;
+  document.body.classList.remove('lang-en', 'lang-ka'); document.body.classList.add(`lang-${i18n.lang}`);
   render();
 })();

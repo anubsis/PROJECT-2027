@@ -42,36 +42,31 @@
     document.querySelectorAll('[data-theme-open]').forEach((button) => {
       button.addEventListener('click', () => {
         if (!dialog) return;
-        if (typeof dialog.showModal === 'function') dialog.showModal();
-        else dialog.setAttribute('open', '');
+        window.WemoMotion.open(dialog);
       });
     });
 
     document.querySelectorAll('[data-theme-close]').forEach((button) => {
       button.addEventListener('click', () => {
-        if (typeof dialog?.close === 'function') dialog.close();
-        else dialog?.removeAttribute('open');
+        window.WemoMotion.close(dialog);
       });
     });
 
     dialog?.addEventListener('click', (event) => {
       if (event.target !== dialog) return;
-      if (typeof dialog.close === 'function') dialog.close();
-      else dialog.removeAttribute('open');
+      window.WemoMotion.close(dialog);
     });
 
     dialog?.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
       event.preventDefault();
-      if (typeof dialog.close === 'function') dialog.close();
-      else dialog.removeAttribute('open');
+      window.WemoMotion.close(dialog);
     });
 
     document.querySelectorAll('[data-theme-option]').forEach((button) => {
       button.addEventListener('click', () => {
         apply(button.dataset.themeOption, true);
-        if (typeof dialog?.close === 'function') dialog.close();
-        else dialog?.removeAttribute('open');
+        window.WemoMotion.close(dialog);
       });
     });
     updateControls();
