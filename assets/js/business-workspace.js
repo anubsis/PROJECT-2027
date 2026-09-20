@@ -90,7 +90,7 @@
   }
   function updateThemeControl() {const el=document.querySelector('[data-action="appearance"]');if(el)el.innerHTML=ico(document.documentElement.dataset.theme==='dark'?'moon':'sun');}
   function paint() { const app=document.getElementById('app'); app.innerHTML=render(); bind(); }
-  function confirmDialog(title,body,action,extra='') { const dialog=document.getElementById('wb-dialog'); dialog.innerHTML=`<h2 id="wb-dialog-title">${esc(tr(title))}</h2><p>${esc(tr(body))}</p><div class="wb-actions">${button(action,'Confirm','check','wb-button wb-primary',extra)}${button('close-dialog','Cancel')}</div>`; dialog.showModal(); }
+  function confirmDialog(title,body,action,extra='') { const dialog=document.getElementById('wb-dialog'); dialog.innerHTML=`<h2 id="wb-dialog-title">${esc(tr(title))}</h2><p>${esc(tr(body))}</p><div class="wb-actions">${button(action,'Confirm','check','wb-button wb-primary',extra)}${button('close-dialog','Cancel')}</div>`; window.WemoMotion.open(dialog); }
   async function onAction(el) {
     const a=el.dataset.action;
     if(a==='language') {
@@ -98,13 +98,13 @@
       window.WemoI18n.lang=language()==='en'?'ka':'en';paint();
       document.querySelectorAll('.wb form').forEach((f,i)=>(drafts[i]||[]).forEach(d=>{const el=f.elements[d.name];if(el){if(el.tagName==='INPUT')el.type=d.type;el.value=d.value;}}));
     }
-    if(a==='appearance') { const dialog=document.getElementById('wb-dialog');dialog.innerHTML=`<h2 id="wb-dialog-title">${esc(tr('Choose appearance'))}</h2><div class="wb-actions">${['light','dark'].map(theme=>button('set-theme',theme==='light'?'Light':'Dark',theme==='light'?'sun':'moon','wb-button',`data-value="${theme}" aria-pressed="${document.documentElement.dataset.theme===theme}"`)).join('')}</div>${button('close-dialog','Cancel','','wb-text-button')}`;dialog.showModal(); }
-    if(a==='set-theme') { window.WemoTheme.set(el.dataset.value);document.getElementById('wb-dialog').close();updateThemeControl(); }
+    if(a==='appearance') { const dialog=document.getElementById('wb-dialog');dialog.innerHTML=`<h2 id="wb-dialog-title">${esc(tr('Choose appearance'))}</h2><div class="wb-actions">${['light','dark'].map(theme=>button('set-theme',theme==='light'?'Light':'Dark',theme==='light'?'sun':'moon','wb-button',`data-value="${theme}" aria-pressed="${document.documentElement.dataset.theme===theme}"`)).join('')}</div>${button('close-dialog','Cancel','','wb-text-button')}`;window.WemoMotion.open(dialog); }
+    if(a==='set-theme') { window.WemoTheme.set(el.dataset.value);window.WemoMotion.close(document.getElementById('wb-dialog'));updateThemeControl(); }
     if(a==='demo') { s=Store.sample(); if(save()) navigate('dashboard'); }
     if(a==='claim') { const p=window.WEMO_PLACES.find(p=>p.id===el.dataset.id); if(!p)return; s=Store.blank(); s.business={id:'wemo-owner-business',name:p.name[language()],category:p.category,address:p.location[language()],cover:p.image,published:false,claim:true}; if(save('Demo claim created — verification pending'))navigate('profile'); }
     if(a==='filter') {filter=el.dataset.value;paint();}
     if(a==='range') {range=el.dataset.value;paint();}
-    if(a==='close-dialog') document.getElementById('wb-dialog').close();
+    if(a==='close-dialog') window.WemoMotion.close(document.getElementById('wb-dialog'));
     if(a==='publish') { const missing=['name','category','description','address','phone','hours','cover'].filter(k=>!String(s.business[k]||'').trim()); if(missing.length) {notice('Before publishing, add: '+missing.join(', ')+'.');return;} s.business.published=true; if(save('Business published locally')) {paint();notice('Published in this browser. Preview your public profile.');} }
     if(a==='unpublish') confirmDialog('Unpublish your business?','Your profile and listings will be hidden from local discovery. You can publish again any time.','confirm-unpublish');
     if(a==='confirm-unpublish') {s.business.published=false;if(save('Business unpublished'))paint();}
@@ -136,7 +136,7 @@
     root.addEventListener('submit',submit);
     root.addEventListener('change',async e=>{const input=e.target;if(!input.matches('[data-upload]'))return;const file=input.files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>1024*1024){notice('Choose a JPG, PNG or WebP image smaller than 1 MB.');input.value='';return;}const reader=new FileReader();reader.onload=()=>{const target=input.closest('form').elements[input.dataset.upload];target.type='text';target.value=reader.result;notice('Image ready. Save your changes to keep it.');};reader.readAsDataURL(file);});
   }
-  window.addEventListener('hashchange',()=>{paint();document.querySelector('.wb-main h1')?.focus({preventScroll:true});document.getElementById('app').scrollTo(0,0);window.scrollTo(0,0);});
+  window.addEventListener('hashchange',()=>{paint();window.WemoMotion.enterPage();document.querySelector('.wb-main h1')?.focus({preventScroll:true});document.getElementById('app').scrollTo(0,0);window.scrollTo(0,0);});
   window.addEventListener('storage',e=>{if(e.key===Store.key){s=Store.read();paint();}if(e.key==='wemo-language')paint();if(e.key==='wemo-theme'&&['light','dark'].includes(e.newValue)){window.WemoTheme.set(e.newValue);updateThemeControl();}});
   window.WemoBusiness={render,bind};
 })();

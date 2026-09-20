@@ -20,10 +20,40 @@
     medical: '<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>', bank: '<path d="m3 9 9-6 9 6M5 10h14M6 10v8M10 10v8M14 10v8M18 10v8M4 21h16M3 18h18"/>', fuel: '<path d="M5 21V4h10v17M3 21h14M7 7h6v5H7zM15 8h2l3 3v7a2 2 0 0 1-4 0v-4"/>', toilet: '<circle cx="8" cy="5" r="2"/><circle cx="16" cy="5" r="2"/><path d="M5 10h6l-1 11H6L5 10zM14 10h4l2 6h-3v5h-3v-5h-2l2-6z"/>',
     briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/>', check: '<path d="M4 12l6 6L20 6"/>', building: '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 8h1M14 8h1M9 12h1M14 12h1M9 16h2"/>', layers: '<path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/>'
   };
-  window.icon = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.spark}</svg>`;
+  Object.assign(paths, {
+  "home": "<path class=\"icon-wash\" d=\"M4.5 10 12 3.5 19.5 10v9a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 19Z\"/><path d=\"m3 10.5 7.7-6.7a2 2 0 0 1 2.6 0l7.7 6.7M5 9v10a1.5 1.5 0 0 0 1.5 1.5H9v-6h6v6h2.5A1.5 1.5 0 0 0 19 19V9\"/>",
+  "map": "<path class=\"icon-wash\" d=\"m9 4 6 3v13l-6-3Z\"/><path d=\"m3.5 6 5.5-2 6 3 5.5-2v13L15 20l-6-3-5.5 2ZM9 4v13m6-10v13\"/>",
+  "atlas": "<rect class=\"icon-wash\" x=\"5\" y=\"3\" width=\"15\" height=\"18\" rx=\"3\"/><rect x=\"5\" y=\"3\" width=\"15\" height=\"18\" rx=\"3\"/><path d=\"M9 3v18M3 7h4m-4 5h4m-4 5h4m5-10h5m-5 4h3\"/>",
+  "profile": "<circle class=\"icon-wash\" cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"9\" r=\"3\"/><path d=\"M5.5 18a7 7 0 0 1 13 0\"/>",
+  "wemo": "<path class=\"icon-wash\" d=\"m11 3 2.5 6.5L20 12l-6.5 2.5L11 21l-2.5-6.5L2 12l6.5-2.5Z\"/><path d=\"m11 3 2.5 6.5L20 12l-6.5 2.5L11 21l-2.5-6.5L2 12l6.5-2.5ZM19 2v4m-2-2h4\"/>",
+  "spark": "<path class=\"icon-wash\" d=\"m10 4 2.2 6.3L18.5 12l-6.3 2.2L10 20.5l-2.2-6.3L1.5 12l6.3-1.7Z\"/><path d=\"m10 4 2.2 6.3L18.5 12l-6.3 2.2L10 20.5l-2.2-6.3L1.5 12l6.3-1.7ZM19 3v5m-2.5-2.5h5\"/>",
+  "grid": "<rect x=\"3.5\" y=\"3.5\" width=\"6.5\" height=\"6.5\" rx=\"2\"/><rect x=\"14\" y=\"3.5\" width=\"6.5\" height=\"6.5\" rx=\"2\"/><rect x=\"3.5\" y=\"14\" width=\"6.5\" height=\"6.5\" rx=\"2\"/><rect x=\"14\" y=\"14\" width=\"6.5\" height=\"6.5\" rx=\"2\"/>",
+  "search": "<circle cx=\"10.75\" cy=\"10.75\" r=\"6.75\"/><path d=\"m16 16 4.5 4.5\"/>",
+  "pin": "<path class=\"icon-wash\" d=\"M19 10c0 5-7 10.5-7 10.5S5 15 5 10a7 7 0 1 1 14 0Z\"/><path d=\"M19 10c0 5-7 10.5-7 10.5S5 15 5 10a7 7 0 1 1 14 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"2.5\"/>",
+  "heart": "<path d=\"M20.4 5.6a5.2 5.2 0 0 0-7.4 0l-1 1-1-1a5.2 5.2 0 0 0-7.4 7.4l8.4 7.5 8.4-7.5a5.2 5.2 0 0 0 0-7.4Z\"/>",
+  "calendar": "<rect class=\"icon-wash\" x=\"4\" y=\"5.5\" width=\"16\" height=\"15\" rx=\"3\"/><rect x=\"4\" y=\"5.5\" width=\"16\" height=\"15\" rx=\"3\"/><path d=\"M8 3.5v4m8-4v4M4 10h16m-12 4h2m4 0h2m-8 3h2\"/>",
+  "clock": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7v5l3.5 2\"/>",
+  "briefcase": "<rect class=\"icon-wash\" x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"3\"/><rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"3\"/><path d=\"M8 7V5.5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2V7M3 11l7 3h4l7-3m-9 1v4\"/>",
+  "building": "<rect x=\"5\" y=\"3\" width=\"14\" height=\"18\" rx=\"2\"/><path d=\"M9 7h1m4 0h1m-6 4h1m4 0h1M10 21v-6h4v6\"/>",
+  "card": "<rect class=\"icon-wash\" x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"/><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"/><path d=\"M3 10h18M7 15h3\"/>",
+  "users": "<circle cx=\"9\" cy=\"8\" r=\"3\"/><path d=\"M3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 4v1\"/>",
+  "utensils": "<path d=\"M6 3v6m3-6v6M3 3v6a3 3 0 0 0 6 0M6 12v9M20 3v18m0-18a6 6 0 0 0-5 6v4h5\"/>",
+  "mountain": "<path class=\"icon-wash\" d=\"m2.5 20 7-14 5 9 3-5 4 10Z\"/><path d=\"m2.5 20 7-14 5 9 3-5 4 10ZM7 11l2.5 2 2.2-2\"/>",
+  "bed": "<path d=\"M3 20V7m18 13v-6H3m0-4h4a3 3 0 0 1 3 3v1m0 0V7h7a4 4 0 0 1 4 4v3M3 17h18\"/>",
+  "message": "<path d=\"M7 18H4l.5-4A8.5 8.5 0 1 1 7 18Z\"/><path d=\"M8 10h8m-8 4h5\"/>",
+  "bell": "<path d=\"M18 9a6 6 0 0 0-12 0v4l-2 4h16l-2-4Zm-8 11a2 2 0 0 0 4 0\"/>",
+  "eye": "<path d=\"M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+  "arrow": "<path d=\"M4.5 12h15m-6-6 6 6-6 6\"/>",
+  "back": "<path d=\"m14.5 5.5-6.5 6.5 6.5 6.5\"/>",
+  "chevron": "<path d=\"m9.5 5.5 6.5 6.5-6.5 6.5\"/>",
+  "check": "<path d=\"m5 12 4.5 4.5L19 7\"/>",
+  "camera": "<path d=\"M8 6 9.5 3.5h5L16 6h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z\"/><circle cx=\"12\" cy=\"13\" r=\"3.5\"/>",
+  "layers": "<path class=\"icon-wash\" d=\"m12 3-9 5 9 5 9-5Z\"/><path d=\"m12 3-9 5 9 5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5\"/>"
+});
+  window.icon = (name) => `<svg class="wemo-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[name] || paths.spark}</svg>`;
   window.renderNav = () => {
     const page = document.body.dataset.page || 'home';
     const items = ['home', 'map', 'wemo', 'atlas', 'profile'];
-    return `<nav class="bottom-nav" aria-label="Primary navigation">${items.map((item) => `<a href="${item === 'home' ? 'index.html' : `${item}.html`}" class="${page === item ? 'active' : ''}" aria-label="${WemoI18n.s(item)}">${window.icon(item)}<span>${WemoI18n.s(item)}</span></a>`).join('')}</nav>`;
+    return `<nav class="bottom-nav" aria-label="${WemoI18n.lang === 'ka' ? 'მთავარი ნავიგაცია' : 'Primary navigation'}">${items.map((item) => `<a href="${item === 'home' ? 'index.html' : `${item}.html`}" class="${page === item ? 'active' : ''}" ${page === item ? 'aria-current="page"' : ''} aria-label="${WemoI18n.s(item)}">${window.icon(item)}<span>${WemoI18n.s(item)}</span></a>`).join('')}</nav>`;
   };
 })();

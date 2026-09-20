@@ -11,8 +11,8 @@
   :is(.planner-intent, .planner-utility, .ai-prompts button):hover { translate: 0 -2px; box-shadow: var(--shadow-sm); }
 }
 /* Native dialogs retain their focus trap throughout the short exit. */
-:is(.planner-dialog, .theme-dialog)[open]::backdrop { animation: wemo-backdrop-in 220ms ease both; }
-:is(.planner-dialog, .theme-dialog).motion-closing::backdrop { animation: wemo-backdrop-out 150ms ease both; }
+:is(.planner-dialog, .theme-dialog, .wb-dialog)[open]::backdrop { animation: wemo-backdrop-in 220ms ease both; }
+:is(.planner-dialog, .theme-dialog, .wb-dialog).motion-closing::backdrop { animation: wemo-backdrop-out 150ms ease both; }
 .modal { animation: wemo-fade-in 180ms ease both; }
 .modal-box { animation: wemo-sheet-in 280ms var(--motion-ease) both; }
 .toast { animation: wemo-rise-in 220ms var(--motion-ease) both; }
@@ -39,4 +39,30 @@
   html, body, .shell { scroll-behavior: auto !important; }
   body *, body *::before, body *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}
+/* Consistent tactile feedback; no navigation is delayed by an animation. */
+:where(button,a) { -webkit-tap-highlight-color: transparent; }
+:is(.primary,.secondary,.wb-button,.wb-control,.setting,.atlas-filters button,.planner-intent,.ai-prompts button,.map-categories button,.bottom-nav a,.planner-save,.save-button,.ai-save) {
+  transition: scale 160ms var(--motion-ease),background-color 180ms ease,border-color 180ms ease,color 180ms ease,box-shadow 220ms ease;
+}
+:root :is(.primary,.secondary,.wb-button,.wb-control,.setting,.atlas-filters button,.planner-intent,.ai-prompts button,.map-categories button,.bottom-nav a,.planner-save,.save-button,.ai-save):active { scale: .97; transform: none; }
+:is(.planner-place,.atlas-trip) img { transition: transform 400ms var(--motion-ease); }
+:is(.planner-intent,.ai-prompts button,.planner-utility,.wb-quick a) svg { transition: translate 220ms var(--motion-ease); }
+@media (hover:hover) and (pointer:fine) {
+  :is(.planner-place,.atlas-trip):hover img { transform: scale(1.035); }
+  :is(.planner-intent,.ai-prompts button,.planner-utility,.wb-quick a):hover svg { translate: 0 -2px; }
+  :is(.wb-button,.wb-control,.atlas-booking,.atlas-idea,.atlas-history a):hover { border-color: var(--accent-border); }
+}
+:root .bottom-nav { view-transition-name: wemo-navigation; }
+:root .topbar { view-transition-name: wemo-header; }
+::view-transition-group(wemo-navigation),::view-transition-group(wemo-header) { animation-duration: 220ms; animation-timing-function: var(--motion-ease); }
+::view-transition-old(wemo-navigation),::view-transition-new(wemo-navigation),::view-transition-old(wemo-header),::view-transition-new(wemo-header) { animation: none; }
+::view-transition-old(root) { animation: wemo-page-out 140ms ease both; }
+::view-transition-new(root) { animation: wemo-page-arrive 240ms var(--motion-ease) both; }
+@keyframes wemo-page-arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  :root .bottom-nav, :root .topbar { view-transition-name: none; }
+  :is(.planner-place,.atlas-trip) img, :is(.planner-intent,.ai-prompts button,.planner-utility,.wb-quick a) svg { transition: none; }
+  ::view-transition-old(root),::view-transition-new(root) { animation: none !important; }
+  :root :is(button,a):active { scale: 1; }
 }

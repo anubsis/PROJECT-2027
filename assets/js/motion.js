@@ -15,6 +15,15 @@
   function enter(element) {
     return animate(element, [{ opacity: 0, translate: '0 10px' }, { opacity: 1, translate: '0 0' }]);
   }
+  function enterPage(app = document.getElementById('app')) {
+    if (reduced.matches || !app || document.body.dataset.page === 'map') return;
+    const main = app.querySelector('main');
+    if (!main) return;
+    // Animate children only; never transform the shell that contains fixed navigation.
+    [...main.children].filter(el => !el.hidden && el.getBoundingClientRect().top < innerHeight).slice(0,7).forEach((el,index) => {
+      animate(el,[{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:300,delay:index*30,fill:'backwards'});
+    });
+  }
   function open(dialog) {
     if (!dialog || closing.has(dialog) || dialog.open) return;
     if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
@@ -75,13 +84,20 @@
     });
     const mode = app.querySelector('.planner-mode:not([hidden])');
     if (mode && mode.textContent !== before.mode) enter(mode);
-    // Opacity only: never turn a page into a containing block for fixed navigation.
-    if (before.initial) animate(app.querySelector('main'), [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
+    // Keep page entrance motion separate from the fixed navigation.
+    if (before.initial) enterPage(app);
   }
   document.addEventListener('cancel', event => {
-    if (!event.target.matches('.planner-dialog, .theme-dialog')) return;
+    if (!event.target.matches('.planner-dialog, .theme-dialog, .wb-dialog')) return;
     event.preventDefault();
     close(event.target);
   }, true);
-  window.WemoMotion = { open, close, dismiss, enter, capture, rendered };
+  // Native page transitions may be skipped by the browser during fast navigation.
+  // Observe the promises so an interrupted decorative transition never surfaces an error.
+  for (const event of ['pageswap','pagereveal']) window.addEventListener(event, e => {
+    e.viewTransition?.ready.catch(() => {});
+    e.viewTransition?.finished.catch(() => {});
+    e.viewTransition?.updateCallbackDone.catch(() => {});
+  });
+  window.WemoMotion = { open, close, dismiss, enter, enterPage, capture, rendered };
 })();
