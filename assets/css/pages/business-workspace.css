@@ -168,3 +168,22 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb-dialog::backdrop { background: var(--modal-backdrop); backdrop-filter: blur(5px); }
 @media (max-width: 360px) { .wb { --wb-space: 14px; } .wb-card { padding: 16px; } .wb-header .brand small { display: none; } .wb-tabs { gap: 0; } .wb-tabs button { padding-inline: 6px; font-size: 10px; } .wb-heading h1 { font-size: 25px; } }
 @media (prefers-reduced-motion: reduce) { .wb * { transition: none !important; } }
+/* Match the shared Georgian typeface, including elements with Latin heading fonts. */
+.wb[lang="ka"], .wb[lang="ka"] :is(h1,h2,input,select,textarea,button,.wb-revenue,.wb-revenue small,.wb-stat strong,.wb-header .brand small) { font-family: "Noto Sans Georgian", Inter, sans-serif; }
+.wb[lang="ka"] :is(h1,h2) { letter-spacing: -.02em; line-height: 1.4; }
+.wb[lang="ka"] .wb-welcome h1 { font-size: 29px; }
+.wb[lang="ka"] .wb-impact h2 { font-size: 27px; }
+.wb[lang="ka"] .wb-heading h1 { font-size: 25px; }
+.wb[lang="ka"] .wb-kicker { letter-spacing: .025em; }
+.wb[lang="ka"] .wb-tabs button { white-space: normal; min-width: 68px; }
+.wb-settings-controls { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+.wb-control { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 10px; min-width: 36px; min-height: 44px; padding: 6px; font-size: 11px !important; font-weight: 700 !important; }
+.wb-header { gap: 8px; }
+.wb-header .brand { font-size: 26px; }
+.wb-header .brand small { display: none; }
+.wb-header > .wb-text-button { justify-content: center; min-width: 30px; }
+.wb-header > .wb-text-button > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.wb-dialog [aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.wb[lang="ka"] .wb-features li { align-items: flex-start; }
+.wb[lang="ka"] .wb-features svg { margin-top: 3px; }
+@media (max-width: 360px) { .wb-header > .wb-pill { display: none; } .wb-header .brand { font-size: 23px; } }

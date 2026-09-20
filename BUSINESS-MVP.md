@@ -28,6 +28,7 @@ Open http://127.0.0.1:4173/profile.html. All pages should be served from the sam
 ## Implementation boundaries
 
 - `assets/js/business-store.js`: versioned local repository, sample fixtures, plan definitions, completeness calculation, and asynchronous AI provider contract.
+- `assets/js/business-i18n.js`: Georgian interface translations and locale helpers using the existing Wemo language preference.
 - `assets/js/business-workspace.js`: business routes, reusable cards/forms, event handling, validation, uploads, and owner/customer preview flows.
 - `assets/css/pages/business-workspace.css`: scoped styling using shared Wemo design tokens.
 - `assets/js/storage.js`: additive consumer discovery adapter for locally published owner content.
@@ -35,7 +36,7 @@ Open http://127.0.0.1:4173/profile.html. All pages should be served from the sam
 
 Data is saved under `wemo-business-v1` in localStorage. Image uploads support PNG, JPEG, and WebP up to 1 MB each; gallery images use URLs. Storage failures show a message instead of claiming the save succeeded.
 
-This is a single-business, browser-local MVP. It does not verify ownership, authenticate owners, sync across devices, send customer messages, process payments, or issue tax invoices. Publishing means visible within the same browser/origin. Plan prices, renewals, payment methods, invoices, and AI conversation responses are simulated. Discovery analytics are illustrative sample data in the demo and zero for new businesses; booking counts and completed value are derived from local requests. Availability is a per-booking guest limit, not a shared inventory calendar. The business workspace copy is English, with a bilingual Profile entry.
+This is a single-business, browser-local MVP. It does not verify ownership, authenticate owners, sync across devices, send customer messages, process payments, or issue tax invoices. Publishing means visible within the same browser/origin. Plan prices, renewals, payment methods, invoices, and AI conversation responses are simulated. Discovery analytics are illustrative sample data in the demo and zero for new businesses; booking counts and completed value are derived from local requests. Availability is a per-booking guest limit, not a shared inventory calendar. All business routes follow the shared English/Georgian language and light/dark settings. Georgian uses the existing Noto Sans Georgian font. Language and appearance controls are available in the business header; switching language preserves unsaved form drafts. User-entered business content stays in its original language.
 
 For production, replace the repository with an authenticated API, verify claims, store media in object storage, and connect analytics, notifications, and billing. Replace `WemoBusinessAI.respond({ field, answer, information })` with an AI service returning `{ field, value, reply }`; never put provider secrets in client code.
 
@@ -46,6 +47,7 @@ Tests use Playwright and Microsoft Edge in isolated browser contexts; they do no
 ```sh
 node tests/business-workflow.cjs
 node tests/business-edge-cases.cjs
+node tests/business-settings.cjs
 ```
 
 Playwright must be available through normal Node resolution or `NODE_PATH`. On this workspace it is available in the bundled Codex runtime. Tests cover the full workflow, consumer integration, state persistence, plan limits, claims, publish validation, booking transitions, uploads, expired dates, and layouts down to 320 px. Screenshots are written to `tests/business-*.png` for visual inspection.

@@ -7,7 +7,7 @@
     Pro: { price: 49, limit: 15, features: ['Everything in Free', '15 active listings', 'Detailed performance insights', 'Priority support'] },
     Premium: { price: 99, limit: 50, features: ['Everything in Pro', '50 active listings', 'Featured profile eligibility', 'Dedicated onboarding support'] }
   };
-  const blank = () => ({ version: 1, business: null, ai: {}, listings: [], bookings: [], activity: [], messages: [], plan: 'Free', invoices: [], settings: { accepting: 'yes', notice: '2', maxGuests: '12', policy: 'Cancel at least 24 hours before your visit.' }, billing: { email: '', name: '', method: 'No payment method' }, demo: false });
+  const blank = () => ({ version: 1, business: null, ai: {}, listings: [], bookings: [], activity: [], messages: [], plan: 'Free', invoices: [], settings: { accepting: 'yes', notice: '2', maxGuests: '12', policy: window.WemoBusinessI18n.t('Cancel at least 24 hours before your visit.') }, billing: { email: '', name: '', method: 'No payment method' }, demo: false });
   function read() { try { const saved = JSON.parse(localStorage.getItem(KEY)); return saved?.version === 1 ? { ...blank(), ...saved } : blank(); } catch { return blank(); } }
   function write(state) { localStorage.setItem(KEY, JSON.stringify(state)); }
   function dateAfter(days = 0) { const d = new Date(); d.setDate(d.getDate() + days); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
