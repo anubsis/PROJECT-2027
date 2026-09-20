@@ -22,6 +22,7 @@
     "Theme":"თემა", "Light":"ნათელი", "Dark":"მუქი", "Close theme selector":"თემის არჩევის დახურვა", "Choose appearance":"აირჩიეთ გაფორმება", "Language":"ენა", "name":"სახელი", "category":"კატეგორია", "description":"აღწერა", "address":"მისამართი", "phone":"ტელეფონი", "hours":"სამუშაო საათები", "cover":"გარეკანი"
   });
   Object.assign(ka, {"WEMO BUSINESS — DEMO INVOICE":"WEMO BUSINESS — დემო ანგარიში", "Not a tax invoice. No payment taken.":"არ არის საგადასახადო დოკუმენტი. თანხა არ ჩამოგჭრიათ.", "Invoice":"ანგარიში", "Business":"ბიზნესი", "Plan":"გეგმა", "Amount":"თანხა", "Cancel at least 24 hours before your visit.":"გააუქმეთ ვიზიტამდე მინიმუმ 24 საათით ადრე."});
+  Object.assign(ka, {"View in Atlas":"ნახვა ატლასში", "The business will review your request. Follow its status in Atlas.":"ბიზნესი განიხილავს თქვენს მოთხოვნას. სტატუსს თვალი ადევნეთ ატლასში."});
   const lang = () => window.WemoI18n.lang === 'ka' ? 'ka' : 'en';
   function t(value) {
     const text = String(value ?? '');

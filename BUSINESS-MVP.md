@@ -10,7 +10,7 @@ The business workspace reuses the existing Wemo shell, icons, fonts, and light/d
 2. Save the separate profile cards. Use **Preview on Wemo** to inspect your edits.
 3. Open **Wemo AI → Talk to Wemo AI**. Answers update the editable AI information and completeness score.
 4. Publish the business locally and create an offer, event, or experience in **Add to Wemo**.
-5. Open the public preview and request a booking. The same request appears in **Bookings**, where it can be confirmed, declined, completed, or cancelled.
+5. Open the public preview and request a booking. Choose **View in Atlas** to follow its Pending, Confirmed, Completed, or Cancelled status. Owner changes appear in Atlas automatically in the same browser; the same request is managed in business **Bookings**. Existing Atlas examples are labelled Demo.
 6. Inspect **Performance**, then switch plans in **Subscription** and download a simulated invoice from **Payments & billing**.
 
 Published businesses join existing consumer search. Active, unexpired events appear on Events; offers and experiences appear on Deals. These links open the owner's public preview. Unpublishing removes the local content on the next consumer page load.
@@ -48,6 +48,7 @@ Tests use Playwright and Microsoft Edge in isolated browser contexts; they do no
 node tests/business-workflow.cjs
 node tests/business-edge-cases.cjs
 node tests/business-settings.cjs
+node tests/atlas-booking-status.cjs
 ```
 
 Playwright must be available through normal Node resolution or `NODE_PATH`. On this workspace it is available in the bundled Codex runtime. Tests cover the full workflow, consumer integration, state persistence, plan limits, claims, publish validation, booking transitions, uploads, expired dates, and layouts down to 320 px. Screenshots are written to `tests/business-*.png` for visual inspection.

@@ -51,3 +51,11 @@
   .atlas-trip img { height: 100%; min-height: 142px; }
   .atlas-booking > b { display: none; }
 }
+/* Status remains visible on small screens and uses the shared light/dark palette. */
+.status-completed { background: var(--success-soft); color: var(--success); }
+.status-cancelled { background: var(--surface-2); color: var(--muted); }
+.atlas-booking > b { flex-shrink: 0; }
+@media (max-width: 350px) {
+  .atlas-booking { flex-wrap: wrap; }
+  .atlas-booking > b { display: inline-block; margin-left: 50px; }
+}

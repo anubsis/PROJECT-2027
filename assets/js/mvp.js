@@ -189,6 +189,30 @@
     return '<div class="atlas-section__head"><div><h2>' + title + '</h2><p>' + sub + '</p></div></div>';
   }
 
+  // Read the same booking records the owner manages; never copy their status into Atlas.
+  function atlasBookingCards(ctx, state = getState()) {
+    const ka = ctx.i18n.lang === 'ka';
+    const statuses = { New: 'pending', Upcoming: 'confirmed', Completed: 'completed', Cancelled: 'cancelled' };
+    const labels = ka
+      ? {pending:'მოლოდინში',confirmed:'დადასტურებული',completed:'დასრულებული',cancelled:'გაუქმებული',planned:'დაგეგმილი'}
+      : {pending:'Pending',confirmed:'Confirmed',completed:'Completed',cancelled:'Cancelled',planned:'Planned'};
+    let actual = [];
+    try {
+      const business = JSON.parse(localStorage.getItem('wemo-business-v1'));
+      if (business?.version === 1 && Array.isArray(business.bookings)) {
+        actual = business.bookings.filter(b => b && statuses[b.status] && (b.source === 'consumer' || (b.listingId && b.createdAt && typeof b.id === 'string' && !b.id.startsWith('sample-')))).map(b => ({
+          id:b.id, icon:'calendar', title:b.item, status:statuses[b.status], live:true,
+          meta:[business.business?.name, b.date, b.time, b.guests + (ka?' სტუმარი':' guests')].filter(Boolean).join(' · ')
+        }));
+      }
+    } catch { /* Missing local business data does not affect saved Atlas plans. */ }
+    const examples = (state.bookings || []).map(b => ({...b, meta:localized(b.meta, ctx.i18n.lang) + (ka?' · დემო':' · Demo')}));
+    return actual.concat(examples).map(b => {
+      const status = Object.hasOwn(labels,b.status) ? b.status : 'pending';
+      return '<article class="atlas-booking" data-booking-id="' + ctx.escapeHtml(b.id) + '"><span>' + ctx.icon(b.icon) + '</span><div><h3>' + ctx.escapeHtml(localized(b.title,ctx.i18n.lang)) + '</h3><p>' + ctx.escapeHtml(localized(b.meta,ctx.i18n.lang)) + '</p></div><b class="status-' + status + '">' + labels[status] + '</b></article>';
+    }).join('');
+  }
+
   function atlasPage(ctx) {
     const lang = ctx.i18n.lang;
     const c = copy[lang];
@@ -222,10 +246,8 @@
             '<article class="atlas-trip"><img src="', trip.image, '" alt=""><div><span>', trip.days, ' ', c.days, '</span><h3>', ctx.escapeHtml(localized(trip.title, lang)), '</h3><p>', ctx.escapeHtml(localized(trip.sub, lang)), '</p><small>', ctx.icon('calendar'), ctx.escapeHtml(localized(trip.dates, lang)), ' · ', trip.budget, '</small></div></article>'
           ].join('')).join(''), '</div>',
         '</section>',
-        '<section class="atlas-section" data-atlas-kind="bookings">', sectionTitle(c.bookings, c.bookingsSub),
-          '<div class="atlas-bookings">', state.bookings.map((booking) => [
-            '<article class="atlas-booking"><span>', ctx.icon(booking.icon), '</span><div><h3>', ctx.escapeHtml(localized(booking.title, lang)), '</h3><p>', ctx.escapeHtml(localized(booking.meta, lang)), '</p></div><b class="status-', booking.status, '">', c[booking.status], '</b></article>'
-          ].join('')).join(''), '</div>',
+        '<section class="atlas-section" data-atlas-kind="bookings">', sectionTitle(lang === 'ka' ? 'ჯავშნები' : 'Bookings', c.bookingsSub),
+          '<div class="atlas-bookings" aria-live="polite">', atlasBookingCards(ctx,state), '</div>',
         '</section>',
         '<section class="atlas-section" data-atlas-kind="places">', sectionTitle(c.places, c.placesSub),
           ideaCards.length ? '<div class="atlas-ideas">' + ideaCards.map((idea) => [
@@ -269,6 +291,22 @@
     }));
 
     if (page === 'atlas') {
+      if (!bind.atlasUpdatesBound) {
+        bind.atlasUpdatesBound = true;
+        const refresh = () => {
+          const list = document.querySelector('.atlas-bookings');
+          if (!list) return;
+          const html = atlasBookingCards({i18n:window.WemoI18n,icon:window.icon,escapeHtml:value=>String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))});
+          if (list.innerHTML !== html) list.innerHTML = html;
+        };
+        window.addEventListener('storage', e => { if (e.key === 'wemo-business-v1' || e.key === null) refresh(); });
+        window.addEventListener('pageshow', refresh);
+        window.addEventListener('focus', refresh);
+      }
+      if (location.hash === '#bookings') {
+        document.querySelectorAll('[data-atlas-filter]').forEach(b=>b.classList.toggle('active',b.dataset.atlasFilter==='bookings'));
+        document.querySelectorAll('[data-atlas-kind]').forEach(section=>{section.hidden=section.dataset.atlasKind!=='bookings';});
+      }
       document.querySelectorAll('[data-atlas-filter]').forEach((button) => button.addEventListener('click', () => {
         document.querySelectorAll('[data-atlas-filter]').forEach((item) => item.classList.toggle('active', item === button));
         document.querySelectorAll('[data-atlas-kind]').forEach((section) => { const wasHidden = section.hidden; section.hidden = button.dataset.atlasFilter !== 'all' && section.dataset.atlasKind !== button.dataset.atlasFilter; if (wasHidden && !section.hidden) window.WemoMotion.enter(section); });
