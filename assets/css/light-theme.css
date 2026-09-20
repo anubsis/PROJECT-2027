@@ -1,0 +1,164 @@
+/* Light-mode visual parity. All rules are theme-scoped; geometry and dark mode stay intact. */
+:root[data-theme="light"] {
+  --canvas: #e6e2ef;
+  --bg: #f7f5fc;
+  --surface: #f0ecf8;
+  --surface-2: #e8e1f4;
+  --surface-raised: #fff;
+  --input-bg: #fcfbff;
+  --text: #252035;
+  --muted: #625a73;
+  --accent: #5840bd;
+  --accent-ink: #fff;
+  --accent-soft: #e7dff9;
+  --accent-border-soft: #c9bce7;
+  --accent-border: #b2a0d9;
+  --accent-border-strong: #8065bb;
+  --accent-shadow: rgba(91, 62, 170, .24);
+  --gold: #795300;
+  --gold-ink: #fff;
+  --gold-soft: #f8eac5;
+  --gold-border: #d5b569;
+  --success: #17603d;
+  --success-soft: #d9efdf;
+  --success-border: #85b89a;
+  --line: #d2c9e2;
+  --control-bg: rgba(247, 243, 255, .94);
+  --pill-bg: #eae2f8;
+  --nav-bg: rgba(249, 246, 255, .88);
+  --nav-text: #554a6b;
+  --nav-border: #b6a6d1;
+  --nav-active: linear-gradient(135deg, #e2d6ff, #c9b4f1);
+  --nav-active-ink: #34234f;
+  --nav-shadow: 0 10px 32px rgba(58, 35, 100, .2), inset 0 1px 0 #fff;
+  --image-control-bg: rgba(255, 252, 255, .94);
+  --image-label-bg: rgba(255, 252, 255, .94);
+  --image-label-text: #49316d;
+  --modal-backdrop: rgba(37, 25, 58, .4);
+  --hero-base: #ebe2f7;
+  --hero-copy: #574c68;
+  --hero-stat-bg: rgba(255, 252, 255, .9);
+  --hero-stat-line: #c9bce1;
+  --feature-bg: linear-gradient(135deg, #f7f1ff, #e2d6f4);
+  --deal-bg: radial-gradient(circle at 92% 18%, #dfc4ef, transparent 55%), linear-gradient(130deg, #fff6e2, #eee2f8);
+  --profile-bg: radial-gradient(circle at 95% 0%, #d5c0f4, transparent 60%), linear-gradient(135deg, #f9f3ff, #e8def6);
+  --business-bg: radial-gradient(circle at 90% 0%, #f2d89e, transparent 58%), linear-gradient(135deg, #fff8e9, #eee3f8);
+  --body-copy: #51475f;
+  --amenity-text: #40334f;
+  --map-bg: #dce8ed;
+  --map-control-bg: rgba(253, 250, 255, .96);
+  --map-menu-bg: rgba(250, 247, 255, .96);
+  --map-control-line: #a99abb;
+  --map-sheet-bg: rgba(253, 250, 255, .96);
+  --shadow: 0 16px 36px rgba(59, 37, 95, .18), inset 0 1px 0 rgba(255, 255, 255, .9);
+  --shadow-sm: 0 5px 15px rgba(59, 37, 95, .13), inset 0 1px 0 rgba(255, 255, 255, .9);
+  --card-shadow: 0 7px 19px rgba(59, 37, 95, .12), inset 0 1px 0 rgba(255, 255, 255, .9);
+  --light-card: linear-gradient(145deg, #fff, #ede7f8);
+  --light-primary: linear-gradient(135deg, #6950ce, #5135b2);
+  --light-control-border: #9584af;
+}
+
+/* Filled surfaces, raised controls and explicit selected states. */
+:root[data-theme="light"] :is(.place-card, .atlas-trip, .atlas-booking, .atlas-idea, .atlas-history a, .setting, .benefit, .business-form, .ai-answer, .review, .offer-card, .event-mini, .planner-utility) {
+  background: var(--light-card);
+  border-color: var(--line);
+  box-shadow: var(--card-shadow);
+}
+:root[data-theme="light"] :is(.planner-intent, .ai-prompts button, .amenity-grid span, .contact-actions a) {
+  background: var(--light-card);
+  color: var(--text);
+  border-color: var(--accent-border-soft);
+  box-shadow: var(--card-shadow);
+}
+:root[data-theme="light"] :is(.icon-btn, .lang-button, .quick-action, .location-pill, .chip, .filter-button, .atlas-filters button, .planner-section__head a, .planner-option, .theme-dialog__options button) {
+  background: linear-gradient(145deg, #fcfaff, #e7dff5);
+  color: var(--accent);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-sm);
+}
+:root[data-theme="light"] :is(.primary, .ai-composer button, .map-search button, .chip.active, .filter-button.active, .atlas-filters button.active, .ai-save.saved) {
+  background: var(--light-primary);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 5px 14px rgba(78, 49, 151, .25), inset 0 1px 0 rgba(255, 255, 255, .2);
+}
+:root[data-theme="light"] :is(.secondary, .ai-save:not(.saved), .tag, .planner-mode) {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-border);
+}
+:root[data-theme="light"] :is(.planner-intent.active, .planner-option.active, .theme-dialog__options button[aria-pressed="true"]) {
+  background: var(--nav-active);
+  color: var(--nav-active-ink);
+  border-color: var(--accent-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+:root[data-theme="light"] .topbar {
+  background: linear-gradient(rgba(247, 245, 252, .97) 78%, rgba(247, 245, 252, .85));
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+:root[data-theme="light"] .bottom-nav {
+  background: var(--nav-bg);
+  border-color: var(--nav-border);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+}
+:root[data-theme="light"] :is(.planner-city-viewer, .profile-head, .business-hero, .deal-feature, .event-feature) { box-shadow: var(--card-shadow); border-color: var(--accent-border); }
+:root[data-theme="light"] .planner-city-viewer { background: radial-gradient(circle at 90% 35%, #d5c4ee, transparent 65%), linear-gradient(135deg, #f8f1ff, #e5d9f6); }
+:root[data-theme="light"] .planner-city-viewer__content small { color: #564369; }
+:root[data-theme="light"] .planner-city-viewer__map { --line: #b3a0cf; --accent-border-strong: #8b6cb6; }
+:root[data-theme="light"] .planner-search { border-color: var(--accent-border-strong); box-shadow: var(--shadow-sm); }
+:root[data-theme="light"] .planner-search input::placeholder { color: var(--nav-active-ink); opacity: 1; }
+:root[data-theme="light"] .planner-search button { background: var(--light-primary); color: #fff; box-shadow: 0 3px 9px var(--accent-shadow); }
+:root[data-theme="light"] .planner-intent__icon,
+:root[data-theme="light"] .ai-prompts button > span { background: #dfd3f5; color: #5335a5; box-shadow: inset 0 1px 0 #fff9; }
+:root[data-theme="light"] .planner-intent.active .planner-intent__icon { background: #fff; color: var(--accent); }
+:root[data-theme="light"] .empty { background: var(--light-card); border-color: var(--accent-border); }
+
+/* Form boundaries, placeholder legibility and keyboard focus. */
+:root[data-theme="light"] :is(.search, .ai-composer, .map-search, .business-form input, .business-form select, .business-form textarea, .form-grid input, .planner-custom-date input) {
+  background: var(--input-bg);
+  border-color: var(--light-control-border);
+  box-shadow: inset 0 2px 4px rgba(67, 41, 110, .05), 0 4px 12px rgba(67, 41, 110, .08);
+}
+:root[data-theme="light"] :is(input, textarea)::placeholder { color: var(--muted); opacity: 1; }
+:root[data-theme="light"] :is(.search, .ai-composer, .map-search, .planner-search):focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+:root[data-theme="light"] :is(button, a, input, textarea, select, summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+:root[data-theme="light"] :is(.theme-dialog, .planner-dialog, .modal-box) { border-color: var(--accent-border); box-shadow: var(--shadow); background: linear-gradient(155deg, #fff, #f1ebfa); }
+:root[data-theme="light"] .theme-dialog::backdrop { backdrop-filter: blur(5px); }
+
+/* Image overlays retain their dark scrim; light surfaces get dark foregrounds. */
+:root[data-theme="light"] .planner-place__badges svg { color: #ffdc81; }
+:root[data-theme="light"] .planner-save.saved { color: #e0d2ff; border-color: #dfd1ff; background: rgba(54, 30, 91, .88); }
+:root[data-theme="light"] .planner-place__content p { color: #eee9f6; }
+:root[data-theme="light"] :is(.pro-badge, .place-card--pro .place-tier, .offer-card > span) { background: linear-gradient(135deg, #ffe8a7, #edc56d); color: #543700; }
+:root[data-theme="light"] .place-card--pro { border-color: var(--gold-border); }
+:root[data-theme="light"] :is(.place-actions .icon-btn, .video-pill, .save-button) { background: var(--image-control-bg); border-color: var(--accent-border); box-shadow: var(--shadow-sm); backdrop-filter: blur(12px); }
+:root[data-theme="light"] :is(.place-actions .saved, .save-button.saved) { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+:root[data-theme="light"] .place-status :is(.open-status, .tag) { box-shadow: 0 2px 6px #25203514; }
+:root[data-theme="light"] .benefit > svg { color: var(--gold); }
+
+/* Map: repair white foregrounds inherited from dark mode on light glass. */
+:root[data-theme="light"] :is(.wemo-map, #wemo-leaflet-map) { background: var(--map-bg); }
+:root[data-theme="light"] :is(.map-layer-toggle, .map-priority-toggle, .map-layer-menu button, .map-priority-list button) {
+  background: var(--map-control-bg);
+  color: var(--accent);
+  border-color: var(--map-control-line);
+  box-shadow: var(--shadow-sm);
+}
+:root[data-theme="light"] :is(.map-layer-toggle[aria-expanded="true"], .map-priority-toggle[aria-expanded="true"], .map-layer-menu button.active, .map-priority-list button.selected) { background: var(--nav-active); color: var(--nav-active-ink); border-color: var(--accent-border-strong); }
+:root[data-theme="light"] .map-priority-list button.revealed span { background: var(--map-menu-bg); color: var(--text); border-color: var(--map-control-line); }
+:root[data-theme="light"] .map-layer-menu button span { color: var(--text); }
+:root[data-theme="light"] .map-sheet { background: var(--map-sheet-bg); border-color: var(--map-control-line); box-shadow: var(--shadow); }
+:root[data-theme="light"] :is(.map-place-card, .heat-context) { color: var(--text); }
+:root[data-theme="light"] :is(.map-place-card p, .heat-context p, .heat-legend) { color: var(--muted); }
+:root[data-theme="light"] .map-sheet__handle { background: #a699b9; }
+:root[data-theme="light"] .wemo-utility-marker { background: var(--accent); color: #fff; }
+@media (hover: hover) {
+  :root[data-theme="light"] :is(.planner-option, .setting, .icon-btn, .lang-button, .secondary, .ai-save:not(.saved), .planner-section__head a):hover { border-color: var(--accent); background: #e4d8f8; }
+  :root[data-theme="light"] :is(.primary, .ai-composer button):hover { background: linear-gradient(135deg, #5e42c0, #45299e); }
+}

@@ -1,0 +1,42 @@
+:root { --motion-ease: cubic-bezier(.22, 1, .36, 1); }
+/* Small tactile responses; individual transforms preserve each control's positioning. */
+:is(.planner-chip, .planner-intent, .planner-option, .ai-prompts button, .atlas-filters button, .map-categories button, .theme-dialog__options button, .planner-save, .ai-save, .desktop-preview-toggle) {
+  transition: scale 160ms var(--motion-ease), background-color 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 220ms ease;
+}
+:is(.planner-chip, .planner-intent, .planner-option, .ai-prompts button, .atlas-filters button, .map-categories button, .theme-dialog__options button, .planner-save, .ai-save, .desktop-preview-toggle):active { scale: .97; }
+:is(.primary, .secondary, .icon-btn, .lang-button, .bottom-nav a, .planner-search button, .ai-composer button) { transition: scale 160ms var(--motion-ease), background-color 180ms ease, color 180ms ease, box-shadow 220ms ease; }
+:is(.primary, .secondary, .icon-btn, .lang-button, .bottom-nav a, .planner-search button, .ai-composer button):active { scale: .97; }
+@media (hover: hover) and (pointer: fine) {
+  :is(.planner-intent, .planner-utility, .ai-prompts button) { transition: translate 220ms var(--motion-ease), box-shadow 220ms ease, border-color 180ms ease; }
+  :is(.planner-intent, .planner-utility, .ai-prompts button):hover { translate: 0 -2px; box-shadow: var(--shadow-sm); }
+}
+/* Native dialogs retain their focus trap throughout the short exit. */
+:is(.planner-dialog, .theme-dialog)[open]::backdrop { animation: wemo-backdrop-in 220ms ease both; }
+:is(.planner-dialog, .theme-dialog).motion-closing::backdrop { animation: wemo-backdrop-out 150ms ease both; }
+.modal { animation: wemo-fade-in 180ms ease both; }
+.modal-box { animation: wemo-sheet-in 280ms var(--motion-ease) both; }
+.toast { animation: wemo-rise-in 220ms var(--motion-ease) both; }
+.planner-custom-date:not([hidden]), .business-success { animation: wemo-rise-in 240ms var(--motion-ease) both; }
+[data-map-context] > * { animation: wemo-rise-in 240ms var(--motion-ease) both; }
+.faq[open] > :not(summary) { animation: wemo-rise-in 200ms var(--motion-ease) both; }
+.faq summary svg { transition: transform 200ms var(--motion-ease); }
+/* Let map menus finish their exit before becoming invisible. */
+.map-layer-menu { transition: max-height 280ms var(--motion-ease), opacity 180ms ease, transform 280ms var(--motion-ease), visibility 0s; }
+.map-layer-menu[hidden] { transition-delay: 0s, 0s, 0s, 280ms; }
+.desktop-phone:not([hidden]) { animation: wemo-fade-in 240ms ease both; }
+@keyframes wemo-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wemo-rise-in { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes wemo-sheet-in { from { opacity: 0; translate: 0 28px; } to { opacity: 1; translate: 0 0; } }
+@keyframes wemo-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wemo-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+/* Native cross-page fade where supported; navigation never waits for animation. */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: wemo-page-out 110ms ease both; }
+::view-transition-new(root) { animation: wemo-fade-in 180ms ease both; }
+@keyframes wemo-page-out { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  html, body, .shell { scroll-behavior: auto !important; }
+  body *, body *::before, body *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}

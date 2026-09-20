@@ -136,13 +136,13 @@
     const tier = place.isPro ? 'pro' : 'basic';
     return `
       <article class="place-card ${compact ? 'place-card--compact' : ''} place-card--${tier}">
-        <a class="place-card__image" href="${place.detailPage}?place=${place.id}" aria-label="${escapeHtml(name)}">
+        <a class="place-card__image" href="${place.ownerManaged ? 'business.html#public' : `${place.detailPage}?place=${place.id}`}" aria-label="${escapeHtml(name)}">
           <img src="${place.image}" alt="${escapeHtml(name)}">
           <span class="place-tier">${place.isPro ? 'Wemo Pro' : 'Basic'}</span>
         </a>
         <div class="place-card__body">
           <span class="tag">${text(place.category)}</span>
-          <a href="${place.detailPage}?place=${place.id}"><h3>${escapeHtml(name)}</h3></a>
+          <a href="${place.ownerManaged ? 'business.html#public' : `${place.detailPage}?place=${place.id}`}"><h3>${escapeHtml(name)}</h3></a>
           <p class="meta">${icon('pin')}${escapeHtml(location)}</p>
           <p class="rating"><span>★</span> ${place.rating} <small>(${place.reviews}) · ${place.price}</small></p>
         </div>
@@ -250,7 +250,18 @@
 
   function map() {
     const en = i18n.lang === 'en';
-    return `${topBar()}<main class="page utility-page map-page"><p class="eyebrow">BATUMI</p><h1 class="page-title">${text('mapTitle')}</h1><p class="page-subtitle">${en ? 'Places for today, and a live view of the shore.' : 'ადგილები დღისთვის და სანაპიროს ცოცხალი ხედი.'}</p><section class="wemo-map" aria-label="${en ? 'Interactive map of Batumi' : 'ბათუმის ინტერაქტიული რუკა'}"><div id="wemo-leaflet-map"></div><div class="map-layer-control"><button type="button" class="map-layer-toggle" data-map-layers aria-expanded="false">${icon('layers')}<span>${en ? 'Layers' : 'ფენები'}</span></button><div class="map-layer-menu" data-map-layer-menu hidden><button type="button" data-map-layer="places">${icon('map')}<span>${en ? 'Map' : 'რუკა'}</span><i></i></button><button type="button" data-map-layer="heat">${icon('sun')}<span>${en ? 'Beach heatmap' : 'პლაჟის დატვირთულობა'}</span><i></i></button></div></div><div class="map-sheet"><div class="map-sheet__handle"></div><div data-map-context></div></div></section></main>${renderNav()}`;
+    const mapCategories = [
+      ['all', 'grid', en ? 'All' : 'ყველა'], ['restaurants', 'utensils', en ? 'Food' : 'კვება'],
+      ['events', 'star', en ? 'Events' : 'გართობა'], ['activities', 'eye', en ? 'See' : 'სანახავი'],
+      ['hotels', 'bed', en ? 'Stay' : 'დარჩენა']
+    ];
+    const priorities = [
+      ['medical', 'medical', en ? 'Emergency & health' : 'სასწრაფო და ჯანმრთელობა'],
+      ['bank', 'bank', en ? 'ATM & banks' : 'ბანკები და ბანკომატები'],
+      ['transport', 'fuel', en ? 'Transport, fuel & charging' : 'ტრანსპორტი, საწვავი და დამუხტვა'],
+      ['toilet', 'toilet', en ? 'Public facilities' : 'საზოგადოებრივი სერვისები']
+    ];
+    return `<main class="map-page"><section class="map-discovery" aria-label="${en ? 'Search and map categories' : 'ძიება და რუკის კატეგორიები'}"><form class="map-search" data-map-search>${icon('search')}<input name="q" placeholder="${en ? 'Search this area' : 'მოძებნე ამ არეში'}" autocomplete="off"><button type="submit" aria-label="${en ? 'Search' : 'ძიება'}">${icon('arrow')}</button></form><div class="map-categories" role="group" aria-label="${en ? 'Categories' : 'კატეგორიები'}">${mapCategories.map(([key, iconName, label], index) => `<button type="button" class="${index === 0 ? 'active' : ''}" data-map-category="${key}">${icon(iconName)}<span>${label}</span></button>`).join('')}</div></section><section class="wemo-map" aria-label="${en ? 'Interactive map of Batumi' : 'ბათუმის ინტერაქტიული რუკა'}"><div id="wemo-leaflet-map"></div><div class="map-priority-control" data-priority-control><div class="map-priority-list" data-priority-list>${priorities.map(([key, iconName, label]) => `<button type="button" data-priority="${key}" aria-label="${label}" title="${label}">${icon(iconName)}<span>${label}</span></button>`).join('')}</div><button type="button" class="map-priority-toggle" data-priority-toggle aria-expanded="false" aria-label="${en ? 'Needed priorities' : 'საჭირო სერვისები'}">${icon('medical')}</button></div><div class="map-layer-control"><div class="map-layer-menu" data-map-layer-menu hidden><button type="button" data-map-layer="places" aria-label="${en ? 'Places map' : 'ადგილების რუკა'}">${icon('map')}<span>${en ? 'Places' : 'ადგილები'}</span></button><button type="button" data-map-layer="heat" aria-label="${en ? 'Beach heatmap' : 'პლაჟის დატვირთულობა'}">${icon('sun')}<span>${en ? 'Heatmap' : 'დატვირთულობა'}</span></button></div><button type="button" class="map-layer-toggle" data-map-layers aria-expanded="false" aria-label="${en ? 'Map layers' : 'რუკის ფენები'}">${icon('layers')}</button></div><div class="map-sheet"><div class="map-sheet__handle"></div><div data-map-context></div></div></section></main>${renderNav()}`;
   }
 
   function profile() {
@@ -260,10 +271,11 @@
     const lightLabel = i18n.lang === 'en' ? 'Light' : 'ნათელი';
     const darkLabel = i18n.lang === 'en' ? 'Dark' : 'მუქი';
     const currentTheme = document.documentElement.dataset.theme === 'light' ? lightLabel : darkLabel;
-    return `${topBar()}<main class="page utility-page"><section class="profile-head"><span class="profile-orb">W</span><div><p class="eyebrow">${i18n.lang === 'en' ? 'WEMO MEMBER' : 'WEMO წევრი'}</p><h1>${text('guest')}</h1><p>${i18n.lang === 'en' ? 'Plans, saved places and more.' : 'გეგმები, შენახული ადგილები და მეტი.'}</p></div><button type="button" class="primary" data-toast="Sign-in is a frontend placeholder">${text('join')}</button></section>${sectionHead(text('profileTitle'), null)}<div class="settings"><button type="button" class="setting" data-toast="Bookings will appear here"><span>${icon('calendar')}<b>${i18n.lang === 'en' ? 'My bookings' : 'ჩემი ჯავშნები'}</b><small>${i18n.lang === 'en' ? 'No upcoming plans' : 'მომავალი გეგმები არ არის'}</small></span>${icon('chevron')}</button><button type="button" class="setting theme-setting" data-theme-open aria-haspopup="dialog" aria-controls="theme-dialog"><span>${icon('sun')}<b>${themeLabel}</b><small>${themeHint}</small></span><span class="theme-setting__current"><small data-theme-current data-light-label="${lightLabel}" data-dark-label="${darkLabel}">${currentTheme}</small>${icon('chevron')}</span></button><button type="button" class="setting" data-language><span>${icon('globe')}<b>${i18n.lang === 'en' ? 'Language' : 'ენა'}</b><small>${language}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Notifications are a frontend placeholder"><span>${icon('bell')}<b>${i18n.lang === 'en' ? 'Notifications' : 'შეტყობინებები'}</b><small>${i18n.lang === 'en' ? 'Manage preferences' : 'პარამეტრების მართვა'}</small></span>${icon('chevron')}</button><a class="setting" href="business.html"><span>${icon('briefcase')}<b>${i18n.lang === 'en' ? 'Add your business' : 'დაამატეთ ბიზნესი'}</b><small>${i18n.lang === 'en' ? 'For owners and teams' : 'მფლობელებისა და გუნდებისთვის'}</small></span>${icon('chevron')}</a></div></main><dialog class="theme-dialog" id="theme-dialog" data-theme-dialog aria-labelledby="theme-dialog-title"><div class="theme-dialog__head"><h2 id="theme-dialog-title">${themeLabel}</h2><button type="button" class="theme-dialog__close" data-theme-close aria-label="${i18n.lang === 'en' ? 'Close theme selector' : 'თემის არჩევის დახურვა'}" autofocus>${icon('close')}</button></div><div class="theme-dialog__options" role="group" aria-label="${themeLabel}"><button type="button" data-theme-option="light" aria-pressed="false">${icon('sun')}<span>${lightLabel}</span></button><button type="button" data-theme-option="dark" aria-pressed="false">${icon('moon')}<span>${darkLabel}</span></button></div></dialog>${renderNav()}`;
+    return `${topBar()}<main class="page utility-page"><section class="profile-head"><span class="profile-orb">W</span><div><p class="eyebrow">${i18n.lang === 'en' ? 'WEMO MEMBER' : 'WEMO წევრი'}</p><h1>${text('guest')}</h1><p>${i18n.lang === 'en' ? 'Plans, saved places and more.' : 'გეგმები, შენახული ადგილები და მეტი.'}</p></div><button type="button" class="primary" data-toast="Sign-in is a frontend placeholder">${text('join')}</button></section>${sectionHead(text('profileTitle'), null)}<div class="settings"><button type="button" class="setting" data-toast="Bookings will appear here"><span>${icon('calendar')}<b>${i18n.lang === 'en' ? 'My bookings' : 'ჩემი ჯავშნები'}</b><small>${i18n.lang === 'en' ? 'No upcoming plans' : 'მომავალი გეგმები არ არის'}</small></span>${icon('chevron')}</button><button type="button" class="setting theme-setting" data-theme-open aria-haspopup="dialog" aria-controls="theme-dialog"><span>${icon('sun')}<b>${themeLabel}</b><small>${themeHint}</small></span><span class="theme-setting__current"><small data-theme-current data-light-label="${lightLabel}" data-dark-label="${darkLabel}">${currentTheme}</small>${icon('chevron')}</span></button><button type="button" class="setting" data-language><span>${icon('globe')}<b>${i18n.lang === 'en' ? 'Language' : 'ენა'}</b><small>${language}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Notifications are a frontend placeholder"><span>${icon('bell')}<b>${i18n.lang === 'en' ? 'Notifications' : 'შეტყობინებები'}</b><small>${i18n.lang === 'en' ? 'Manage preferences' : 'პარამეტრების მართვა'}</small></span>${icon('chevron')}</button><a class="setting" href="business.html"><span>${icon('briefcase')}<b>${i18n.lang === 'en' ? 'Wemo Business' : 'Wemo Business / ბიზნესისთვის'}</b><small>${i18n.lang === 'en' ? 'For owners and teams' : 'მფლობელებისა და გუნდებისთვის'}</small></span>${icon('chevron')}</a></div></main><dialog class="theme-dialog" id="theme-dialog" data-theme-dialog aria-labelledby="theme-dialog-title"><div class="theme-dialog__head"><h2 id="theme-dialog-title">${themeLabel}</h2><button type="button" class="theme-dialog__close" data-theme-close aria-label="${i18n.lang === 'en' ? 'Close theme selector' : 'თემის არჩევის დახურვა'}" autofocus>${icon('close')}</button></div><div class="theme-dialog__options" role="group" aria-label="${themeLabel}"><button type="button" data-theme-option="light" aria-pressed="false">${icon('sun')}<span>${lightLabel}</span></button><button type="button" data-theme-option="dark" aria-pressed="false">${icon('moon')}<span>${darkLabel}</span></button></div></dialog>${renderNav()}`;
   }
 
   function business() {
+    if (window.WemoBusiness) return window.WemoBusiness.render();
     const en = i18n.lang === 'en';
     return `${topBar()}<main class="page utility-page">
       <section class="business-hero"><p class="eyebrow">${en ? 'FOR BUSINESSES' : 'ბიზნესებისთვის'}</p><h1>${en ? 'Get found by every traveller in town.' : 'გახდით ხილული ყველა მოგზაურისთვის.'}</h1><p>${en ? "If your business isn't online yet, this is the fastest way to be. Free to list, no tech skills needed." : 'თუ თქვენი ბიზნესი ჯერ ონლაინ არ არის, ეს ყველაზე სწრაფი გზაა. დარეგისტრირება უფასოა და ტექნიკური ცოდნა არ სჭირდება.'}</p></section>
@@ -315,21 +327,26 @@
   }
 
   function collection(title, eyebrow) {
-    return `${topBar()}<main class="page utility-page"><p class="eyebrow">${eyebrow}</p><h1 class="page-title">${title}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'Fresh reasons to go out in Batumi.' : 'ახალი მიზეზები ბათუმში გასასვლელად.'}</p><section class="listing-grid">${places.slice(0, 4).map((place) => placeCard(place)).join('')}</section></main>${renderNav()}`;
+    return `${topBar()}<main class="page utility-page"><p class="eyebrow">${eyebrow}</p><h1 class="page-title">${title}</h1><p class="page-subtitle">${i18n.lang === 'en' ? 'Fresh reasons to go out in Batumi.' : 'ახალი მიზეზები ბათუმში გასასვლელად.'}</p><section class="listing-grid">${window.WemoOwnerContent?.cards(document.body.dataset.page) || ''}${places.slice(0, 4).map((place) => placeCard(place)).join('')}</section></main>${renderNav()}`;
   }
 
   function render() {
     const page = document.body.dataset.page;
     const app = $('#app');
+    const motionBefore = window.WemoMotion.capture(app);
     const output = page === 'home' ? home() : page === 'map' ? map() : page === 'wemo' ? window.WemoMvp.wemoPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'atlas' ? window.WemoMvp.atlasPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'business' ? business() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
     app.innerHTML = output;
     bind();
+    if (page === 'business' && window.WemoBusiness) window.WemoBusiness.bind();
+    window.WemoMotion.rendered(app, motionBefore);
     if (page === 'map') initializeMap();
     if (page === 'search') refreshSearch();
   }
 
   let activeMapLayer = 'places';
   let activeMapPlace = 'old-town-wine-house';
+  let activeMapCategory = 'all';
+  let activePriority = null;
   let wemoLeafletMap;
   let wemoMapLayers = [];
 
@@ -339,7 +356,7 @@
   function mapPlaces() {
     return (window.WEMO_BATUMI_MAP_PLACES || []).map((entry) => ({
       ...places.find((place) => place.id === entry.id), coordinates: entry.coordinates
-    })).filter((place) => place.id);
+    })).filter((place) => place.id && (activeMapCategory === 'all' || place.category === activeMapCategory));
   }
 
   function clearMapLayers() {
@@ -357,7 +374,7 @@
     }
     const place = mapPlaces().find((item) => item.id === activeMapPlace) || mapPlaces()[0];
     if (!place) return;
-    target.innerHTML = `<a class="map-place-card" href="${place.detailPage}?place=${place.id}"><img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}"><div><span class="tag">${text(place.category)}</span><h2>${escapeHtml(place.name[i18n.lang])}</h2><p>${place.rating} ★ · ${escapeHtml(place.location[i18n.lang])}</p></div>${icon('arrow')}</a>`;
+    target.innerHTML = `<a class="map-place-card" href="${place.ownerManaged ? 'business.html#public' : `${place.detailPage}?place=${place.id}`}"><img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}"><div><span class="tag">${text(place.category)}</span><h2>${escapeHtml(place.name[i18n.lang])}</h2><p>${place.rating} ★ · ${escapeHtml(place.location[i18n.lang])}</p></div>${icon('arrow')}</a>`;
   }
 
   function setMapLayer(layer) {
@@ -369,8 +386,6 @@
   }
 
   function renderPlacesMap() {
-    wemoLeafletMap.setMaxBounds(batumiBounds);
-    wemoLeafletMap.setMinZoom(12);
     wemoLeafletMap.setMaxZoom(18);
     wemoLeafletMap.fitBounds(batumiBounds, { padding: [28, 28] });
     const placeLayer = window.L.layerGroup().addTo(wemoLeafletMap);
@@ -379,6 +394,16 @@
       marker.on('click', () => { activeMapPlace = place.id; renderPlacesMap(); mapContext(); });
     });
     wemoMapLayers.push(placeLayer);
+    if (activePriority) {
+      const priorityIcons = { medical: 'medical', bank: 'bank', transport: 'fuel', toilet: 'toilet' };
+      const priorityPoints = {
+        medical: [[41.6497, 41.6358], [41.6439, 41.6218]], bank: [[41.6515, 41.6388], [41.6472, 41.6296]],
+        transport: [[41.6554, 41.6428], [41.6388, 41.6119]], toilet: [[41.6531, 41.6324], [41.6462, 41.6251]]
+      };
+      const utilityLayer = window.L.layerGroup().addTo(wemoLeafletMap);
+      (priorityPoints[activePriority] || []).forEach((coordinates) => window.L.marker(coordinates, { icon: window.L.divIcon({ className: 'wemo-utility-marker-wrap', html: `<span class="wemo-utility-marker">${icon(priorityIcons[activePriority])}</span>`, iconSize: [38, 38], iconAnchor: [19, 19] }) }).addTo(utilityLayer));
+      wemoMapLayers.push(utilityLayer);
+    }
   }
 
   function interpolateCoastline(points, steps = 8) {
@@ -412,10 +437,7 @@
     const sensorPoint = batumiCoast[Math.floor(batumiCoast.length * 0.55)];
     const sensor = window.L.marker(sensorPoint, { icon: window.L.divIcon({ className: 'wemo-heat-sensor-wrap', html: '<span class="wemo-heat-sensor"></span>', iconSize: [24, 24], iconAnchor: [12, 12] }) }).addTo(wemoLeafletMap);
     wemoMapLayers.push(heatLayer, shorelines, sensor);
-    wemoLeafletMap.setMaxBounds(georgiaCoastBounds);
     wemoLeafletMap.setMaxZoom(16);
-    const coastZoom = wemoLeafletMap.getBoundsZoom(georgiaCoastBounds, true, [32, 32]);
-    wemoLeafletMap.setMinZoom(coastZoom);
     wemoLeafletMap.fitBounds(georgiaCoastBounds, { padding: [32, 32] });
   }
 
@@ -426,10 +448,22 @@
       return;
     }
     if (wemoLeafletMap) wemoLeafletMap.remove();
-    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25, maxBoundsViscosity: 1 });
+    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25 });
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(wemoLeafletMap);
     window.L.control.zoom({ position: 'bottomright' }).addTo(wemoLeafletMap);
     setMapLayer(activeMapLayer);
+    wemoLeafletMap.on('click', () => {
+      const control = $('[data-priority-control]');
+      if (activePriority && control) {
+        control.classList.remove('open');
+        control.classList.add('compact');
+        $('[data-priority-toggle]')?.setAttribute('aria-expanded', 'false');
+        $$('[data-priority]').forEach((button) => button.classList.remove('revealed'));
+      }
+      const layerMenu = $('[data-map-layer-menu]');
+      if (layerMenu) layerMenu.hidden = true;
+      $('[data-map-layers]')?.setAttribute('aria-expanded', 'false');
+    });
     requestAnimationFrame(() => wemoLeafletMap.invalidateSize());
   }
 
@@ -441,35 +475,32 @@
   }
 
   function toast(message) {
-    const notice = document.createElement('div'); notice.className = 'toast'; notice.textContent = message; document.body.append(notice); setTimeout(() => notice.remove(), 2600);
+    const notice = document.createElement('div'); notice.className = 'toast'; notice.textContent = message; document.body.append(notice); setTimeout(() => window.WemoMotion.dismiss(notice), 2600);
   }
 
   function booking(name) {
     const modal = document.createElement('div'); modal.className = 'modal';
     modal.innerHTML = `<form class="modal-box" data-book-form><button type="button" class="modal-close" data-close aria-label="Close">${icon('close')}</button><p class="eyebrow">${i18n.lang === 'en' ? 'BOOKING REQUEST' : 'დაჯავშნის მოთხოვნა'}</p><h2>${escapeHtml(name)}</h2><div class="form-grid"><label>Date<input required type="date"></label><label>Time<input required type="time"></label><label>${i18n.lang === 'en' ? 'People' : 'სტუმრები'}<input required type="number" min="1" value="2"></label><label>${i18n.lang === 'en' ? 'Name' : 'სახელი'}<input required></label></div><button class="primary">${i18n.lang === 'en' ? 'Save demo request' : 'დემო მოთხოვნის შენახვა'}</button></form>`;
     document.body.append(modal);
-    modal.addEventListener('click', (event) => { if (event.target === modal || event.target.closest('[data-close]')) modal.remove(); });
-    $('[data-book-form]', modal).addEventListener('submit', (event) => { event.preventDefault(); const requests = JSON.parse(localStorage.getItem('wemo-booking-requests') || '[]'); requests.push({ name, date: Date.now() }); localStorage.setItem('wemo-booking-requests', JSON.stringify(requests)); modal.remove(); toast(text('requestSaved')); });
+    modal.addEventListener('click', (event) => { if (event.target === modal || event.target.closest('[data-close]')) window.WemoMotion.dismiss(modal); });
+    $('[data-book-form]', modal).addEventListener('submit', (event) => { event.preventDefault(); const requests = JSON.parse(localStorage.getItem('wemo-booking-requests') || '[]'); requests.push({ name, date: Date.now() }); localStorage.setItem('wemo-booking-requests', JSON.stringify(requests)); window.WemoMotion.dismiss(modal); toast(text('requestSaved')); });
   }
 
   function bind() {
     window.WemoTheme?.bind();
     $$('[data-planner-open]').forEach((button) => button.addEventListener('click', () => {
       const dialog = document.getElementById(button.dataset.plannerOpen);
-      if (typeof dialog?.showModal === 'function') dialog.showModal();
-      else dialog?.setAttribute('open', '');
+      window.WemoMotion.open(dialog);
     }));
     $$('[data-planner-dialog]').forEach((dialog) => dialog.addEventListener('click', (event) => {
       if (event.target !== dialog) return;
-      if (typeof dialog.close === 'function') dialog.close();
-      else dialog.removeAttribute('open');
+      window.WemoMotion.close(dialog);
     }));
-    $$('[data-planner-close]').forEach((button) => button.addEventListener('click', () => button.closest('dialog')?.close()));
+    $$('[data-planner-close]').forEach((button) => button.addEventListener('click', () => window.WemoMotion.close(button.closest('dialog'))));
     $$('[data-planner-date]').forEach((button) => button.addEventListener('click', () => {
       homePlanner.date = button.dataset.plannerDate;
       homePlanner.customDate = '';
-      button.closest('dialog')?.close();
-      render();
+      window.WemoMotion.close(button.closest('dialog'), render);
     }));
     $('[data-planner-custom]')?.addEventListener('click', () => {
       $('[data-planner-custom-box]').hidden = false;
@@ -480,13 +511,11 @@
       if (!input?.value) { input?.focus(); return; }
       homePlanner.date = 'custom';
       homePlanner.customDate = input.value;
-      input.closest('dialog')?.close();
-      render();
+      window.WemoMotion.close(input.closest('dialog'), render);
     });
     $$('[data-planner-city]').forEach((button) => button.addEventListener('click', () => {
       homePlanner.city = button.dataset.plannerCity;
-      button.closest('dialog')?.close();
-      render();
+      window.WemoMotion.close(button.closest('dialog'), render);
     }));
     $$('[data-planner-intent]').forEach((button) => button.addEventListener('click', () => {
       homePlanner.intent = homePlanner.intent === button.dataset.plannerIntent ? null : button.dataset.plannerIntent;
@@ -494,9 +523,27 @@
     }));
     $$('[data-save]').forEach((button) => button.addEventListener('click', () => { WemoStorage.toggle(button.dataset.save); render(); }));
     window.WemoMvp?.bind(document.body.dataset.page, { render, toast });
-    $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.className = `lang-${i18n.lang}`; render(); }));
+    $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.classList.remove('lang-en', 'lang-ka'); document.body.classList.add(`lang-${i18n.lang}`); render(); }));
     $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
     $('[data-search]')?.addEventListener('submit', (event) => { event.preventDefault(); location.href = `search-results.html?q=${encodeURIComponent(new FormData(event.currentTarget).get('q').trim())}`; });
+    $('[data-map-search]')?.addEventListener('submit', (event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('q').trim(); if (query) location.href = `search-results.html?q=${encodeURIComponent(query)}`; });
+    $$('[data-map-category]').forEach((button) => button.addEventListener('click', () => {
+      activeMapCategory = button.dataset.mapCategory;
+      $$('[data-map-category]').forEach((item) => item.classList.toggle('active', item === button));
+      setMapLayer('places');
+    }));
+    $('[data-priority-toggle]')?.addEventListener('click', (event) => {
+      const control = $('[data-priority-control]');
+      const open = !control.classList.contains('open');
+      control.classList.toggle('open', open);
+      control.classList.remove('compact');
+      event.currentTarget.setAttribute('aria-expanded', String(open));
+    });
+    $$('[data-priority]').forEach((button) => button.addEventListener('click', () => {
+      activePriority = button.dataset.priority;
+      $$('[data-priority]').forEach((item) => { item.classList.toggle('selected', item === button); item.classList.toggle('revealed', item === button); });
+      if (activeMapLayer !== 'places') setMapLayer('places'); else { clearMapLayers(); renderPlacesMap(); }
+    }));
     $('[data-map-layers]')?.addEventListener('click', (event) => {
       const menu = $('[data-map-layer-menu]');
       const open = menu.hidden;
@@ -523,6 +570,6 @@
   }
 
   document.documentElement.lang = i18n.lang;
-  document.body.className = `lang-${i18n.lang}`;
+  document.body.classList.remove('lang-en', 'lang-ka'); document.body.classList.add(`lang-${i18n.lang}`);
   render();
 })();

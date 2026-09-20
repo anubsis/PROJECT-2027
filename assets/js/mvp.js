@@ -249,7 +249,7 @@
       document.querySelectorAll('[data-ai-prompt]').forEach((button) => button.addEventListener('click', () => {
         addConversation(button.dataset.aiPrompt);
         actions.render();
-        requestAnimationFrame(() => document.querySelector('.ai-thread')?.scrollIntoView({ block: 'end', behavior: 'smooth' }));
+        requestAnimationFrame(() => document.querySelector('.ai-thread')?.scrollIntoView({ block: 'end', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
       }));
       document.querySelector('[data-ai-chat]')?.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -258,7 +258,7 @@
         if (!value) { input.focus(); return; }
         addConversation('custom', value);
         actions.render();
-        requestAnimationFrame(() => document.querySelector('.ai-thread')?.scrollIntoView({ block: 'end', behavior: 'smooth' }));
+        requestAnimationFrame(() => document.querySelector('.ai-thread')?.scrollIntoView({ block: 'end', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
       });
     }
 
@@ -271,7 +271,7 @@
     if (page === 'atlas') {
       document.querySelectorAll('[data-atlas-filter]').forEach((button) => button.addEventListener('click', () => {
         document.querySelectorAll('[data-atlas-filter]').forEach((item) => item.classList.toggle('active', item === button));
-        document.querySelectorAll('[data-atlas-kind]').forEach((section) => { section.hidden = button.dataset.atlasFilter !== 'all' && section.dataset.atlasKind !== button.dataset.atlasFilter; });
+        document.querySelectorAll('[data-atlas-kind]').forEach((section) => { const wasHidden = section.hidden; section.hidden = button.dataset.atlasFilter !== 'all' && section.dataset.atlasKind !== button.dataset.atlasFilter; if (wasHidden && !section.hidden) window.WemoMotion.enter(section); });
       }));
     }
   }
