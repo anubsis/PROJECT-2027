@@ -4,7 +4,13 @@ Open **Profile → Wemo Business / ბიზნესისთვის**. Choos
 
 The business workspace reuses the existing Wemo shell, icons, fonts, and light/dark theme tokens. It does not require a build step or additional runtime dependencies.
 
-## Try the complete workflow
+## Account-backed local server
+
+Run `npm start` for real local accounts, account-owned businesses, shared discovery, cross-browser customer bookings and account-synced saved places. See [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md) for setup, the full two-account workflow and limitations. Public profiles expose only business/listing information; private billing details, interview history and booking lists require the owner account. Claims, payments and AI responses remain prototypes.
+
+The browser-only behavior described below is preserved when serving the project statically. Demo data is not automatically imported into accounts.
+
+## Try the static demo workflow
 
 1. Create or claim a business, or explore the sample courtyard restaurant.
 2. Save the separate profile cards. Use **Preview on Wemo** to inspect your edits.
@@ -36,7 +42,7 @@ Open http://127.0.0.1:4173/profile.html. All pages should be served from the sam
 
 Data is saved under `wemo-business-v1` in localStorage. Image uploads support PNG, JPEG, and WebP up to 1 MB each; gallery images use URLs. Storage failures show a message instead of claiming the save succeeded.
 
-This is a single-business, browser-local MVP. It does not verify ownership, authenticate owners, sync across devices, send customer messages, process payments, or issue tax invoices. Publishing means visible within the same browser/origin. Plan prices, renewals, payment methods, invoices, and AI conversation responses are simulated. Discovery analytics are illustrative sample data in the demo and zero for new businesses; booking counts and completed value are derived from local requests. Availability is a per-booking guest limit, not a shared inventory calendar. All business routes follow the shared English/Georgian language and light/dark settings. Georgian uses the existing Noto Sans Georgian font. Language and appearance controls are available in the business header; switching language preserves unsaved form drafts. User-entered business content stays in its original language.
+This is a single-business, browser-local MVP. It does not verify ownership, authenticate owners, sync across devices, send customer messages, process payments, or issue tax invoices. Publishing means visible within the same browser/origin. Plan prices, renewals, payment methods, invoices, and AI conversation responses are simulated. Discovery analytics are illustrative sample data in the demo and zero for new businesses; booking counts and completed value are derived from local requests. Availability is a per-booking guest limit, not a shared inventory calendar. All business routes follow the shared English/Georgian language and light/dark settings. Georgian uses BPG Nino Mtavruli, and English uses Plus Jakarta Sans. Language and appearance controls are available in the business header; switching language preserves unsaved form drafts. User-entered business content stays in its original language.
 
 For production, replace the repository with an authenticated API, verify claims, store media in object storage, and connect analytics, notifications, and billing. Replace `WemoBusinessAI.respond({ field, answer, information })` with an AI service returning `{ field, value, reply }`; never put provider secrets in client code.
 

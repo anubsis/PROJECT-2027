@@ -1,9 +1,10 @@
-window.WemoStorage={key:'wemo-saved-places',get(){try{return JSON.parse(localStorage.getItem(this.key))||[]}catch{return[]}},has(id){return this.get().includes(id)},toggle(id){let a=this.get();a=a.includes(id)?a.filter(x=>x!==id):[...a,id];localStorage.setItem(this.key,JSON.stringify(a));return a.includes(id)}};
+window.WemoStorage={key:'wemo-saved-places',get(){if(window.WemoBackend?.enabled)return [...WemoBackend.saved];try{return JSON.parse(localStorage.getItem(this.key))||[]}catch{return[]}},has(id){return this.get().includes(id)},toggle(id){if(window.WemoBackend?.enabled)return WemoBackend.toggleSaved(id);let a=this.get();a=a.includes(id)?a.filter(x=>x!==id):[...a,id];localStorage.setItem(this.key,JSON.stringify(a));return a.includes(id)}};
 
 /* Locally published owner content joins existing discovery without replacing seed places. */
 (() => {
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const validImage = value => { try { if (/^data:image\/(png|jpeg|webp);base64,/.test(value)) return value; const url = new URL(value); return ['https:','http:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } };
+  if(window.WemoBackend?.enabled)return;
   try {
     const state = JSON.parse(localStorage.getItem('wemo-business-v1'));
     const b = state?.business;

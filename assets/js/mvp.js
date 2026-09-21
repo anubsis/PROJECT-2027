@@ -95,18 +95,19 @@
     };
   }
 
+  const stateKey=()=>window.WemoBackend?.enabled?KEY+'-account-'+(WemoBackend.user?.id||'guest'):KEY;
   function getState() {
     try {
-      const stored = JSON.parse(localStorage.getItem(KEY));
+      const stored = JSON.parse(localStorage.getItem(stateKey()));
       if (stored && Array.isArray(stored.conversations) && Array.isArray(stored.trips)) return stored;
     } catch {}
     const fresh = seed();
-    localStorage.setItem(KEY, JSON.stringify(fresh));
+    localStorage.setItem(stateKey(), JSON.stringify(fresh));
     return fresh;
   }
 
   function setState(state) {
-    localStorage.setItem(KEY, JSON.stringify(state));
+    localStorage.setItem(stateKey(), JSON.stringify(state));
   }
 
   function addConversation(key, customText) {
@@ -198,15 +199,15 @@
       : {pending:'Pending',confirmed:'Confirmed',completed:'Completed',cancelled:'Cancelled',planned:'Planned'};
     let actual = [];
     try {
-      const business = JSON.parse(localStorage.getItem('wemo-business-v1'));
+      const business = window.WemoBackend?.enabled ? {version:1,bookings:WemoBackend.bookings} : JSON.parse(localStorage.getItem('wemo-business-v1'));
       if (business?.version === 1 && Array.isArray(business.bookings)) {
         actual = business.bookings.filter(b => b && statuses[b.status] && (b.source === 'consumer' || (b.listingId && b.createdAt && typeof b.id === 'string' && !b.id.startsWith('sample-')))).map(b => ({
           id:b.id, icon:'calendar', title:b.item, status:statuses[b.status], live:true,
-          meta:[business.business?.name, b.date, b.time, b.guests + (ka?' სტუმარი':' guests')].filter(Boolean).join(' · ')
+          meta:[b.businessName || business.business?.name, b.date, b.time, b.guests + (ka?' სტუმარი':' guests')].filter(Boolean).join(' · ')
         }));
       }
     } catch { /* Missing local business data does not affect saved Atlas plans. */ }
-    const examples = (state.bookings || []).map(b => ({...b, meta:localized(b.meta, ctx.i18n.lang) + (ka?' · დემო':' · Demo')}));
+    const examples = (window.WemoBackend?.enabled ? [] : (state.bookings || [])).map(b => ({...b, meta:localized(b.meta, ctx.i18n.lang) + (ka?' · დემო':' · Demo')}));
     return actual.concat(examples).map(b => {
       const status = Object.hasOwn(labels,b.status) ? b.status : 'pending';
       return '<article class="atlas-booking" data-booking-id="' + ctx.escapeHtml(b.id) + '"><span>' + ctx.icon(b.icon) + '</span><div><h3>' + ctx.escapeHtml(localized(b.title,ctx.i18n.lang)) + '</h3><p>' + ctx.escapeHtml(localized(b.meta,ctx.i18n.lang)) + '</p></div><b class="status-' + status + '">' + labels[status] + '</b></article>';
@@ -301,6 +302,7 @@
         };
         window.addEventListener('storage', e => { if (e.key === 'wemo-business-v1' || e.key === null) refresh(); });
         window.addEventListener('pageshow', refresh);
+        window.addEventListener('wemo:sync', refresh);
         window.addEventListener('focus', refresh);
       }
       if (location.hash === '#bookings') {

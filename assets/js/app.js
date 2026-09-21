@@ -136,15 +136,15 @@
     const tier = place.isPro ? 'pro' : 'basic';
     return `
       <article class="place-card ${compact ? 'place-card--compact' : ''} place-card--${tier}">
-        <a class="place-card__image" href="${place.ownerManaged ? 'business.html#public' : `${place.detailPage}?place=${place.id}`}" aria-label="${escapeHtml(name)}">
-          <img src="${place.image}" alt="${escapeHtml(name)}">
+        <a class="place-card__image" href="${place.ownerManaged ? place.detailPage : `${place.detailPage}?place=${place.id}`}" aria-label="${escapeHtml(name)}">
+          <img src="${escapeHtml(place.image)}" alt="${escapeHtml(name)}">
           <span class="place-tier">${place.isPro ? 'Wemo Pro' : 'Basic'}</span>
         </a>
         <div class="place-card__body">
-          <span class="tag">${text(place.category)}</span>
-          <a href="${place.ownerManaged ? 'business.html#public' : `${place.detailPage}?place=${place.id}`}"><h3>${escapeHtml(name)}</h3></a>
+          <span class="tag">${escapeHtml(text(place.category))}</span>
+          <a href="${place.ownerManaged ? place.detailPage : `${place.detailPage}?place=${place.id}`}"><h3>${escapeHtml(name)}</h3></a>
           <p class="meta">${icon('pin')}${escapeHtml(location)}</p>
-          <p class="rating"><span>★</span> ${place.rating} <small>(${place.reviews}) · ${place.price}</small></p>
+          <p class="rating"><span>★</span> ${place.rating} <small>(${place.reviews}) · ${escapeHtml(place.price)}</small></p>
         </div>
         <button type="button" class="save-button ${saved ? 'saved' : ''}" data-save="${place.id}" aria-label="Save ${escapeHtml(name)}">
           ${icon('heart')}
@@ -194,7 +194,7 @@
     const subtitle = place.sub[i18n.lang];
     const saved = WemoStorage.has(place.id);
     return `<article class="${compact ? 'planner-place planner-place--compact' : 'planner-place planner-place--feature'}"${compact ? ' role="listitem"' : ''}>
-      <img src="${place.image}" alt="${escapeHtml(name)}">
+      <img src="${escapeHtml(place.image)}" alt="${escapeHtml(name)}">
       <div class="planner-place__badges"><span>${icon('star')}${place.rating}</span>${place.open && homePlanner.date === 'today' ? `<span class="is-open">${homeT('open')}</span>` : ''}</div>
       <button type="button" class="planner-save ${saved ? 'saved' : ''}" data-save="${place.id}" aria-label="${saved ? homeT('saved') : homeT('save')} ${escapeHtml(name)}" aria-pressed="${saved}">${icon('heart')}</button>
       <a class="planner-place__content" href="${place.href}"><h3>${escapeHtml(name)}</h3><p>${icon('pin')}${escapeHtml(subtitle)}</p></a>
@@ -271,7 +271,7 @@
     const lightLabel = i18n.lang === 'en' ? 'Light' : 'ნათელი';
     const darkLabel = i18n.lang === 'en' ? 'Dark' : 'მუქი';
     const currentTheme = document.documentElement.dataset.theme === 'light' ? lightLabel : darkLabel;
-    return `${topBar()}<main class="page utility-page"><section class="profile-head"><span class="profile-orb">W</span><div><p class="eyebrow">${i18n.lang === 'en' ? 'WEMO MEMBER' : 'WEMO წევრი'}</p><h1>${text('guest')}</h1><p>${i18n.lang === 'en' ? 'Plans, saved places and more.' : 'გეგმები, შენახული ადგილები და მეტი.'}</p></div><button type="button" class="primary" data-toast="Sign-in is a frontend placeholder">${text('join')}</button></section>${sectionHead(text('profileTitle'), null)}<div class="settings"><button type="button" class="setting" data-toast="Bookings will appear here"><span>${icon('calendar')}<b>${i18n.lang === 'en' ? 'My bookings' : 'ჩემი ჯავშნები'}</b><small>${i18n.lang === 'en' ? 'No upcoming plans' : 'მომავალი გეგმები არ არის'}</small></span>${icon('chevron')}</button><button type="button" class="setting theme-setting" data-theme-open aria-haspopup="dialog" aria-controls="theme-dialog"><span>${icon('sun')}<b>${themeLabel}</b><small>${themeHint}</small></span><span class="theme-setting__current"><small data-theme-current data-light-label="${lightLabel}" data-dark-label="${darkLabel}">${currentTheme}</small>${icon('chevron')}</span></button><button type="button" class="setting" data-language><span>${icon('globe')}<b>${i18n.lang === 'en' ? 'Language' : 'ენა'}</b><small>${language}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Notifications are a frontend placeholder"><span>${icon('bell')}<b>${i18n.lang === 'en' ? 'Notifications' : 'შეტყობინებები'}</b><small>${i18n.lang === 'en' ? 'Manage preferences' : 'პარამეტრების მართვა'}</small></span>${icon('chevron')}</button><a class="setting" href="business.html"><span>${icon('briefcase')}<b>${i18n.lang === 'en' ? 'Wemo Business' : 'Wemo Business / ბიზნესისთვის'}</b><small>${i18n.lang === 'en' ? 'For owners and teams' : 'მფლობელებისა და გუნდებისთვის'}</small></span>${icon('chevron')}</a></div></main><dialog class="theme-dialog" id="theme-dialog" data-theme-dialog aria-labelledby="theme-dialog-title"><div class="theme-dialog__head"><h2 id="theme-dialog-title">${themeLabel}</h2><button type="button" class="theme-dialog__close" data-theme-close aria-label="${i18n.lang === 'en' ? 'Close theme selector' : 'თემის არჩევის დახურვა'}" autofocus>${icon('close')}</button></div><div class="theme-dialog__options" role="group" aria-label="${themeLabel}"><button type="button" data-theme-option="light" aria-pressed="false">${icon('sun')}<span>${lightLabel}</span></button><button type="button" data-theme-option="dark" aria-pressed="false">${icon('moon')}<span>${darkLabel}</span></button></div></dialog>${renderNav()}`;
+    return `${topBar()}<main class="page utility-page">${window.WemoBackend?.enabled ? window.WemoAccount.panel() : `<section class="profile-head"><span class="profile-orb">W</span><div><p class="eyebrow">${i18n.lang === 'en' ? 'WEMO MEMBER' : 'WEMO წევრი'}</p><h1>${text('guest')}</h1><p>${i18n.lang === 'en' ? 'Plans, saved places and more.' : 'გეგმები, შენახული ადგილები და მეტი.'}</p></div><button type="button" class="primary" data-toast="Sign-in is a frontend placeholder">${text('join')}</button></section>`}${sectionHead(text('profileTitle'), null)}<div class="settings"><a class="setting" href="atlas.html#bookings"><span>${icon('calendar')}<b>${i18n.lang === 'en' ? 'My bookings' : 'ჩემი ჯავშნები'}</b><small>${window.WemoBackend?.enabled?(i18n.lang==='en'?'Track requests and confirmations':'მოთხოვნები და დადასტურებები'):(i18n.lang === 'en' ? 'No upcoming plans' : 'მომავალი გეგმები არ არის')}</small></span>${icon('chevron')}</a><button type="button" class="setting theme-setting" data-theme-open aria-haspopup="dialog" aria-controls="theme-dialog"><span>${icon('sun')}<b>${themeLabel}</b><small>${themeHint}</small></span><span class="theme-setting__current"><small data-theme-current data-light-label="${lightLabel}" data-dark-label="${darkLabel}">${currentTheme}</small>${icon('chevron')}</span></button><button type="button" class="setting" data-language><span>${icon('globe')}<b>${i18n.lang === 'en' ? 'Language' : 'ენა'}</b><small>${language}</small></span>${icon('chevron')}</button><button type="button" class="setting" data-toast="Notifications are a frontend placeholder"><span>${icon('bell')}<b>${i18n.lang === 'en' ? 'Notifications' : 'შეტყობინებები'}</b><small>${i18n.lang === 'en' ? 'Manage preferences' : 'პარამეტრების მართვა'}</small></span>${icon('chevron')}</button><a class="setting" href="business.html"><span>${icon('briefcase')}<b>${i18n.lang === 'en' ? 'Wemo Business' : 'Wemo Business / ბიზნესისთვის'}</b><small>${i18n.lang === 'en' ? 'For owners and teams' : 'მფლობელებისა და გუნდებისთვის'}</small></span>${icon('chevron')}</a></div></main><dialog class="theme-dialog" id="theme-dialog" data-theme-dialog aria-labelledby="theme-dialog-title"><div class="theme-dialog__head"><h2 id="theme-dialog-title">${themeLabel}</h2><button type="button" class="theme-dialog__close" data-theme-close aria-label="${i18n.lang === 'en' ? 'Close theme selector' : 'თემის არჩევის დახურვა'}" autofocus>${icon('close')}</button></div><div class="theme-dialog__options" role="group" aria-label="${themeLabel}"><button type="button" data-theme-option="light" aria-pressed="false">${icon('sun')}<span>${lightLabel}</span></button><button type="button" data-theme-option="dark" aria-pressed="false">${icon('moon')}<span>${darkLabel}</span></button></div></dialog>${renderNav()}`;
   }
 
   function business() {
@@ -309,11 +309,11 @@
     const name = place.name[i18n.lang];
     const locationName = place.location[i18n.lang];
     return `${topBar()}<main class="place-page">
-      <section class="place-hero ${pro ? 'place-hero--pro' : ''}"><img src="${place.image}" alt="${escapeHtml(name)}"><div class="place-hero__wash"></div><div class="place-actions"><button type="button" class="icon-btn" data-back aria-label="Back">${icon('back')}</button><div><button type="button" class="icon-btn" data-share data-title="${escapeHtml(name)}" aria-label="Share">${icon('share')}</button><button type="button" class="icon-btn ${WemoStorage.has(place.id) ? 'saved' : ''}" data-save="${place.id}" aria-label="Save">${icon('heart')}</button></div></div>${pro ? `<span class="pro-badge">${icon('spark')} Wemo Pro</span><button type="button" class="video-pill" data-toast="Video tour is a demo feature">${icon('play')} ${i18n.lang === 'en' ? 'Watch the vibe' : 'ვიდეო ტური'}</button>` : ''}</section>
-      <section class="place-content"><div class="place-status"><span class="open-status"><i></i>${place.isOpen ? text('open') : (i18n.lang === 'en' ? 'Closed now' : 'დახურულია')}</span><span class="tag">${text(place.category)}</span></div><div class="place-title"><div><h1>${escapeHtml(name)}</h1><p>${icon('pin')}${escapeHtml(locationName)}</p></div><b>${place.price}</b></div><div class="rating-board"><div><strong>${place.rating}</strong><span>★★★★★</span><small>${place.reviews} ${i18n.lang === 'en' ? 'reviews' : 'შეფასება'}</small></div><i></i><div><strong>${place.isOpen ? '12–23' : '12–00'}</strong><small>${i18n.lang === 'en' ? 'today' : 'დღეს'}</small></div><i></i><div><strong>2 km</strong><small>${i18n.lang === 'en' ? 'from centre' : 'ცენტრიდან'}</small></div></div>
+      <section class="place-hero ${pro ? 'place-hero--pro' : ''}"><img src="${escapeHtml(place.image)}" alt="${escapeHtml(name)}"><div class="place-hero__wash"></div><div class="place-actions"><button type="button" class="icon-btn" data-back aria-label="Back">${icon('back')}</button><div><button type="button" class="icon-btn" data-share data-title="${escapeHtml(name)}" aria-label="Share">${icon('share')}</button><button type="button" class="icon-btn ${WemoStorage.has(place.id) ? 'saved' : ''}" data-save="${place.id}" aria-label="Save">${icon('heart')}</button></div></div>${pro ? `<span class="pro-badge">${icon('spark')} Wemo Pro</span><button type="button" class="video-pill" data-toast="Video tour is a demo feature">${icon('play')} ${i18n.lang === 'en' ? 'Watch the vibe' : 'ვიდეო ტური'}</button>` : ''}</section>
+      <section class="place-content"><div class="place-status"><span class="open-status"><i></i>${place.isOpen ? text('open') : (i18n.lang === 'en' ? 'Closed now' : 'დახურულია')}</span><span class="tag">${escapeHtml(text(place.category))}</span></div><div class="place-title"><div><h1>${escapeHtml(name)}</h1><p>${icon('pin')}${escapeHtml(locationName)}</p></div><b>${escapeHtml(place.price)}</b></div><div class="rating-board"><div><strong>${place.rating}</strong><span>★★★★★</span><small>${place.reviews} ${i18n.lang === 'en' ? 'reviews' : 'შეფასება'}</small></div><i></i><div><strong>${place.isOpen ? '12–23' : '12–00'}</strong><small>${i18n.lang === 'en' ? 'today' : 'დღეს'}</small></div><i></i><div><strong>2 km</strong><small>${i18n.lang === 'en' ? 'from centre' : 'ცენტრიდან'}</small></div></div>
       <section class="detail-section"><h2>${i18n.lang === 'en' ? 'About' : 'შესახებ'}</h2><p>${i18n.lang === 'en' ? (pro ? 'An all-day beachfront escape for slow lunches, sunset music and the kind of evenings that carry on.' : 'A welcoming Old Batumi table for traditional Georgian dishes and small-batch wines.') : (pro ? 'პრემიუმ სანაპირო ადგილი მთელი დღის მენიუთი, მზის ჩასვლის მუსიკით და მარტივი დაჯავშნით.' : 'მყუდრო სივრცე ძველ ბათუმში ქართული კერძებითა და ღვინით.')}</p></section>
       <section class="detail-section"><h2>${i18n.lang === 'en' ? 'Good to know' : 'სასარგებლო ინფორმაცია'}</h2><div class="amenity-grid"><span>${icon('wifi')}Wi‑Fi</span><span>${icon('sun')} ${i18n.lang === 'en' ? 'Outdoor seating' : 'ღია სივრცე'}</span><span>${icon('card')} ${i18n.lang === 'en' ? 'Card payment' : 'ბარათით გადახდა'}</span><span>${icon('users')} ${i18n.lang === 'en' ? 'Groups welcome' : 'ჯგუფებისთვის'}</span>${pro ? `<span>${icon('music')} ${i18n.lang === 'en' ? 'Live music' : 'ცოცხალი მუსიკა'}</span><span>${icon('camera')} ${i18n.lang === 'en' ? 'Photo spots' : 'ფოტო ზონა'}</span>` : ''}</div></section>
-      <section class="detail-section"><div class="section-head"><h2>${pro ? (i18n.lang === 'en' ? 'The atmosphere' : 'ატმოსფერო') : (i18n.lang === 'en' ? 'A few photos' : 'რამდენიმე ფოტო')}</h2></div><div class="photo-gallery"><img src="${place.image}" alt=""><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=500&q=80" alt=""><img src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?auto=format&fit=crop&w=500&q=80" alt=""></div></section>
+      <section class="detail-section"><div class="section-head"><h2>${pro ? (i18n.lang === 'en' ? 'The atmosphere' : 'ატმოსფერო') : (i18n.lang === 'en' ? 'A few photos' : 'რამდენიმე ფოტო')}</h2></div><div class="photo-gallery"><img src="${escapeHtml(place.image)}" alt=""><img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=500&q=80" alt=""><img src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?auto=format&fit=crop&w=500&q=80" alt=""></div></section>
       ${pro ? proSections(place) : basicSections(place)}</section>
     </main><div class="sticky-cta"><button type="button" class="quick-action" data-share aria-label="Share">${icon('share')}</button><button type="button" class="primary" data-book="${escapeHtml(name)}">${text('book')}</button></div>`;
   }
@@ -334,13 +334,14 @@
     const page = document.body.dataset.page;
     const app = $('#app');
     const motionBefore = window.WemoMotion.capture(app);
-    const output = page === 'home' ? home() : page === 'map' ? map() : page === 'wemo' ? window.WemoMvp.wemoPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'atlas' ? window.WemoMvp.atlasPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'business' ? business() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
+    const output = page === 'account' ? window.WemoAccount.render() : page === 'home' ? home() : page === 'map' ? map() : page === 'wemo' ? window.WemoMvp.wemoPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'atlas' ? window.WemoMvp.atlasPage({ i18n, icon, escapeHtml, topBar, renderNav }) : page === 'profile' ? profile() : page === 'place' ? detail() : page === 'business' ? business() : page === 'search' ? collection(i18n.lang === 'en' ? 'Search results' : 'ძიების შედეგები', i18n.lang === 'en' ? 'SEARCH' : 'ძიება') : page === 'events' ? collection(text('events'), 'WHAT’S ON') : collection(i18n.lang === 'en' ? 'Local deals' : 'შეთავაზებები', 'WEMO WEEKEND');
     app.innerHTML = output;
+    if (page === 'search') refreshSearch();
     bind();
+    window.WemoAccount?.bind(render);
     if (page === 'business' && window.WemoBusiness) window.WemoBusiness.bind();
     window.WemoMotion.rendered(app, motionBefore);
     if (page === 'map') initializeMap();
-    if (page === 'search') refreshSearch();
   }
 
   let activeMapLayer = 'places';
@@ -374,7 +375,7 @@
     }
     const place = mapPlaces().find((item) => item.id === activeMapPlace) || mapPlaces()[0];
     if (!place) return;
-    target.innerHTML = `<a class="map-place-card" href="${place.ownerManaged ? 'business.html#public' : `${place.detailPage}?place=${place.id}`}"><img src="${place.image}" alt="${escapeHtml(place.name[i18n.lang])}"><div><span class="tag">${text(place.category)}</span><h2>${escapeHtml(place.name[i18n.lang])}</h2><p>${place.rating} ★ · ${escapeHtml(place.location[i18n.lang])}</p></div>${icon('arrow')}</a>`;
+    target.innerHTML = `<a class="map-place-card" href="${place.ownerManaged ? place.detailPage : `${place.detailPage}?place=${place.id}`}"><img src="${escapeHtml(place.image)}" alt="${escapeHtml(place.name[i18n.lang])}"><div><span class="tag">${escapeHtml(text(place.category))}</span><h2>${escapeHtml(place.name[i18n.lang])}</h2><p>${place.rating} ★ · ${escapeHtml(place.location[i18n.lang])}</p></div>${icon('arrow')}</a>`;
   }
 
   function setMapLayer(layer) {
@@ -479,6 +480,7 @@
   }
 
   function booking(name) {
+    if(window.WemoBackend?.enabled){toast(i18n.lang==='ka'?'ეს საჩვენებელი ადგილია. დაჯავშნეთ ანგარიშით გამოქვეყნებული ბიზნესის შეთავაზება.':'This is an example place. Book an offer from an account-published business.');return;}
     const modal = document.createElement('div'); modal.className = 'modal';
     modal.innerHTML = `<form class="modal-box" data-book-form><button type="button" class="modal-close" data-close aria-label="Close">${icon('close')}</button><p class="eyebrow">${i18n.lang === 'en' ? 'BOOKING REQUEST' : 'დაჯავშნის მოთხოვნა'}</p><h2>${escapeHtml(name)}</h2><div class="form-grid"><label>Date<input required type="date"></label><label>Time<input required type="time"></label><label>${i18n.lang === 'en' ? 'People' : 'სტუმრები'}<input required type="number" min="1" value="2"></label><label>${i18n.lang === 'en' ? 'Name' : 'სახელი'}<input required></label></div><button class="primary">${i18n.lang === 'en' ? 'Save demo request' : 'დემო მოთხოვნის შენახვა'}</button></form>`;
     document.body.append(modal);
@@ -521,7 +523,7 @@
       homePlanner.intent = homePlanner.intent === button.dataset.plannerIntent ? null : button.dataset.plannerIntent;
       render();
     }));
-    $$('[data-save]').forEach((button) => button.addEventListener('click', () => { WemoStorage.toggle(button.dataset.save); render(); }));
+    $$('[data-save]').forEach((button) => button.addEventListener('click', async () => { button.disabled=true; try { await WemoStorage.toggle(button.dataset.save); render(); } catch(e) { toast(window.WemoAccount.message(e)); button.disabled=false; } }));
     window.WemoMvp?.bind(document.body.dataset.page, { render, toast });
     $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.classList.remove('lang-en', 'lang-ka'); document.body.classList.add(`lang-${i18n.lang}`); render(); }));
     $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
@@ -571,5 +573,10 @@
 
   document.documentElement.lang = i18n.lang;
   document.body.classList.remove('lang-en', 'lang-ka'); document.body.classList.add(`lang-${i18n.lang}`);
-  render();
+  const start=()=>{window.WemoBusiness?.hydrate();render();};
+  if(window.WemoBackend?.enabled){
+    window.WemoBackend.ready.then(start).catch(error=>{const app=document.getElementById('app');app.innerHTML='<main class="page account-page"><h1>Wemo</h1><p>'+escapeHtml(window.WemoAccount.message(error))+'</p><button class="primary" data-retry>'+ (i18n.lang==='ka'?'ხელახლა ცდა':'Try again')+'</button></main>';app.querySelector('[data-retry]').onclick=()=>location.reload();});
+    window.addEventListener('wemo:sync',event=>{if(event.detail.accountChanged&&document.querySelector('main')){window.WemoBusiness?.hydrate();render();}});
+    window.addEventListener('wemo:connection',event=>{let notice=document.querySelector('.connection-notice');if(event.detail.ok){notice?.remove();return;}if(!notice){notice=document.createElement('p');notice.className='connection-notice';notice.setAttribute('role','status');document.body.append(notice);}notice.textContent=window.WemoAccount.message({code:'offline'});});
+  }else start();
 })();

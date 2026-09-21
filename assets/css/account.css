@@ -1,0 +1,18 @@
+.account-page { padding-top: 36px; }
+.account-page h1 { font-size: 30px; line-height: 1.3; letter-spacing: -.035em; }
+.account-page > p { color: var(--muted); line-height: 1.7; }
+.account-page form { display: grid; gap: 18px; }
+.account-page label { display: grid; gap: 8px; font-weight: 600; }
+.account-page input { min-width: 0; width: 100%; min-height: 50px; border-radius: 14px; padding: 12px; border: 1px solid var(--line); background: var(--input-bg); color: var(--text); }
+.account-page small { color: var(--muted); line-height: 1.6; }
+.account-tabs { display: flex; gap: 8px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; margin: 24px 0; }
+.account-tabs button { flex: 1; border: 0; min-height: 46px; border-radius: 12px; background: transparent; color: var(--muted); padding: 8px; }
+.account-tabs button[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
+.account-feedback { color: var(--text); font-size: 13px; line-height: 1.6; margin: 0; }
+.account-feedback:empty { display: none; }
+.profile-head .account-feedback { grid-column: 1/-1; }
+.account-back { display: block; margin-top: 24px; text-align: center; color: var(--muted); }
+.account-page .profile-head { margin-bottom: 24px; }
+.connection-notice { position: fixed; z-index: 200; left: 16px; right: 16px; bottom: 105px; max-width: 390px; margin: auto; padding: 14px; background: var(--surface-raised); color: var(--text); border: 1px solid var(--accent-border); border-radius: 14px; box-shadow: var(--shadow); font-size: 12px; }
+.profile-head [data-account-logout] { grid-column: 1 / -1; }
+.profile-head > div { min-width: 0; overflow-wrap: anywhere; }

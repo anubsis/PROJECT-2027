@@ -5,6 +5,12 @@ Internal product prototype.
 
 This repository contains UI experiments, design concepts, and frontend prototypes for a location-based mobile application.
 
+## Run the working local app
+
+With Node.js 22.13+ installed, run `npm start` and open http://localhost:4173. No package installation or external database is needed. Accounts, saved places, owned businesses and customer bookings persist in a local SQLite database.
+
+See [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md) for the two-browser customer/owner workflow, same-Wi-Fi phone testing, data storage and remaining prototype features.
+
 ## Status
 
 🚧 Work in Progress
