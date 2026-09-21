@@ -1,6 +1,6 @@
 .business-hero { position: relative; padding: 24px 20px; margin-bottom: 4px; overflow: hidden; border: 1px solid rgba(232,196,104,0.3); border-radius: var(--r-lg); background: radial-gradient(circle at 88% 6%, rgba(232,196,104,0.18), transparent 34%), linear-gradient(135deg, #251f38, #171824); }
 .business-hero .eyebrow { color: var(--gold); }
-.business-hero h1 { margin: 0; font: 800 26px/1.08 Syne, Inter, sans-serif; letter-spacing: -0.05em; }
+.business-hero h1 { margin: 0; font: 800 26px/1.08 var(--font-ui); letter-spacing: -0.05em; }
 .business-hero p { margin: 9px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 
 .benefit-list { display: grid; gap: 10px; margin: 18px 0 26px; }

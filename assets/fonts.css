@@ -1,1 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap');
+
+/* Self-hosted variable family: one English typeface for UI, body and headings. */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url('fonts/plus-jakarta-sans/normal.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url('fonts/plus-jakarta-sans/italic.woff2') format('woff2');
+  font-style: italic;
+  font-weight: 200 800;
+  font-display: swap;
+}
+:root {
+  --font-en: "Plus Jakarta Sans", "Noto Sans Georgian", sans-serif;
+  --font-ka: "Noto Sans Georgian", "Plus Jakarta Sans", sans-serif;
+  --font-ui: var(--font-en);
+  font-family: var(--font-ui);
+}
+.lang-en, [lang="en"] { --font-ui: var(--font-en); }
+.lang-ka, [lang="ka"] { --font-ui: var(--font-ka); }
+/* Native controls and map library labels must follow the same language font. */
+button, input, textarea, select { font-family: inherit; }
+.leaflet-container, .leaflet-tooltip, .leaflet-popup-content, .leaflet-control, svg text { font-family: var(--font-ui); }

@@ -6,8 +6,8 @@
 .planner-hero { padding: 27px 4px 24px; }
 .planner-kicker { display: flex; align-items: center; gap: 8px; margin: 0 0 13px; color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .11em; }
 .planner-kicker i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
-.planner-question { max-width: 390px; margin: 0; font: 800 30px/1.45 "Noto Sans Georgian", Inter, sans-serif; letter-spacing: -.055em; }
-.lang-en .planner-question { font-family: Syne, Inter, sans-serif; line-height: 1.22; }
+.planner-question { max-width: 390px; margin: 0; font: 800 30px/1.45 var(--font-ui); letter-spacing: -.055em; }
+.lang-en .planner-question { font-family: var(--font-ui); line-height: 1.22; }
 .planner-chip { display: inline-flex; min-height: 43px; align-items: center; gap: 5px; padding: 3px 13px 5px; vertical-align: 1px; border: 1px solid var(--accent-border); border-radius: 999px; background: var(--nav-active); color: var(--nav-active-ink); box-shadow: 0 8px 18px var(--accent-shadow); font: inherit; line-height: 1; }
 .planner-chip svg { width: 15px; height: 15px; stroke-width: 2.2; }
 .planner-copy { max-width: 355px; margin: 17px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
@@ -37,8 +37,8 @@
 
 .planner-section { margin-top: 39px; }
 .planner-section__head { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
-.planner-section__head h2 { margin: 0; font: 800 19px/1.2 Syne, "Noto Sans Georgian", sans-serif; letter-spacing: -.04em; }
-.lang-ka .planner-section__head h2 { font-family: "Noto Sans Georgian", Inter, sans-serif; letter-spacing: -.02em; }
+.planner-section__head h2 { margin: 0; font: 800 19px/1.2 var(--font-ui); letter-spacing: -.04em; }
+.lang-ka .planner-section__head h2 { font-family: var(--font-ui); letter-spacing: -.02em; }
 .planner-section__head p { margin: 5px 0 0; color: var(--muted); font-size: 10px; }
 .planner-section__head a { display: inline-flex; flex: none; align-items: center; gap: 4px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--accent); font-size: 10px; font-weight: 800; }
 .planner-section__head a svg { width: 13px; }

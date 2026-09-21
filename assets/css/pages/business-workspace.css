@@ -15,7 +15,7 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb h2 { font-size: 16px; line-height: 1.4; font-weight: 700; letter-spacing: -.025em; }
 .wb-header { display: flex; align-items: center; gap: 12px; padding: 20px var(--wb-space) 16px; border-bottom: 1px solid var(--line); }
 .wb-header .brand { display: inline-flex; align-items: baseline; gap: 0; font-size: 29px; margin-right: auto; }
-.wb-header .brand small { margin-left: 8px; font: 500 12px Inter, sans-serif; letter-spacing: -.02em; color: var(--muted); }
+.wb-header .brand small { margin-left: 8px; font: 500 12px var(--font-ui); letter-spacing: -.02em; color: var(--muted); }
 .wb-back { width: 30px; min-height: 44px; display: grid; place-items: center; color: var(--text); }
 .wb-nav { display: flex; gap: 7px; overflow-x: auto; padding: 12px var(--wb-space); scrollbar-width: thin; scrollbar-color: var(--line) transparent; border-bottom: 1px solid var(--line); }
 .wb-nav a { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; min-height: 40px; border-radius: 11px; padding: 9px 12px; color: var(--muted); font-size: 12px; }
@@ -26,7 +26,7 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb-environment { display: flex; gap: 6px; align-items: center; padding: 14px 0 0; font-size: 10px; }
 .wb-environment svg { width: 13px; height: 13px; }
 .wb-heading { padding: 14px 0 4px; }
-.wb-heading h1 { font: 750 27px/1.17 Syne, Inter, sans-serif; letter-spacing: -.045em; max-width: 330px; }
+.wb-heading h1 { font: 750 27px/1.17 var(--font-ui); letter-spacing: -.045em; max-width: 330px; }
 .wb-heading p { margin-top: 10px; font-size: 12px; line-height: 1.65; }
 .wb-card { padding: 20px; border-radius: 21px; border: 1px solid var(--line); background: var(--surface); overflow: hidden; }
 .wb-card > h2 { margin-bottom: 14px; }
@@ -55,11 +55,11 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb-good { background: var(--success-soft); color: var(--success); }
 .wb-kicker { font-size: 9px; font-weight: 700; letter-spacing: .1em; color: var(--muted); }
 .wb-business-identity { display: flex; align-items: center; gap: 13px; margin: 20px 0 24px; }
-.wb-business-identity h1 { font: 750 21px/1.25 Syne, Inter, sans-serif; letter-spacing: -.035em; margin: 5px 0 8px; }
+.wb-business-identity h1 { font: 750 21px/1.25 var(--font-ui); letter-spacing: -.035em; margin: 5px 0 8px; }
 .wb-avatar { width: 59px; height: 66px; object-fit: cover; border-radius: 15px; flex-shrink: 0; }
 .wb-impact { position: relative; padding: 24px; border: 1px solid var(--accent-border); border-radius: 23px; background: radial-gradient(ellipse at 110% 0%,var(--accent-soft),transparent 70%),var(--surface); overflow: hidden; }
 .wb-impact .wb-kicker, .wb-impact > .wb-row > svg { color: var(--accent); }
-.wb-impact h2 { font: 750 30px/1.1 Syne,Inter,sans-serif; letter-spacing: -.05em; margin: 20px 0 16px; }
+.wb-impact h2 { font: 750 30px/1.1 var(--font-ui); letter-spacing: -.05em; margin: 20px 0 16px; }
 .wb-impact > p { font-size: 12px; }
 .wb-impact p strong { color: var(--text); }
 .wb-impact > a { display: inline-flex; gap: 8px; align-items: center; color: var(--accent); margin-top: 22px; font-size: 12px; font-weight: 650; }
@@ -67,7 +67,7 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .wb-stat { display: grid; grid-template-columns: 1fr auto; border: 1px solid var(--line); border-radius: 17px; background: var(--surface); padding: 16px; gap: 5px; }
 .wb-stat svg { grid-column: 2; grid-row: 1; color: var(--muted); width: 17px; }
-.wb-stat strong { grid-column: 1; grid-row: 1; font: 700 25px/1.15 Inter,sans-serif; letter-spacing: -.04em; }
+.wb-stat strong { grid-column: 1; grid-row: 1; font: 700 25px/1.15 var(--font-ui); letter-spacing: -.04em; }
 .wb-stat span { grid-column: 1/-1; font-size: 10px; color: var(--muted); }
 .wb-section-head { padding: 7px 0 0; }
 .wb-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -128,8 +128,8 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb-empty > svg { width: 32px; height: 32px; color: var(--accent); margin-bottom: 18px; }
 .wb-empty p { margin: 10px 0 20px; }
 .wb-empty .wb-button { margin: 5px; }
-.wb-revenue { font: 700 38px/1.2 Inter,sans-serif; letter-spacing: -.05em; margin: 15px 0; }
-.wb-revenue small { display: block; font: 400 11px/1.5 Inter,sans-serif; letter-spacing: 0; margin-top: 5px; }
+.wb-revenue { font: 700 38px/1.2 var(--font-ui); letter-spacing: -.05em; margin: 15px 0; }
+.wb-revenue small { display: block; font: 400 11px/1.5 var(--font-ui); letter-spacing: 0; margin-top: 5px; }
 .wb-chart { display: flex; align-items: flex-end; height: 150px; gap: 10px; padding: 0 3px 22px; margin: 20px 0 15px; border-bottom: 1px solid var(--line); }
 .wb-chart > div { height: 100%; flex: 1; display: flex; align-items: flex-end; position: relative; }
 .wb-chart span { width: 100%; height: max(2px,var(--bar)); background: var(--accent); opacity: .75; border-radius: 6px 6px 0 0; }
@@ -143,14 +143,14 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb-features svg { width: 15px; height: 15px; color: var(--accent); }
 .wb-plan-featured > .wb-button { width: 100%; }
 .wb-public-cover { width: 100%; height: 235px; object-fit: cover; border-radius: 22px; }
-.wb-public-title h1 { font: 750 29px/1.15 Syne,Inter,sans-serif; letter-spacing: -.04em; margin: 12px 0; }
+.wb-public-title h1 { font: 750 29px/1.15 var(--font-ui); letter-spacing: -.04em; margin: 12px 0; }
 .wb-public-title p { font-size: 12px; }
 .wb-public-title svg { width: 14px; margin-right: 4px; }
 .wb-preview-note { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--muted); padding-top: 14px; }
 .wb-gallery { display: flex; gap: 10px; overflow-x: auto; }
 .wb-gallery img { width: 150px; height: 130px; border-radius: 12px; object-fit: cover; }
 .wb-welcome { padding: 33px 0 12px; }
-.wb-welcome h1 { font: 750 34px/1.1 Syne,Inter,sans-serif; letter-spacing: -.055em; margin: 18px 0; }
+.wb-welcome h1 { font: 750 34px/1.1 var(--font-ui); letter-spacing: -.055em; margin: 18px 0; }
 .wb-welcome > p:not(.wb-kicker) { font-size: 13px; line-height: 1.8; }
 .wb-welcome .wb-stack { margin-top: 26px; }
 .wb-welcome-features { display: grid; gap: 18px; margin: 30px 0; padding: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -169,7 +169,7 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 @media (max-width: 360px) { .wb { --wb-space: 14px; } .wb-card { padding: 16px; } .wb-header .brand small { display: none; } .wb-tabs { gap: 0; } .wb-tabs button { padding-inline: 6px; font-size: 10px; } .wb-heading h1 { font-size: 25px; } }
 @media (prefers-reduced-motion: reduce) { .wb * { transition: none !important; } }
 /* Match the shared Georgian typeface, including elements with Latin heading fonts. */
-.wb[lang="ka"], .wb[lang="ka"] :is(h1,h2,input,select,textarea,button,.wb-revenue,.wb-revenue small,.wb-stat strong,.wb-header .brand small) { font-family: "Noto Sans Georgian", Inter, sans-serif; }
+.wb[lang="ka"], .wb[lang="ka"] :is(h1,h2,input,select,textarea,button,.wb-revenue,.wb-revenue small,.wb-stat strong,.wb-header .brand small) { font-family: var(--font-ui); }
 .wb[lang="ka"] :is(h1,h2) { letter-spacing: -.02em; line-height: 1.4; }
 .wb[lang="ka"] .wb-welcome h1 { font-size: 29px; }
 .wb[lang="ka"] .wb-impact h2 { font-size: 27px; }

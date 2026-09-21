@@ -137,7 +137,7 @@ input,textarea,select { scroll-margin-block: 100px; }
 .wb-quick .wb-button { min-height: 102px; justify-content: space-between; }
 .wb-attention { gap: 12px; padding: 18px; }
 .wb-heading p { font-size: 13px; }
-.lang-ka :is(h1,h2,h3,input,textarea,select,button,.map-layer-menu button span,.map-priority-list button span) { font-family: "Noto Sans Georgian",Inter,sans-serif; }
+.lang-ka :is(h1,h2,h3,input,textarea,select,button,.map-layer-menu button span,.map-priority-list button span) { font-family: var(--font-ui); }
 .lang-ka :is(h1,h2,h3) { letter-spacing: -.02em; line-height: 1.45; }
 .lang-ka :is(.eyebrow,.planner-kicker,.tag) { letter-spacing: .02em; }
 .lang-ka .bottom-nav a { font-size: 9px; }

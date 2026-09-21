@@ -1,6 +1,6 @@
 /* Shared shell */
 .topbar { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 74px; padding: 17px 20px 10px; background: linear-gradient(var(--bg) 76%, transparent); }
-.brand { font: 800 28px/1 Syne, Inter, sans-serif; letter-spacing: -0.08em; color: var(--text); }
+.brand { font: 800 28px/1 var(--font-ui); letter-spacing: -0.08em; color: var(--text); }
 .brand span { color: var(--accent); }
 .location-pill { display: flex; align-items: center; gap: 4px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 100px; background: var(--pill-bg); color: var(--muted); font-size: 11px; font-weight: 700; }
 .location-pill svg { width: 13px; color: var(--accent); }
@@ -27,7 +27,7 @@
 .primary, .secondary { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 13px; padding: 12px 15px; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
 .secondary { border: 1px solid var(--accent-border); background: var(--accent-soft); color: var(--accent); }
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 27px 0 13px; }
-.section-head h2 { margin: 0; font: 800 18px/1.2 Syne, Inter, sans-serif; letter-spacing: -0.04em; }
+.section-head h2 { margin: 0; font: 800 18px/1.2 var(--font-ui); letter-spacing: -0.04em; }
 .section-head a, .text-link { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: 12px; font-weight: 700; }
 .section-head a svg, .text-link svg { width: 14px; }
 

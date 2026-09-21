@@ -14,3 +14,9 @@ This repository contains UI experiments, design concepts, and frontend prototype
 This repository is under active development and does not represent the final product.
 
 Some assets, functionality, and documentation are intentionally omitted.
+
+## Typography
+
+English uses **Plus Jakarta Sans** throughout the app; Georgian uses **Noto Sans Georgian**. The shared families are defined in `assets/fonts.css` and selected through `--font-ui` by the page language.
+
+All new text, titles, cards, dialogs and controls should inherit the font. When a CSS `font` shorthand or third-party component requires an explicit family, use `var(--font-ui)`. Do not introduce page-specific font families. Keep weight and size separate: use 700–800 for bold headings and 400–600 for readable body text. The English variable fonts and their license are hosted in `assets/fonts/plus-jakarta-sans/`.

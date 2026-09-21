@@ -11,6 +11,10 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
     assert.equal(await page.locator('html').getAttribute('data-theme'),theme,route);
     for(const width of [390,320]){await page.setViewportSize({width,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${route} ${lang} ${theme} ${width}px overflow`);}
     await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.fonts.ready);await page.evaluate(()=>scrollTo(0,0));
+    if(lang==='en'){
+     const loaded=await page.evaluate(async()=>{const faces=await document.fonts.load('800 16px "Plus Jakarta Sans"');return faces.length>0&&faces.every(f=>f.status==='loaded');});assert.ok(loaded,route+' local English font loaded');
+     const mismatches=await page.evaluate(()=>[...document.querySelectorAll('body *')].filter(el=>el.getClientRects().length&&[...el.childNodes].some(n=>n.nodeType===Node.TEXT_NODE&&/[a-z]/i.test(n.textContent))&&!getComputedStyle(el).fontFamily.startsWith('"Plus Jakarta Sans"')).map(el=>el.tagName+'.'+el.className));assert.deepEqual(mismatches,[],route+' English typography');
+    }
     if(lang==='ka'&&await page.locator('h1').count())assert.match(await page.locator('h1').first().evaluate(e=>getComputedStyle(e).fontFamily),/Noto Sans Georgian/,route);
     if(['index.html','profile.html','atlas.html','wemo.html'].includes(route))await page.screenshot({path:`tests/visual-polish/${route.split('.')[0]}-${lang}-${theme}.png`,animations:'disabled'});
     assert.ok(await page.locator('.wemo-icon').count()>0,route+' icons');
