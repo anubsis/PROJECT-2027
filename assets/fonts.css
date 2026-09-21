@@ -15,9 +15,26 @@
   font-weight: 200 800;
   font-display: swap;
 }
+/* Mtavruli glyphs for Georgian text; Latin text keeps Plus Jakarta Sans. */
+@font-face {
+  font-family: "BPG Nino Mtavruli";
+  src: url('fonts/bpg-nino-mtavruli/regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+10A0-10FF;
+}
+@font-face {
+  font-family: "BPG Nino Mtavruli";
+  src: url('fonts/bpg-nino-mtavruli/bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+10A0-10FF;
+}
 :root {
-  --font-en: "Plus Jakarta Sans", "Noto Sans Georgian", sans-serif;
-  --font-ka: "Noto Sans Georgian", "Plus Jakarta Sans", sans-serif;
+  --font-en: "Plus Jakarta Sans", "BPG Nino Mtavruli", "Noto Sans Georgian", sans-serif;
+  --font-ka: "BPG Nino Mtavruli", "Plus Jakarta Sans", "Noto Sans Georgian", sans-serif;
   --font-ui: var(--font-en);
   font-family: var(--font-ui);
 }

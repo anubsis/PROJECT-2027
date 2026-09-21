@@ -17,6 +17,8 @@ Some assets, functionality, and documentation are intentionally omitted.
 
 ## Typography
 
-English uses **Plus Jakarta Sans** throughout the app; Georgian uses **Noto Sans Georgian**. The shared families are defined in `assets/fonts.css` and selected through `--font-ui` by the page language.
+English uses **Plus Jakarta Sans** throughout the app; Georgian uses **BPG Nino Mtavruli**. The shared families are defined in `assets/fonts.css` and selected through `--font-ui` by the page language.
 
 All new text, titles, cards, dialogs and controls should inherit the font. When a CSS `font` shorthand or third-party component requires an explicit family, use `var(--font-ui)`. Do not introduce page-specific font families. Keep weight and size separate: use 700–800 for bold headings and 400–600 for readable body text. The English variable fonts and their license are hosted in `assets/fonts/plus-jakarta-sans/`.
+
+Georgian regular and bold font files live in `assets/fonts/bpg-nino-mtavruli/`. Their source lists CC BY-NC-ND 4.0; commercial deployment requires appropriate font rights. Noto Sans Georgian remains a fallback for characters absent from BPG. Georgian capitals are a visual font treatment; stored text is not rewritten.

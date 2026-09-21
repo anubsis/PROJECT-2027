@@ -15,7 +15,11 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
      const loaded=await page.evaluate(async()=>{const faces=await document.fonts.load('800 16px "Plus Jakarta Sans"');return faces.length>0&&faces.every(f=>f.status==='loaded');});assert.ok(loaded,route+' local English font loaded');
      const mismatches=await page.evaluate(()=>[...document.querySelectorAll('body *')].filter(el=>el.getClientRects().length&&[...el.childNodes].some(n=>n.nodeType===Node.TEXT_NODE&&/[a-z]/i.test(n.textContent))&&!getComputedStyle(el).fontFamily.startsWith('"Plus Jakarta Sans"')).map(el=>el.tagName+'.'+el.className));assert.deepEqual(mismatches,[],route+' English typography');
     }
-    if(lang==='ka'&&await page.locator('h1').count())assert.match(await page.locator('h1').first().evaluate(e=>getComputedStyle(e).fontFamily),/Noto Sans Georgian/,route);
+    if(lang==='ka'){
+     const loaded=await page.evaluate(async()=>{const faces=await Promise.all([400,700].map(weight=>document.fonts.load(weight+' 16px "BPG Nino Mtavruli"','საქართველო')));return faces.every(group=>group.length>0&&group.every(f=>f.status==='loaded'));});assert.ok(loaded,route+' local Georgian regular/bold loaded');
+     const mismatches=await page.evaluate(()=>[...document.querySelectorAll('body *')].filter(el=>el.getClientRects().length&&[...el.childNodes].some(n=>n.nodeType===Node.TEXT_NODE&&/[ა-ჰ]/.test(n.textContent))&&!getComputedStyle(el).fontFamily.startsWith('"BPG Nino Mtavruli"')).map(el=>el.tagName+'.'+el.className));assert.deepEqual(mismatches,[],route+' Georgian typography');
+    }
+    if(lang==='ka'&&await page.locator('h1').count())assert.match(await page.locator('h1').first().evaluate(e=>getComputedStyle(e).fontFamily),/BPG Nino Mtavruli/,route);
     if(['index.html','profile.html','atlas.html','wemo.html'].includes(route))await page.screenshot({path:`tests/visual-polish/${route.split('.')[0]}-${lang}-${theme}.png`,animations:'disabled'});
     assert.ok(await page.locator('.wemo-icon').count()>0,route+' icons');
     assert.equal(await page.evaluate(()=>document.getAnimations().filter(a=>a.playState==='running'&&a.effect.getTiming().duration>1).length),0,route+' reduced motion');
@@ -33,7 +37,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
   await p.locator('.bottom-nav a[href="profile.html"]').click();await p.locator('[data-theme-open]').click();await p.locator('[data-theme-option="dark"]').click();await p.locator('[data-theme-dialog]').waitFor({state:'hidden'});assert.equal(await p.locator('html').getAttribute('data-theme'),'dark');
   await p.setViewportSize({width:1440,height:1000});await p.locator('.desktop-preview-toggle').click();await p.locator('.desktop-phone-active').waitFor();
   const nav=await p.locator('.bottom-nav').boundingBox(),screen=await p.locator('.desktop-phone__screen').boundingBox();assert.ok(nav.x>=screen.x&&nav.x+nav.width<=screen.x+screen.width+1);assert.ok(nav.y+nav.height<=screen.y+screen.height+1);
-  await p.screenshot({path:'tests/visual-polish/desktop-profile.png'});await p.locator('.lang-button').click();assert.equal(await p.locator('html').getAttribute('lang'),'ka');assert.match(await p.locator('.profile-head h1').evaluate(e=>getComputedStyle(e).fontFamily),/Noto Sans Georgian/);
+  await p.screenshot({path:'tests/visual-polish/desktop-profile.png'});await p.locator('.lang-button').click();assert.equal(await p.locator('html').getAttribute('lang'),'ka');assert.match(await p.locator('.profile-head h1').evaluate(e=>getComputedStyle(e).fontFamily),/BPG Nino Mtavruli/);
   console.log('PASS desktop phone preview: navigation bounds, language switching and Georgian font.');
   await ctx.close();assert.deepEqual(errors,[]);console.log('PASS normal motion: page navigation, filter interaction, dialog focus/escape, theme selection, no browser errors.');
  }finally{await browser.close();server.closeAllConnections();server.close();}

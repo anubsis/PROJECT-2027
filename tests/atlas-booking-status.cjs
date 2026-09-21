@@ -15,7 +15,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
   await customer.reload();await card.getByText('Completed',{exact:true}).waitFor();assert.equal(await card.count(),1);
   // Canonical cancellation maps to the fourth customer status without copying records.
   await owner.evaluate(id=>{const s=WemoBusinessStore.read();s.bookings.find(b=>b.id===id).status='Cancelled';WemoBusinessStore.write(s);},id);await card.getByText('Cancelled',{exact:true}).waitFor();
-  await customer.locator('[data-language]').click();await card.getByText('გაუქმებული',{exact:true}).waitFor();assert.match(await card.evaluate(e=>getComputedStyle(e).fontFamily),/Noto Sans Georgian/);
+  await customer.locator('[data-language]').click();await card.getByText('გაუქმებული',{exact:true}).waitFor();assert.match(await card.evaluate(e=>getComputedStyle(e).fontFamily),/BPG Nino Mtavruli/);
   await customer.setViewportSize({width:320,height:740});assert.equal(await card.locator('b').isVisible(),true);assert.equal(await customer.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await customer.evaluate(()=>WemoTheme.set('dark'));assert.equal(await customer.locator('html').getAttribute('data-theme'),'dark');
   // Missing/malformed business storage must leave Atlas's existing content usable.

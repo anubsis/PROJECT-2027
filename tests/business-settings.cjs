@@ -14,7 +14,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
    assert.equal(await page.locator('.wb').getAttribute('lang'),'ka',route);
    assert.equal(await page.locator('html').getAttribute('data-theme'),'dark',route);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,route+' overflow');
-   assert.match(await page.locator('.wb-main h1').first().evaluate(e=>getComputedStyle(e).fontFamily),/Noto Sans Georgian/,route);
+   assert.match(await page.locator('.wb-main h1').first().evaluate(e=>getComputedStyle(e).fontFamily),/BPG Nino Mtavruli/,route);
    english[route]=await page.locator('.wb-main').evaluate(root=>{const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const out=[];while(w.nextNode()){const e=w.currentNode;if(!e.parentElement.closest('input,textarea,option')&&/[A-Za-z]{3}/.test(e.textContent))out.push(e.textContent.trim());}return out;});
   }
   assert.ok(!JSON.stringify(english).includes('Or upload an image'));
@@ -37,7 +37,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
   // Fresh setup and claim share the same preferences and Georgian font.
   await page.evaluate(()=>localStorage.removeItem('wemo-business-v1'));await page.reload();
   await page.getByRole('link',{name:'დაამატეთ თქვენი ბიზნესი',exact:true}).click();await page.getByRole('heading',{name:'გაგვაცანით თქვენი ბიზნესი'}).waitFor();
-  assert.match(await page.getByLabel('ბიზნესის სახელი').evaluate(e=>getComputedStyle(e).fontFamily),/Noto Sans Georgian/);
+  assert.match(await page.getByLabel('ბიზნესის სახელი').evaluate(e=>getComputedStyle(e).fontFamily),/BPG Nino Mtavruli/);
   await page.goto(base+'/business.html#claim');await page.getByRole('heading',{name:'თქვენი ბიზნესი უკვე Wemo-ზეა?'}).waitFor();
   await page.getByRole('button',{name:/ძველი ქალაქის ღვინის სახლი/}).waitFor();
   assert.deepEqual(errors,[]);console.log('PASS: shared language/theme, Georgian fonts, all business routes, AI replies, draft preservation, theme switching and 320px layout.');
