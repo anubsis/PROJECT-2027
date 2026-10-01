@@ -348,11 +348,19 @@
   let activeMapPlace = 'old-town-wine-house';
   let activeMapCategory = 'all';
   let activePriority = null;
+  let activeBankService = 'branches';
+  let activeBankLocation = null;
+  let bankSearch = '';
+  let bankRequestId = 0;
+  let bankSelectedMarker = null;
   let wemoLeafletMap;
   let wemoMapLayers = [];
+  let wemoBankRenderer;
+  const bankLocationCache = new Map();
 
   const batumiBounds = [[41.625, 41.595], [41.675, 41.675]];
   const georgiaCoastBounds = [[41.42, 40.68], [43.6, 42.28]];
+  const georgiaBounds = [[41.02, 40.02], [43.62, 46.75]];
 
   function mapPlaces() {
     return (window.WEMO_BATUMI_MAP_PLACES || []).map((entry) => ({
@@ -363,12 +371,111 @@
   function clearMapLayers() {
     wemoMapLayers.forEach((layer) => layer.remove());
     wemoMapLayers = [];
+    bankSelectedMarker = null;
+  }
+
+  function bankServiceMeta() {
+    const en = i18n.lang === 'en';
+    return {
+      branches: { icon: 'building', label: en ? 'Branches' : 'ფილიალები', color: '#5b4bd8' },
+      atms: { icon: 'card', label: en ? 'ATMs' : 'ბანკომატები', color: '#13a77d' },
+      bogpay: { icon: 'plus', label: en ? 'BOGPAY terminals' : 'BOGPAY ჩარიცხვის აპარატები', color: '#f07b36' }
+    };
+  }
+
+  function bankCopy() {
+    const en = i18n.lang === 'en';
+    return en ? {
+      title: 'Bank of Georgia', eyebrow: 'BANKS & ATMS', choose: 'Choose a service to see every location in Georgia.',
+      live: 'Live BOG locations', loading: 'Loading locations…', unavailable: 'Locations could not be loaded.',
+      retry: 'Try again', directions: 'Directions', all: 'All locations', open247: 'Open 24/7',
+      search: 'Search BOG locations', noResults: 'No locations match this search.', clear: 'Clear search'
+    } : {
+      title: 'საქართველოს ბანკი', eyebrow: 'ბანკები და ბანკომატები', choose: 'აირჩიე სერვისი და ნახე ყველა ლოკაცია საქართველოში.',
+      live: 'BOG-ის მიმდინარე ლოკაციები', loading: 'ლოკაციები იტვირთება…', unavailable: 'ლოკაციების ჩატვირთვა ვერ მოხერხდა.',
+      retry: 'ხელახლა ცდა', directions: 'მარშრუტი', all: 'ყველა ლოკაცია', open247: 'ღიაა 24/7',
+      search: 'მოძებნე BOG-ის ლოკაცია', noResults: 'ამ ძიებით ლოკაცია ვერ მოიძებნა.', clear: 'ძიების გასუფთავება'
+    };
+  }
+
+  function updateBankSearchUI(active) {
+    const input = $('[data-map-search] input');
+    if (!input) return;
+    input.placeholder = active ? bankCopy().search : (i18n.lang === 'en' ? 'Search this area' : 'მოძებნე ამ არეში');
+    input.value = active ? bankSearch : '';
+    $('.wemo-map')?.classList.toggle('banking', active);
+  }
+
+  async function loadBankLocations(service, refresh = false) {
+    if (!refresh && bankLocationCache.has(service)) return bankLocationCache.get(service);
+    const source = window.WEMO_SERVER === true ? `/api/bog/locations?type=` + encodeURIComponent(service) : `assets/data/bog-` + service + `.json?v=1`;
+    const response = await fetch(source, { signal: AbortSignal.timeout(16000), credentials: 'same-origin' });
+    if (!response.ok) throw new Error('bog_unavailable');
+    const data = await response.json();
+    if (!Array.isArray(data.locations)) throw new Error('bog_invalid');
+    bankLocationCache.set(service, data);
+    return data;
+  }
+
+  function filteredBankLocations(data) {
+    const query = bankSearch.trim().toLocaleLowerCase(i18n.lang === 'ka' ? 'ka-GE' : 'en-US');
+    if (!query) return data.locations;
+    return data.locations.filter((location) => [location.nameEn, location.nameKa, location.addressEn, location.addressKa, location.cityEn, location.cityKa, location.nearbyEn, location.nearbyKa].join(' ').toLocaleLowerCase().includes(query));
+  }
+
+  function bankContext(state = 'ready') {
+    const target = $('[data-map-context]');
+    if (!target) return;
+    const copy = bankCopy(), services = bankServiceMeta(), data = bankLocationCache.get(activeBankService);
+    const selected = data?.locations.find((location) => location.id === activeBankLocation);
+    if (selected) {
+      const ka = i18n.lang === 'ka', name = (ka ? selected.nameKa : selected.nameEn) || copy.title;
+      const address = (ka ? selected.addressKa : selected.addressEn) || (ka ? selected.nearbyKa : selected.nearbyEn) || (ka ? selected.cityKa : selected.cityEn);
+      const badges = [selected.fullTime ? copy.open247 : '', ...(selected.currencies || [])].filter(Boolean);
+      target.innerHTML = `<article class="bank-location-card"><button type="button" class="bank-location-back" data-bank-back aria-label="${escapeHtml(copy.all)}">${icon('back')}</button><div class="bank-location-card__body"><span class="map-context__eyebrow">${escapeHtml(services[activeBankService].label)}</span><h2>${escapeHtml(name)}</h2><p>${icon('pin')}${escapeHtml(address || copy.title)}</p>${badges.length ? `<div class="bank-location-badges">${badges.map((badge) => `<span>${escapeHtml(badge)}</span>`).join('')}</div>` : ''}</div><a class="bank-directions" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(selected.lat + ',' + selected.lng)}" target="_blank" rel="noopener">${icon('arrow')}<span>${escapeHtml(copy.directions)}</span></a></article>`;
+      return;
+    }
+    const status = state === 'loading' ? `<div class="bank-status"><i class="bank-loader"></i><span>${escapeHtml(copy.loading)}</span></div>`
+      : state === 'error' ? `<div class="bank-status bank-status--error"><span>${escapeHtml(copy.unavailable)}</span><button type="button" data-bank-retry>${escapeHtml(copy.retry)}</button></div>`
+      : data && !filteredBankLocations(data).length ? `<div class="bank-status bank-status--empty"><span>${escapeHtml(copy.noResults)}</span><button type="button" data-bank-clear>${escapeHtml(copy.clear)}</button></div>` : '';
+    target.innerHTML = `<div class="bank-panel"><div class="bank-provider" aria-label="${escapeHtml(copy.title)}"><span class="bank-provider__mark">B</span><div><span class="map-context__eyebrow">${escapeHtml(copy.eyebrow)}</span><h2>${escapeHtml(copy.title)}</h2><p><i></i>${escapeHtml(copy.live)}</p></div>${icon('check')}</div><p class="bank-panel__prompt">${escapeHtml(copy.choose)}</p><div class="bank-services" role="group" aria-label="${escapeHtml(copy.choose)}">${Object.entries(services).map(([key, service]) => { const count = bankLocationCache.get(key)?.total; return `<button type="button" class="${key === activeBankService ? 'active' : ''}" data-bank-service="${key}" aria-pressed="${key === activeBankService}"><span>${icon(service.icon)}</span><b>${escapeHtml(service.label)}</b>${Number.isFinite(count) ? `<small>${count.toLocaleString()}</small>` : ''}</button>`; }).join('')}</div>${status}</div>`;
+  }
+
+  async function renderBankMap({ fit = true, refresh = false } = {}) {
+    const requestId = ++bankRequestId, service = activeBankService;
+    clearMapLayers();
+    updateBankSearchUI(true);
+    bankContext(bankLocationCache.has(service) && !refresh ? 'ready' : 'loading');
+    try {
+      const data = await loadBankLocations(service, refresh);
+      if (requestId !== bankRequestId || activePriority !== 'bank' || service !== activeBankService) return;
+      const locations = filteredBankLocations(data), meta = bankServiceMeta()[service];
+      const layer = window.L.layerGroup().addTo(wemoLeafletMap);
+      const baseStyle = { renderer: wemoBankRenderer, radius: service === 'branches' ? 6 : 5, weight: 2, color: '#fff', opacity: .92, fillColor: meta.color, fillOpacity: .9 };
+      locations.forEach((location) => {
+        const marker = window.L.circleMarker([location.lat, location.lng], baseStyle).addTo(layer);
+        marker.on('click', () => {
+          if (bankSelectedMarker) { bankSelectedMarker.setRadius(baseStyle.radius); bankSelectedMarker.setStyle({ weight: 2, color: '#fff' }); }
+          bankSelectedMarker = marker; marker.setRadius(baseStyle.radius + 4); marker.setStyle({ weight: 3, color: '#fff4bc' }); marker.bringToFront();
+          activeBankLocation = location.id; bankContext(); wemoLeafletMap.panTo([location.lat, location.lng], { animate: true });
+        });
+      });
+      wemoMapLayers.push(layer);
+      if (fit) {
+        if (bankSearch && locations.length) wemoLeafletMap.fitBounds(window.L.latLngBounds(locations.map((location) => [location.lat, location.lng])), { padding: [34, 34], maxZoom: 15 });
+        else wemoLeafletMap.fitBounds(georgiaBounds, { padding: [24, 24] });
+      }
+      bankContext();
+    } catch {
+      if (requestId === bankRequestId) bankContext('error');
+    }
   }
 
   function mapContext() {
     const target = $('[data-map-context]');
     if (!target) return;
     const en = i18n.lang === 'en';
+    if (activePriority === 'bank' && activeMapLayer === 'places') { bankContext(); return; }
     if (activeMapLayer === 'heat') {
       target.innerHTML = `<div class="heat-context"><div><span class="map-context__eyebrow">${en ? 'BEACH HEATMAP' : 'პლაჟის დატვირთულობა'}</span><h2>${en ? 'Batumi shore, right now' : 'ბათუმის სანაპირო ახლა'}</h2><p>${en ? 'A smooth shoreline view of beach activity.' : 'სანაპიროს აქტივობის გლუვი ხედვა.'}</p></div><div class="heat-legend" aria-label="${en ? 'Crowd level legend' : 'დატვირთულობის ლეგენდა'}"><span>${en ? 'Quiet' : 'მშვიდი'}</span><i></i><span>${en ? 'Busy' : 'დატვირთული'}</span></div></div>`;
       return;
@@ -381,7 +488,15 @@
   function setMapLayer(layer) {
     activeMapLayer = layer;
     clearMapLayers();
-    if (layer === 'heat') renderBeachHeatmap(); else renderPlacesMap();
+    if (layer === 'heat') {
+      if (activePriority === 'bank') activePriority = null;
+      updateBankSearchUI(false);
+      renderBeachHeatmap();
+    } else if (activePriority === 'bank') renderBankMap();
+    else {
+      updateBankSearchUI(false);
+      renderPlacesMap();
+    }
     mapContext();
     $$('[data-map-layer]').forEach((button) => button.classList.toggle('active', button.dataset.mapLayer === layer));
   }
@@ -449,7 +564,8 @@
       return;
     }
     if (wemoLeafletMap) wemoLeafletMap.remove();
-    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25 });
+    wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25, preferCanvas: true });
+    wemoBankRenderer = window.L.canvas({ padding: 0.45 });
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(wemoLeafletMap);
     window.L.control.zoom({ position: 'bottomright' }).addTo(wemoLeafletMap);
     setMapLayer(activeMapLayer);
@@ -528,9 +644,26 @@
     $$('[data-language]').forEach((button) => button.addEventListener('click', () => { i18n.lang = i18n.lang === 'en' ? 'ka' : 'en'; document.documentElement.lang = i18n.lang; document.body.classList.remove('lang-en', 'lang-ka'); document.body.classList.add(`lang-${i18n.lang}`); render(); }));
     $$('[data-toast]').forEach((button) => button.addEventListener('click', () => toast(button.dataset.toast)));
     $('[data-search]')?.addEventListener('submit', (event) => { event.preventDefault(); location.href = `search-results.html?q=${encodeURIComponent(new FormData(event.currentTarget).get('q').trim())}`; });
-    $('[data-map-search]')?.addEventListener('submit', (event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('q').trim(); if (query) location.href = `search-results.html?q=${encodeURIComponent(query)}`; });
+    $('[data-map-search]')?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const query = new FormData(event.currentTarget).get('q').trim();
+      if (activePriority === 'bank') { bankSearch = query; activeBankLocation = null; renderBankMap(); return; }
+      if (query) location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+    });
+    $('[data-map-context]')?.addEventListener('click', (event) => {
+      const service = event.target.closest('[data-bank-service]');
+      if (service) {
+        activeBankService = service.dataset.bankService; activeBankLocation = null; bankSearch = '';
+        renderBankMap(); return;
+      }
+      if (event.target.closest('[data-bank-back]')) { if (bankSelectedMarker) { const radius = activeBankService === 'branches' ? 6 : 5; bankSelectedMarker.setRadius(radius); bankSelectedMarker.setStyle({ weight: 2, color: '#fff' }); } activeBankLocation = null; bankSelectedMarker = null; bankContext(); return; }
+      if (event.target.closest('[data-bank-retry]')) { bankLocationCache.delete(activeBankService); renderBankMap({ refresh: true }); return; }
+      if (event.target.closest('[data-bank-clear]')) { bankSearch = ''; activeBankLocation = null; updateBankSearchUI(true); renderBankMap(); }
+    });
     $$('[data-map-category]').forEach((button) => button.addEventListener('click', () => {
       activeMapCategory = button.dataset.mapCategory;
+      activePriority = null; activeBankLocation = null; bankSearch = ''; bankRequestId += 1;
+      $$('[data-priority]').forEach((item) => { item.classList.remove('selected', 'revealed'); });
       $$('[data-map-category]').forEach((item) => item.classList.toggle('active', item === button));
       setMapLayer('places');
     }));
@@ -543,8 +676,13 @@
     });
     $$('[data-priority]').forEach((button) => button.addEventListener('click', () => {
       activePriority = button.dataset.priority;
+      activeBankLocation = null; bankSearch = ''; bankRequestId += 1;
       $$('[data-priority]').forEach((item) => { item.classList.toggle('selected', item === button); item.classList.toggle('revealed', item === button); });
-      if (activeMapLayer !== 'places') setMapLayer('places'); else { clearMapLayers(); renderPlacesMap(); }
+      if (activePriority === 'bank') {
+        $$('[data-map-category]').forEach((item) => item.classList.remove('active'));
+        activeMapLayer = 'places'; renderBankMap();
+      } else if (activeMapLayer !== 'places') setMapLayer('places');
+      else { updateBankSearchUI(false); clearMapLayers(); renderPlacesMap(); mapContext(); }
     }));
     $('[data-map-layers]')?.addEventListener('click', (event) => {
       const menu = $('[data-map-layer-menu]');

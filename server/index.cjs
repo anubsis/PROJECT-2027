@@ -15,7 +15,26 @@ const pick = (obj, keys) => Object.fromEntries(keys.map(k => [k, text(obj?.[k], 
 const validDate = v => /^\d{4}-\d{2}-\d{2}$/.test(v) && Number.isFinite(Date.parse(v)) && new Date(v).toISOString().slice(0,10) === v;
 const image = v => !v || /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(v) || (/^https?:\/\/[^\s]+$/i.test(v)&&!/["'<>`]/.test(v));
 
-function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sqlite'), root = path.join(__dirname, '..') } = {}) {
+const BOG_LOCATION_TYPES = { branches:'SC', atms:'ATM', bogpay:'PBX' };
+const bogPayload = type => ({
+  objectType:BOG_LOCATION_TYPES[type],isBOG:type==='branches',isEXP:type==='branches',isSOL:type==='branches',
+  isGel:type==='atms',isUsd:type==='atms',isEuro:type==='atms',city:null,worksFullTime:false,openNow:false,
+  isAdapted:false,searchWord:'',offset:null,limit:null,needDetails:true
+});
+const normalizeBogLocation = (row,type) => {
+  const lat=Number(row?.latitude),lng=Number(row?.longitude);
+  if(!Number.isFinite(lat)||!Number.isFinite(lng)||lat<40||lat>44||lng<39||lng>48)return null;
+  const currencies=list(row.atmCcys).map(value=>text(value,8).toUpperCase()).filter(Boolean);
+  return {
+    id:text(row.objectKey,80),type,nameEn:text(row.nameEn||row.objectName,180),nameKa:text(row.nameGe||row.objectName,180),
+    addressEn:text(row.addressEn,260),addressKa:text(row.addressGe,260),cityEn:text(row.cityEn,100),cityKa:text(row.cityGe,100),
+    nearbyEn:text(row.nearbyEn,220),nearbyKa:text(row.nearbyGe,220),lat,lng,currencies,
+    fullTime:row.worksFullTime==='Y'||/24\s*\/\s*7/.test(String(row.nearbyEn||row.nearbyGe||'')),
+    adapted:row.isAdapted===true||row.isAdapted==='Y',available:typeof row.available==='boolean'?row.available:null
+  };
+};
+
+function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sqlite'), root = path.join(__dirname, '..'), fetchImpl = fetch } = {}) {
   if (database !== ':memory:') fs.mkdirSync(path.dirname(database), {recursive:true});
   const db = new DatabaseSync(database);
   db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
@@ -27,6 +46,7 @@ function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sq
     CREATE INDEX IF NOT EXISTS bookings_business ON bookings(business_id);
     CREATE INDEX IF NOT EXISTS bookings_customer ON bookings(customer_id);`);
   const rates = new Map();
+  const bogCache = new Map();
   const getUser = req => {
     const token = /(?:^|;\s*)wemo_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
     if (!token) return null;
@@ -94,6 +114,18 @@ function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sq
         if(req.headers['sec-fetch-site']==='cross-site')fail(403,'origin');
       }
       const user=getUser(req);
+      if(url.pathname==='/api/bog/locations'&&req.method==='GET') {
+        const type=text(url.searchParams.get('type'),20);if(!BOG_LOCATION_TYPES[type])fail(400,'invalid_location_type');
+        const now=Date.now(),cached=bogCache.get(type);
+        if(cached&&cached.expires>now)return json(res,200,cached.value);
+        try{
+          const upstream=await fetchImpl('https://bankofgeorgia.ge/api/locations/searchLocations',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(bogPayload(type)),signal:AbortSignal.timeout(15000)});
+          if(!upstream.ok)throw new Error('bog_upstream');
+          const raw=await upstream.json(),locations=list(raw.data).map(row=>normalizeBogLocation(row,type)).filter(Boolean);
+          const value={type,total:locations.length,updatedAt:new Date().toISOString(),locations};bogCache.set(type,{expires:now+5*60000,value});
+          return json(res,200,value);
+        }catch(error){if(cached)return json(res,200,{...cached.value,stale:true});fail(502,'bog_unavailable');}
+      }
       if(url.pathname==='/api/bootstrap'&&req.method==='GET')return json(res,200,bootstrap(user));
       if(url.pathname==='/api/availability'&&req.method==='GET') {
         const row=db.prepare('SELECT * FROM businesses WHERE id=?').get(text(url.searchParams.get('businessId'),100));if(!row)fail(404,'unavailable');
@@ -189,5 +221,5 @@ function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sq
   });
   server.on('close',()=>db.close());return server;
 }
-module.exports={createServer};
+module.exports={createServer,bogPayload,normalizeBogLocation};
 if(require.main===module){const port=Number(process.env.PORT)||4173;const host=process.argv.includes('--lan')?'0.0.0.0':'127.0.0.1';createServer().listen(port,host,()=>{console.log(`Wemo: http://localhost:${port}\nDatabase: .local/wemo.sqlite`);if(host==='0.0.0.0'){for(const entries of Object.values(require('node:os').networkInterfaces()))for(const e of entries||[])if(e.family==='IPv4'&&!e.internal)console.log(`Same Wi-Fi: http://${e.address}:${port}`);console.log('Local HTTP testing only. Use test passwords on a trusted network.');}});}

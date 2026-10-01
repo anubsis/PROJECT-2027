@@ -11,6 +11,10 @@ With Node.js 22.13+ installed, run `npm start` and open http://localhost:4173. N
 
 See [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md) for the two-browser customer/owner workflow, same-Wi-Fi phone testing, data storage and remaining prototype features.
 
+### Bank of Georgia map data
+
+The banking map reads Bank of Georgia's current branch, ATM and BOGPAY terminal feed through the cached `/api/bog/locations` server route. Static hosting falls back to normalized snapshots in `assets/data/`. Run `npm run refresh:bog` to refresh all three snapshots from the official feed.
+
 ## Status
 
 🚧 Work in Progress

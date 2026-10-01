@@ -3,5 +3,5 @@
   "version": "0.1.0",
   "private": true,
   "engines": { "node": ">=22.13.0" },
-  "scripts": { "start": "node server/index.cjs", "start:lan": "node server/index.cjs --lan", "test": "node --test tests/local-api.test.cjs" }
+  "scripts": { "start": "node server/index.cjs", "start:lan": "node server/index.cjs --lan", "refresh:bog": "node scripts/refresh-bog-locations.cjs", "test": "node --test tests/*.test.cjs" }
 }
