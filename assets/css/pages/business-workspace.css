@@ -124,6 +124,20 @@ body[data-page="business"] .shell { padding-bottom: 0; }
 .wb-booking-meta span { display: flex; gap: 7px; align-items: center; font-size: 12px; }
 .wb-booking-meta svg { color: var(--muted); width: 15px; }
 .wb-booking-meta b { margin-left: auto; }
+.wb-launch-card { background: linear-gradient(145deg,var(--accent-soft),transparent 58%),var(--surface); }
+.wb-launch-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.wb-launch-head strong { font-size: 24px; color: var(--accent); }
+.wb-launch-head span { color: var(--muted); font-size: 11px; text-align: right; }
+.wb-launch-card .wb-checklist { margin-bottom: 18px; }
+.wb-launch-card .wb-checklist a { border-bottom: 1px solid var(--line); }
+.wb-launch-card .wb-checklist a > span:nth-child(2) { flex: 1; }
+.wb-launch-card .wb-checklist a > svg { width: 14px; color: var(--muted); }
+.wb-launch-card .wb-checklist a.is-done { color: var(--muted); }
+.wb-launch-card .wb-row > .wb-step { display: grid; place-items: center; flex: 0 0 28px; height: 28px; border-radius: 999px; background: var(--surface-2); color: var(--accent); font-size: 11px; font-weight: 800; }
+.wb-step svg { width: 14px !important; }
+.wb-booking-note { margin-top: 12px; padding: 11px 12px; border-radius: 11px; background: var(--surface-2); font-size: 11px; line-height: 1.6; }
+.wb-booking-note b { display: block; margin-bottom: 2px; color: var(--text); }
+.wb-availability { margin: -6px 0 16px; padding: 10px 12px; border: 1px solid var(--accent-border-soft); border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-size: 11px; }
 .wb-empty { text-align: center; padding: 40px 15px; }
 .wb-empty > svg { width: 32px; height: 32px; color: var(--accent); margin-bottom: 18px; }
 .wb-empty p { margin: 10px 0 20px; }

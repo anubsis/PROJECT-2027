@@ -23,6 +23,14 @@
   });
   Object.assign(ka, {"WEMO BUSINESS — DEMO INVOICE":"WEMO BUSINESS — დემო ანგარიში", "Not a tax invoice. No payment taken.":"არ არის საგადასახადო დოკუმენტი. თანხა არ ჩამოგჭრიათ.", "Invoice":"ანგარიში", "Business":"ბიზნესი", "Plan":"გეგმა", "Amount":"თანხა", "Cancel at least 24 hours before your visit.":"გააუქმეთ ვიზიტამდე მინიმუმ 24 საათით ადრე."});
   Object.assign(ka, {"View in Atlas":"ნახვა ატლასში", "The business will review your request. Follow its status in Atlas.":"ბიზნესი განიხილავს თქვენს მოთხოვნას. სტატუსს თვალი ადევნეთ ატლასში."});
+  Object.assign(ka, {
+    "Your launch checklist":"თქვენი გაშვების სია", "Ready for guests":"მზადაა სტუმრებისთვის", "Keep going — your progress is saved":"გააგრძელეთ — პროგრესი შენახულია", "Launch progress":"გაშვების პროგრესი",
+    "Complete your public profile":"შეავსეთ საჯარო პროფილი", "Create your first bookable listing":"შექმენით პირველი დასაჯავშნი შეთავაზება", "Review booking preferences":"გადაამოწმეთ ჯავშნის პარამეტრები", "Publish your business":"გამოაქვეყნეთ ბიზნესი", "Continue setup":"გაგრძელება",
+    "Guest note":"სტუმრის შენიშვნა", "Visit note":"ვიზიტის შენიშვნა", "Edit visit":"ვიზიტის რედაქტირება", "Booking unavailable":"ჯავშანი მიუწვდომელია", "This booking could not be found.":"ჯავშანი ვერ მოიძებნა.", "Back to bookings":"ჯავშნებზე დაბრუნება",
+    "Edit this visit":"ვიზიტის რედაქტირება", "Update the schedule or leave a note for your team.":"განაახლეთ დრო ან დაუტოვეთ შენიშვნა თქვენს გუნდს.", "Save booking":"ჯავშნის შენახვა",
+    "Anything we should know?":"არის რამე, რაც უნდა ვიცოდეთ?", "Choose a time to see live availability.":"აირჩიეთ დრო ხელმისაწვდომობის სანახავად.", "Checking availability…":"ხელმისაწვდომობა მოწმდება…", "No spaces left at this time.":"ამ დროს ადგილები აღარ არის.",
+    "space left at this time.":"ადგილია დარჩენილი ამ დროს.", "spaces left at this time.":"ადგილია დარჩენილი ამ დროს."
+  });
   const lang = () => window.WemoI18n.lang === 'ka' ? 'ka' : 'en';
   function t(value) {
     const text = String(value ?? '');

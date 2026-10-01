@@ -20,7 +20,12 @@
   B.publicId=()=>new URLSearchParams(location.search).get('business');
   B.businessState=()=>B.publicId()?B.businesses.find(s=>s.business.id===B.publicId()):B.ownerState;
   B.saveBusiness=async state=>{const result=await B.api('/business','PUT',state);B.ownerState=result.ownerState;return structuredClone(result.ownerState);};
-  B.updateBooking=async(id,status,previous)=>{const result=await B.api('/bookings/'+encodeURIComponent(id),'PATCH',{status,previous});B.ownerState=result.ownerState;return structuredClone(result.ownerState);};
+  B.availability=(businessId,listingId,date,time)=>B.api('/availability?'+new URLSearchParams({businessId,listingId,date,time}));
+  B.updateBooking=async(id,changes,previous)=>{
+    const result=await B.api('/bookings/'+encodeURIComponent(id),'PATCH',{...(typeof changes==='string'?{status:changes}:changes),previous});
+    if(result.ownerState)B.ownerState=result.ownerState;if(result.bookings)B.bookings=result.bookings;
+    return structuredClone(result.ownerState||result.bookings);
+  };
   B.requireAccount=()=>{if(B.user)return true;location.href='account.html?next='+encodeURIComponent(location.pathname+location.search+location.hash);return false;};
   B.toggleSaved=async id=>{if(!B.requireAccount())return;const result=await B.api('/saved','PUT',{id,saved:!B.saved.includes(id)});B.saved=result.saved;};
   B.ownerCards=page=>{

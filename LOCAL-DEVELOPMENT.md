@@ -18,8 +18,8 @@ On Windows, if PowerShell blocks `npm.ps1`, use `npm.cmd start` or `node server/
 2. Open **Wemo Business → Add your business**. Complete the profile, publish it, then add an active offer, event, or experience.
 3. Open a different browser or an incognito window. Create a separate customer account.
 4. Search for the business by name, open it, and request a booking. The date must fall within the listing dates and meet its minimum notice. Booking times use Georgia time (UTC+04:00).
-5. The owner opens **Wemo Business → Bookings → New** and confirms the request.
-6. The customer opens **Atlas → Bookings**. Status updates arrive automatically, usually within three seconds while the page is visible. Keep both windows open to watch the update.
+5. The owner opens **Wemo Business → Bookings → New**, confirms the request, edits its schedule, or adds a visit note.
+6. The customer opens **Atlas → Bookings**. Status updates arrive automatically, usually within three seconds while the page is visible. The customer can request another date/time or cancel a pending or confirmed visit.
 7. Save a place as the customer, then sign into the same account in another browser. Atlas shows the same saved places. Reload an already-open Atlas page to refresh its saved-place list.
 
 Published businesses are searchable and their listings appear under Events or Deals. Sample places remain examples; real booking requests are available through account-published businesses. Guests can browse published profiles but must sign in to save places or book. Each account can own one business and can also book other businesses.
@@ -39,7 +39,7 @@ Use test credentials on a trusted network: this local server uses HTTP, not prod
 - SQLite data is stored in `.local/wemo.sqlite`, with SQLite journal files alongside it. `.local/` is ignored by Git and is never served by the web server.
 - Passwords use salted scrypt hashes. Sessions use random, revocable HttpOnly/SameSite cookies; the database stores token hashes. Sessions last seven days.
 - Business editing and booking status changes require the owning account. Customer booking lists and saved places are private to the signed-in account.
-- Booking prices, status transitions, listing activity, dates and per-booking guest limits are checked on the server. Duplicate submissions with the same request key return the same booking.
+- Booking prices, status transitions, listing activity, dates and capacity are checked on the server. Pending and confirmed guests consume the shared capacity for the exact listing, date and time. Duplicate submissions with the same request key return the same booking.
 - Profile edits have a revision check. If another session changed the business, reopen that section before saving again; an old edit cannot overwrite newer changes.
 - Keep `.local/` private. To back up, stop the server and copy the entire `.local/` directory. There is no automatic reset or import of browser demo data.
 - Uploaded images remain in the business record for this small local MVP. An API request is limited to 3.5 MB total. Prefer image URLs or small uploads when adding several photos.
@@ -48,7 +48,7 @@ Use test credentials on a trusted network: this local server uses HTTP, not prod
 
 Email verification, password recovery emails, business claim verification, payment processing, notifications, real AI recommendations and discovery analytics are not connected. Subscription changes and invoices remain simulations. AI conversations and sample trips remain local demos; their browser storage is separated by account, but those conversations/trips do not sync across devices yet. Theme/language preferences remain device-local.
 
-Availability is a **per-booking guest limit**, not shared inventory across bookings. There is no automatic migration of the previous browser-only businesses or saved lists into accounts.
+Availability is shared for bookings at the exact same listing, date and time. Wemo does not yet generate fixed time slots from opening hours or manage day-wide/table-level inventory. There is no automatic migration of the previous browser-only businesses or saved lists into accounts.
 
 The original static demo remains available with `node tests/business-server.cjs` (stop the account server first because both default to port 4173). It uses separate browser-local demo data and does not expose real accounts. GitHub Pages cannot run the Node backend; use the local server for account tests.
 

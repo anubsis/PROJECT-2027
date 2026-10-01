@@ -34,12 +34,16 @@ function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sq
   };
   const own = user => db.prepare('SELECT * FROM businesses WHERE owner_id=?').get(user.id);
   const bookingData = row => ({...JSON.parse(row.data), id:row.id, businessId:row.business_id});
+  const liveBooking = booking => ['New','Upcoming'].includes(booking.status);
+  const reservedFor = (businessId,listingId,date,time,excludeId='') => db.prepare('SELECT id,data FROM bookings WHERE business_id=?').all(businessId).reduce((total,row)=>{
+    const booking=bookingData(row);return row.id!==excludeId&&booking.listingId===listingId&&booking.date===date&&booking.time===time&&liveBooking(booking)?total+Number(booking.guests||0):total;
+  },0);
   const ownedState = row => row ? {...JSON.parse(row.state),revision:row.revision,bookings:db.prepare('SELECT * FROM bookings WHERE business_id=? ORDER BY rowid DESC').all(row.id).map(bookingData)} : null;
   const publicState = row => {
     const s=JSON.parse(row.state); if (!s.business.published) return null;
     return {version:1,business:s.business,listings:s.listings,settings:s.settings,ai:pick(s.ai,['special','accessibility','languages']),plan:s.plan,bookings:[],activity:[],messages:[],invoices:[],billing:{},demo:false};
   };
-  const customerBookings = user => db.prepare('SELECT b.*,v.state FROM bookings b JOIN businesses v ON v.id=b.business_id WHERE b.customer_id=? ORDER BY b.rowid DESC').all(user.id).map(row=>({...bookingData(row),businessName:JSON.parse(row.state).business.name}));
+  const customerBookings = user => db.prepare('SELECT b.*,v.state FROM bookings b JOIN businesses v ON v.id=b.business_id WHERE b.customer_id=? ORDER BY b.rowid DESC').all(user.id).map(row=>{const booking=bookingData(row);delete booking.ownerNote;return {...booking,businessName:JSON.parse(row.state).business.name};});
   const bootstrap = user => ({user,saved:user?db.prepare('SELECT place_id FROM saved WHERE user_id=?').all(user.id).map(r=>r.place_id):[],ownerState:user?ownedState(own(user)):null,bookings:user?customerBookings(user):[],businesses:db.prepare('SELECT * FROM businesses').all().map(publicState).filter(Boolean)});
   const json = (res,status,value) => {res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
   const body = async req => {
@@ -91,6 +95,13 @@ function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sq
       }
       const user=getUser(req);
       if(url.pathname==='/api/bootstrap'&&req.method==='GET')return json(res,200,bootstrap(user));
+      if(url.pathname==='/api/availability'&&req.method==='GET') {
+        const row=db.prepare('SELECT * FROM businesses WHERE id=?').get(text(url.searchParams.get('businessId'),100));if(!row)fail(404,'unavailable');
+        const s=JSON.parse(row.state),listingId=text(url.searchParams.get('listingId'),80),date=text(url.searchParams.get('date'),10),time=text(url.searchParams.get('time'),5),l=s.listings.find(item=>item.id===listingId&&item.active);
+        if(!s.business.published||s.settings.accepting!=='yes'||!l||!validDate(date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)||date<l.start||date>l.end)fail(404,'unavailable');
+        const capacity=Math.min(Number(l.availability),Number(s.settings.maxGuests)),reserved=reservedFor(row.id,l.id,date,time);
+        return json(res,200,{capacity,reserved,remaining:Math.max(0,capacity-reserved)});
+      }
       if(['/api/auth/register','/api/auth/login'].includes(url.pathname)&&req.method==='POST') {
         const key=req.socket.remoteAddress;const now=Date.now();let rate=rates.get(key);if(!rate||rate.until<now){rate={count:0,until:now+15*60000};rates.set(key,rate);}if(++rate.count>40)fail(429,'rate_limit');
         for(const [k,v]of rates)if(v.until<now)rates.delete(k);
@@ -142,19 +153,36 @@ function createServer({ database = path.join(__dirname, '..', '.local', 'wemo.sq
         const date=text(d.date,10),time=text(d.time,5),guests=Number(d.guests);
         // App and businesses use Georgia's time zone, independently of the server's zone.
         if(!validDate(date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)||date<l.start||date>l.end||new Date(`${date}T${time}:00+04:00`).getTime()<Date.now()+Number(s.settings.notice)*3600000)fail(400,'booking_date');
-        if(!Number.isInteger(guests)||guests<1||guests>Math.min(Number(l.availability),Number(s.settings.maxGuests)))fail(400,'guests');
+        const capacity=Math.min(Number(l.availability),Number(s.settings.maxGuests));
+        if(!Number.isInteger(guests)||guests<1||guests>capacity)fail(400,'guests');
+        if(guests>capacity-reservedFor(row.id,l.id,date,time))fail(409,'capacity');
         const customer=text(d.customer,100);if(!customer)fail(400,'required_fields');
-        const data={customer,date,time,guests,item:l.title,listingId:l.id,source:'consumer',price:Math.round(Number(l.price)*guests*100)/100,status:'New',createdAt:new Date().toISOString()};
+        const data={customer,date,time,guests,item:l.title,listingId:l.id,source:'consumer',price:Math.round(Number(l.price)*guests*100)/100,status:'New',note:text(d.note,500),createdAt:new Date().toISOString()};
         const bookingId=id();db.prepare('INSERT INTO bookings VALUES(?,?,?,?,?)').run(bookingId,user.id,row.id,d.requestKey,JSON.stringify(data));
         return json(res,201,{booking:{...data,id:bookingId,businessId:row.id}});
       }
       const match=/^\/api\/bookings\/([a-zA-Z0-9-]+)$/.exec(url.pathname);
       if(match&&req.method==='PATCH') {
-        const d=await body(req);const row=db.prepare('SELECT b.* FROM bookings b JOIN businesses v ON v.id=b.business_id WHERE b.id=? AND v.owner_id=?').get(match[1],user.id);if(!row)fail(404,'not_found');
+        const d=await body(req);const row=db.prepare('SELECT b.*,v.owner_id,v.state FROM bookings b JOIN businesses v ON v.id=b.business_id WHERE b.id=?').get(match[1]);if(!row)fail(404,'not_found');
+        const isOwner=row.owner_id===user.id,isCustomer=row.customer_id===user.id;if(!isOwner&&!isCustomer)fail(404,'not_found');
         const booking=bookingData(row);if(d.previous!==booking.status)fail(409,'conflict');
-        if(!({New:['Upcoming','Cancelled'],Upcoming:['Completed','Cancelled']}[booking.status]||[]).includes(d.status))fail(400,'invalid_status');
-        booking.status=d.status;if(d.status==='Completed')booking.completedAt=new Date().toISOString();db.prepare('UPDATE bookings SET data=? WHERE id=?').run(JSON.stringify(booking),row.id);
-        return json(res,200,{ownerState:ownedState(own(user))});
+        const hasSchedule=['date','time','guests'].some(key=>Object.hasOwn(d,key));
+        if(hasSchedule){
+          if(!liveBooking(booking))fail(400,'invalid_status');
+          const s=JSON.parse(row.state),l=s.listings.find(item=>item.id===booking.listingId);if(!l||(isCustomer&&(!l.active||s.settings.accepting!=='yes')))fail(409,'unavailable');
+          const date=text(d.date,10),time=text(d.time,5),guests=Number(d.guests),capacity=Math.min(Number(l.availability),Number(s.settings.maxGuests));
+          if(!validDate(date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)||date<l.start||date>l.end||new Date(`${date}T${time}:00+04:00`).getTime()<Date.now()+Number(s.settings.notice)*3600000)fail(400,'booking_date');
+          if(!Number.isInteger(guests)||guests<1||guests>capacity)fail(400,'guests');
+          if(guests>capacity-reservedFor(row.business_id,l.id,date,time,row.id))fail(409,'capacity');
+          booking.date=date;booking.time=time;booking.guests=guests;booking.price=Math.round(Number(l.price)*guests*100)/100;booking.rescheduledAt=new Date().toISOString();booking.rescheduledBy=isOwner?'owner':'customer';if(isCustomer)booking.status='New';
+        }else{
+          const allowed=isOwner?({New:['Upcoming','Cancelled'],Upcoming:['Completed','Cancelled']}[booking.status]||[]):liveBooking(booking)?['Cancelled']:[];
+          if(!allowed.includes(d.status))fail(400,'invalid_status');booking.status=d.status;
+          if(d.status==='Completed')booking.completedAt=new Date().toISOString();if(d.status==='Cancelled')booking.cancelledAt=new Date().toISOString();
+        }
+        if(isOwner&&Object.hasOwn(d,'note'))booking.ownerNote=text(d.note,500);
+        db.prepare('UPDATE bookings SET data=? WHERE id=?').run(JSON.stringify(Object.fromEntries(Object.entries(booking).filter(([key])=>!['id','businessId'].includes(key)))),row.id);
+        return json(res,200,isOwner?{ownerState:ownedState(own(user))}:{bookings:customerBookings(user)});
       }
       fail(404,'not_found');
     }catch(e){if(!res.headersSent)json(res,e.status||500,{error:e.code||'server_error'});else res.end();if(!e.status)console.error(e);}

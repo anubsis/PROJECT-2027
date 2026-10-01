@@ -197,6 +197,7 @@
     const labels = ka
       ? {pending:'მოლოდინში',confirmed:'დადასტურებული',completed:'დასრულებული',cancelled:'გაუქმებული',planned:'დაგეგმილი'}
       : {pending:'Pending',confirmed:'Confirmed',completed:'Completed',cancelled:'Cancelled',planned:'Planned'};
+    const controls=ka?{change:'დროის შეცვლა',cancel:'გაუქმება',save:'ახალი დროის მოთხოვნა',close:'დახურვა',guests:'სტუმრები'}:{change:'Change time',cancel:'Cancel',save:'Request new time',close:'Close',guests:'Guests'};
     let actual = [];
     try {
       const business = window.WemoBackend?.enabled ? {version:1,bookings:WemoBackend.bookings} : JSON.parse(localStorage.getItem('wemo-business-v1'));
@@ -210,7 +211,8 @@
     const examples = (window.WemoBackend?.enabled ? [] : (state.bookings || [])).map(b => ({...b, meta:localized(b.meta, ctx.i18n.lang) + (ka?' · დემო':' · Demo')}));
     return actual.concat(examples).map(b => {
       const status = Object.hasOwn(labels,b.status) ? b.status : 'pending';
-      return '<article class="atlas-booking" data-booking-id="' + ctx.escapeHtml(b.id) + '"><span>' + ctx.icon(b.icon) + '</span><div><h3>' + ctx.escapeHtml(localized(b.title,ctx.i18n.lang)) + '</h3><p>' + ctx.escapeHtml(localized(b.meta,ctx.i18n.lang)) + '</p></div><b class="status-' + status + '">' + labels[status] + '</b></article>';
+      const source=window.WemoBackend?.enabled?WemoBackend.bookings.find(item=>item.id===b.id):null,manageable=source&&['New','Upcoming'].includes(source.status);
+      return '<article class="atlas-booking" data-booking-id="' + ctx.escapeHtml(b.id) + '"><span>' + ctx.icon(b.icon) + '</span><div><h3>' + ctx.escapeHtml(localized(b.title,ctx.i18n.lang)) + '</h3><p>' + ctx.escapeHtml(localized(b.meta,ctx.i18n.lang)) + '</p></div><b class="status-' + status + '">' + labels[status] + '</b>' + (manageable?'<div class="atlas-booking__actions"><button type="button" data-atlas-reschedule="'+ctx.escapeHtml(b.id)+'">'+controls.change+'</button><button type="button" data-atlas-cancel="'+ctx.escapeHtml(b.id)+'">'+controls.cancel+'</button></div><form class="atlas-booking__form" data-atlas-booking-form="'+ctx.escapeHtml(b.id)+'" hidden><label>'+controls.change+'<span><input name="date" type="date" value="'+ctx.escapeHtml(source.date)+'" required><input name="time" type="time" value="'+ctx.escapeHtml(source.time)+'" required></span></label><label>'+controls.guests+'<input name="guests" type="number" min="1" max="1000" value="'+Number(source.guests)+'" required></label><p role="alert"></p><div><button type="submit">'+controls.save+'</button><button type="button" data-atlas-reschedule="'+ctx.escapeHtml(b.id)+'">'+controls.close+'</button></div></form>':'')+'</article>';
     }).join('');
   }
 
@@ -300,10 +302,22 @@
           const html = atlasBookingCards({i18n:window.WemoI18n,icon:window.icon,escapeHtml:value=>String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))});
           if (list.innerHTML !== html) list.innerHTML = html;
         };
+        bind.atlasRefresh=refresh;
         window.addEventListener('storage', e => { if (e.key === 'wemo-business-v1' || e.key === null) refresh(); });
         window.addEventListener('pageshow', refresh);
         window.addEventListener('wemo:sync', refresh);
         window.addEventListener('focus', refresh);
+        document.addEventListener('click',async event=>{
+          const toggle=event.target.closest('[data-atlas-reschedule]');if(toggle){const form=document.querySelector('[data-atlas-booking-form="'+CSS.escape(toggle.dataset.atlasReschedule)+'"]');if(form)form.hidden=!form.hidden;return;}
+          const cancel=event.target.closest('[data-atlas-cancel]');if(!cancel)return;
+          const booking=WemoBackend.bookings.find(item=>item.id===cancel.dataset.atlasCancel);if(!booking||!confirm(window.WemoI18n.lang==='ka'?'გსურთ ჯავშნის გაუქმება?':'Cancel this booking?'))return;
+          cancel.disabled=true;try{await WemoBackend.updateBooking(booking.id,'Cancelled',booking.status);refresh();actions.toast(window.WemoI18n.lang==='ka'?'ჯავშანი გაუქმდა':'Booking cancelled');}catch(error){actions.toast(WemoAccount.message(error));cancel.disabled=false;}
+        });
+        document.addEventListener('submit',async event=>{
+          const form=event.target.closest('[data-atlas-booking-form]');if(!form)return;event.preventDefault();const booking=WemoBackend.bookings.find(item=>item.id===form.dataset.atlasBookingForm),error=form.querySelector('[role="alert"]');if(!booking)return;
+          const data=Object.fromEntries(new FormData(form));form.querySelector('[type="submit"]').disabled=true;error.textContent='';
+          try{await WemoBackend.updateBooking(booking.id,{date:data.date,time:data.time,guests:Number(data.guests)},booking.status);refresh();actions.toast(window.WemoI18n.lang==='ka'?'ახალი დრო გაიგზავნა დასადასტურებლად':'New time sent for confirmation');}catch(reason){error.textContent=WemoAccount.message(reason);form.querySelector('[type="submit"]').disabled=false;}
+        });
       }
       if (location.hash === '#bookings') {
         document.querySelectorAll('[data-atlas-filter]').forEach(b=>b.classList.toggle('active',b.dataset.atlasFilter==='bookings'));

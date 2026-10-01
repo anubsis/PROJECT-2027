@@ -55,6 +55,17 @@
 .status-completed { background: var(--success-soft); color: var(--success); }
 .status-cancelled { background: var(--surface-2); color: var(--muted); }
 .atlas-booking > b { flex-shrink: 0; }
+.atlas-booking { flex-wrap: wrap; }
+.atlas-booking > .atlas-booking__actions { display: flex; flex: 0 0 calc(100% - 50px); flex-wrap: wrap; gap: 7px; margin-left: 50px; }
+.atlas-booking__actions button { flex: 1 1 90px; }
+.atlas-booking__actions button, .atlas-booking__form button { min-height: 36px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--text); font: 700 10px/1.2 var(--font-ui); }
+.atlas-booking__actions button:first-child, .atlas-booking__form button[type="submit"] { border-color: var(--accent-border); background: var(--accent-soft); color: var(--accent); }
+.atlas-booking__form { flex: 0 0 calc(100% - 50px); display: grid; gap: 10px; margin-left: 50px; padding-top: 11px; border-top: 1px solid var(--line); }
+.atlas-booking__form[hidden] { display: none; }
+.atlas-booking__form label { display: grid; gap: 5px; color: var(--muted); font-size: 10px; font-weight: 700; }
+.atlas-booking__form label span, .atlas-booking__form > div { display: flex; gap: 7px; }
+.atlas-booking__form input { width: 100%; min-width: 0; min-height: 40px; padding: 8px; border: 1px solid var(--line); border-radius: 9px; background: var(--input-bg); color: var(--text); font-size: 14px; }
+.atlas-booking__form p { color: var(--gold); white-space: normal; }
 @media (max-width: 350px) {
   .atlas-booking { flex-wrap: wrap; }
   .atlas-booking > b { display: inline-block; margin-left: 50px; }
