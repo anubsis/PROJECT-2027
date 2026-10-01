@@ -11,7 +11,7 @@
 .map-categories button { display: inline-flex; height: 42px; flex: 0 0 auto; align-items: center; gap: 8px; padding: 0 15px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--muted); font: 700 12px/1 var(--font-ui); }
 .map-categories button svg { width: 17px; }
 .map-categories button.active { border-color: transparent; background: var(--nav-active); color: var(--nav-active-ink); box-shadow: 0 7px 18px var(--accent-shadow); }
-.wemo-map { position: relative; height: calc(100dvh - 235px); min-height: 510px; overflow: hidden; background: #163240; }
+.wemo-map { position: relative; height: max(330px, calc(100dvh - 235px)); min-height: 0; overflow: hidden; background: #163240; }
 #wemo-leaflet-map { position: absolute; inset: 0; background: #163240; }
 .wemo-map .leaflet-tile-pane { filter: saturate(.72) contrast(1.06) brightness(.72) hue-rotate(148deg); }
 .wemo-map .leaflet-control-zoom { display: none; }
@@ -82,7 +82,7 @@
 .bank-status button { padding: 6px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-2); color: var(--text); font: 700 9px/1 var(--font-ui); }
 .bank-loader { width: 13px; height: 13px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: bankSpin .8s linear infinite; }
 @keyframes bankSpin { to { transform: rotate(360deg); } }
-.bank-panel, .bank-location-card { animation: bankPanelIn .24s var(--ease); }
+.bank-location-card { animation: bankPanelIn .2s var(--ease); }
 @keyframes bankPanelIn { from { opacity: 0; transform: translateY(5px); } }
 .bank-location-card { display: grid; min-height: 76px; grid-template-columns: 34px minmax(0,1fr) auto; align-items: center; gap: 9px; color: var(--text); }
 .bank-location-back { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-2); color: var(--text); }
@@ -102,7 +102,7 @@
   .bank-services { margin-top: 9px; }
   .bank-services button { min-height: 55px; padding: 6px; }
 }
-@media (prefers-reduced-motion: reduce) { .bank-loader, .bank-panel, .bank-location-card { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bank-loader, .bank-location-card { animation: none; } }
 
 .wemo-map.banking .map-sheet:has(.bank-location-card) { min-height: 92px; }
 .wemo-map.banking:has(.bank-location-card) .map-layer-control, .wemo-map.banking:has(.bank-location-card) .map-priority-control { bottom: 126px; }
@@ -147,4 +147,35 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .bank-map-pin, .bank-map-cluster { animation: none; transition: none; }
+}
+
+
+/* Control fit and narrow-screen polish */
+.map-priority-list button.revealed {
+  display: inline-grid; width: max-content; max-width: calc(100vw - 32px);
+  grid-template-columns: 46px minmax(0,auto); justify-items: center; padding: 0 15px 0 0;
+  border-radius: 18px;
+}
+.map-priority-list button.revealed span {
+  position: static; width: max-content; max-width: min(210px,calc(100vw - 98px)); padding: 0;
+  border: 0; border-radius: 0; background: transparent; color: currentColor;
+  text-overflow: ellipsis; opacity: 1; backdrop-filter: none;
+}
+.map-priority-control.compact .map-priority-list button.selected {
+  display: grid; width: 48px; grid-template-columns: 1fr; padding: 0;
+}
+.map-priority-control.compact .map-priority-list button.selected span { display: none; }
+.map-categories { scroll-padding-inline: 16px; scroll-snap-type: x proximity; }
+.map-categories button { scroll-snap-align: start; }
+.map-categories button:last-child { margin-right: 16px; }
+.bank-services button b { overflow-wrap: normal; word-break: normal; hyphens: none; }
+@media (max-width: 360px) {
+  .wemo-map.banking .map-sheet { min-height: 168px; }
+  .wemo-map.banking .map-layer-control, .wemo-map.banking .map-priority-control { bottom: 196px; }
+  .bank-services button {
+    min-height: 62px; grid-template-columns: 1fr; grid-template-rows: 26px auto;
+    align-content: center; justify-items: start; gap: 4px; padding: 6px 7px;
+  }
+  .bank-services button b { padding-right: 0; font-size: 9px; line-height: 1.15; }
+  .bank-services button small { top: 7px; right: 7px; }
 }

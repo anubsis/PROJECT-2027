@@ -538,15 +538,16 @@
 
   async function renderBankMap({ refresh = false } = {}) {
     const requestId = ++bankRequestId, service = activeBankService;
+    const cachedAtStart = bankLocationCache.has(service) && !refresh;
     clearMapLayers();
     updateBankSearchUI(true);
-    bankContext(bankLocationCache.has(service) && !refresh ? 'ready' : 'loading');
+    bankContext(cachedAtStart ? 'ready' : 'loading');
     try {
       const data = await loadBankLocations(service, refresh);
       if (requestId !== bankRequestId || activePriority !== 'bank' || service !== activeBankService) return;
       wemoLeafletMap.setMaxZoom(18);
+      if (!cachedAtStart) bankContext();
       renderBankMarkers(filteredBankLocations(data));
-      bankContext();
     } catch {
       if (requestId === bankRequestId) bankContext('error');
     }
@@ -759,6 +760,10 @@
       activePriority = button.dataset.priority;
       activeBankLocation = null; bankSearch = ''; bankRequestId += 1;
       $$('[data-priority]').forEach((item) => { item.classList.toggle('selected', item === button); item.classList.toggle('revealed', item === button); });
+      const priorityControl = $('[data-priority-control]');
+      priorityControl?.classList.remove('open');
+      priorityControl?.classList.add('compact');
+      $('[data-priority-toggle]')?.setAttribute('aria-expanded', 'false');
       if (activePriority === 'bank') {
         $$('[data-map-category]').forEach((item) => item.classList.remove('active'));
         activeMapLayer = 'places'; renderBankMap();

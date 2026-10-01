@@ -70,3 +70,12 @@
   .atlas-booking { flex-wrap: wrap; }
   .atlas-booking > b { display: inline-block; margin-left: 50px; }
 }
+
+
+@media (max-width: 360px) {
+  .atlas-page .atlas-hero { min-height: 260px; }
+  .atlas-page .atlas-hero__content { min-height: 260px; padding: 18px; }
+  .atlas-page .atlas-hero h2 { font-size: 22px; }
+  .atlas-filters { flex-wrap: wrap; overflow: visible; margin-right: 0; margin-left: 0; padding-right: 0; padding-left: 0; }
+  .atlas-filters button { flex: 1 0 auto; }
+}
