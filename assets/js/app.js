@@ -352,15 +352,14 @@
   let activeBankLocation = null;
   let bankSearch = '';
   let bankRequestId = 0;
-  let bankSelectedMarker = null;
+  let bankMarkerLayer = null;
+  let bankMarkerRefreshTimer = null;
   let wemoLeafletMap;
   let wemoMapLayers = [];
-  let wemoBankRenderer;
   const bankLocationCache = new Map();
 
   const batumiBounds = [[41.625, 41.595], [41.675, 41.675]];
   const georgiaCoastBounds = [[41.42, 40.68], [43.6, 42.28]];
-  const georgiaBounds = [[41.02, 40.02], [43.62, 46.75]];
 
   function mapPlaces() {
     return (window.WEMO_BATUMI_MAP_PLACES || []).map((entry) => ({
@@ -371,7 +370,8 @@
   function clearMapLayers() {
     wemoMapLayers.forEach((layer) => layer.remove());
     wemoMapLayers = [];
-    bankSelectedMarker = null;
+    bankMarkerLayer = null;
+    clearTimeout(bankMarkerRefreshTimer);
   }
 
   function bankServiceMeta() {
@@ -441,7 +441,102 @@
     target.innerHTML = `<div class="bank-panel"><div class="bank-provider" aria-label="${escapeHtml(copy.title)}"><span class="bank-provider__mark">B</span><div><span class="map-context__eyebrow">${escapeHtml(copy.eyebrow)}</span><h2>${escapeHtml(copy.title)}</h2><p><i></i>${escapeHtml(copy.live)}</p></div>${icon('check')}</div><p class="bank-panel__prompt">${escapeHtml(copy.choose)}</p><div class="bank-services" role="group" aria-label="${escapeHtml(copy.choose)}">${Object.entries(services).map(([key, service]) => { const count = bankLocationCache.get(key)?.total; return `<button type="button" class="${key === activeBankService ? 'active' : ''}" data-bank-service="${key}" aria-pressed="${key === activeBankService}"><span>${icon(service.icon)}</span><b>${escapeHtml(service.label)}</b>${Number.isFinite(count) ? `<small>${count.toLocaleString()}</small>` : ''}</button>`; }).join('')}</div>${status}</div>`;
   }
 
-  async function renderBankMap({ fit = true, refresh = false } = {}) {
+  function clusterBankLocations(locations) {
+    const zoom = wemoLeafletMap.getZoom();
+    const radius = zoom < 8 ? 62 : zoom < 11 ? 54 : zoom < 14 ? 46 : 36;
+    const bounds = wemoLeafletMap.getBounds().pad(0.35);
+    const cells = new Map(), clusters = [];
+    locations.filter((location) => bounds.contains([location.lat, location.lng])).forEach((location) => {
+      const point = wemoLeafletMap.project([location.lat, location.lng], zoom);
+      const cellX = Math.floor(point.x / radius), cellY = Math.floor(point.y / radius);
+      let match = null;
+      for (let x = cellX - 1; x <= cellX + 1 && !match; x += 1) {
+        for (let y = cellY - 1; y <= cellY + 1 && !match; y += 1) {
+          for (const index of cells.get(x + ':' + y) || []) {
+            const cluster = clusters[index];
+            if (Math.hypot(point.x - cluster.pointX, point.y - cluster.pointY) <= radius) { match = cluster; break; }
+          }
+        }
+      }
+      if (match) {
+        match.locations.push(location);
+        const count = match.locations.length;
+        match.pointX += (point.x - match.pointX) / count;
+        match.pointY += (point.y - match.pointY) / count;
+        match.lat += (location.lat - match.lat) / count;
+        match.lng += (location.lng - match.lng) / count;
+      } else {
+        const cluster = { locations: [location], pointX: point.x, pointY: point.y, lat: location.lat, lng: location.lng };
+        const index = clusters.push(cluster) - 1, key = cellX + ':' + cellY;
+        cells.set(key, [...(cells.get(key) || []), index]);
+      }
+    });
+    return clusters;
+  }
+
+  function renderBankMarkers(locations) {
+    if (!wemoLeafletMap || activePriority !== 'bank') return;
+    if (bankMarkerLayer) {
+      bankMarkerLayer.remove();
+      wemoMapLayers = wemoMapLayers.filter((layer) => layer !== bankMarkerLayer);
+    }
+    const service = activeBankService, meta = bankServiceMeta()[service], copy = bankCopy();
+    bankMarkerLayer = window.L.layerGroup().addTo(wemoLeafletMap);
+    const clusters = clusterBankLocations(locations);
+    clusters.forEach((cluster, index) => {
+      const count = cluster.locations.length;
+      if (count > 1) {
+        const label = count > 999 ? '999+' : count.toLocaleString();
+        const marker = window.L.marker([cluster.lat, cluster.lng], {
+          keyboard: false,
+          icon: window.L.divIcon({
+            className: 'bank-map-cluster-wrap',
+            html: `<button type="button" class="bank-map-cluster" style="--marker-color:${meta.color};--pin-delay:${Math.min(index % 10, 9) * 18}ms" aria-label="${escapeHtml(meta.label + ': ' + count)}"><span>${label}</span></button>`,
+            iconSize: [48, 48], iconAnchor: [24, 24]
+          })
+        }).addTo(bankMarkerLayer);
+        marker.on('click', () => {
+          const maxZoom = wemoLeafletMap.getMaxZoom();
+          if (wemoLeafletMap.getZoom() >= maxZoom) {
+            activeBankLocation = cluster.locations[0].id; bankContext(); renderBankMarkers(locations); return;
+          }
+          const clusterBounds = window.L.latLngBounds(cluster.locations.map((location) => [location.lat, location.lng]));
+          if (clusterBounds.getNorthEast().equals(clusterBounds.getSouthWest())) wemoLeafletMap.setView([cluster.lat, cluster.lng], Math.min(maxZoom, wemoLeafletMap.getZoom() + 2), { animate: true });
+          else wemoLeafletMap.fitBounds(clusterBounds, { padding: [46, 46], maxZoom: Math.min(17, wemoLeafletMap.getZoom() + 3), animate: true });
+        });
+        return;
+      }
+      const location = cluster.locations[0], ka = i18n.lang === 'ka';
+      const name = (ka ? location.nameKa : location.nameEn) || copy.title;
+      const selected = location.id === activeBankLocation;
+      const marker = window.L.marker([location.lat, location.lng], {
+        keyboard: false,
+        icon: window.L.divIcon({
+          className: 'bank-map-pin-wrap',
+          html: `<button type="button" class="bank-map-pin bank-map-pin--${service} ${selected ? 'is-selected' : ''}" style="--marker-color:${meta.color};--pin-delay:${Math.min(index % 12, 11) * 16}ms" aria-label="${escapeHtml(name)}"><span>${icon(meta.icon)}</span></button>`,
+          iconSize: [44, 52], iconAnchor: [22, 49]
+        })
+      }).addTo(bankMarkerLayer);
+      marker.on('click', () => {
+        activeBankLocation = location.id;
+        document.querySelector('.bank-map-pin.is-selected')?.classList.remove('is-selected');
+        marker.getElement()?.querySelector('.bank-map-pin')?.classList.add('is-selected');
+        bankContext();
+      });
+    });
+    wemoMapLayers.push(bankMarkerLayer);
+  }
+
+  function scheduleBankMarkerRender() {
+    clearTimeout(bankMarkerRefreshTimer);
+    bankMarkerRefreshTimer = setTimeout(() => {
+      if (activePriority !== 'bank' || activeMapLayer !== 'places') return;
+      const data = bankLocationCache.get(activeBankService);
+      if (data) renderBankMarkers(filteredBankLocations(data));
+    }, 90);
+  }
+
+  async function renderBankMap({ refresh = false } = {}) {
     const requestId = ++bankRequestId, service = activeBankService;
     clearMapLayers();
     updateBankSearchUI(true);
@@ -449,22 +544,8 @@
     try {
       const data = await loadBankLocations(service, refresh);
       if (requestId !== bankRequestId || activePriority !== 'bank' || service !== activeBankService) return;
-      const locations = filteredBankLocations(data), meta = bankServiceMeta()[service];
-      const layer = window.L.layerGroup().addTo(wemoLeafletMap);
-      const baseStyle = { renderer: wemoBankRenderer, radius: service === 'branches' ? 6 : 5, weight: 2, color: '#fff', opacity: .92, fillColor: meta.color, fillOpacity: .9 };
-      locations.forEach((location) => {
-        const marker = window.L.circleMarker([location.lat, location.lng], baseStyle).addTo(layer);
-        marker.on('click', () => {
-          if (bankSelectedMarker) { bankSelectedMarker.setRadius(baseStyle.radius); bankSelectedMarker.setStyle({ weight: 2, color: '#fff' }); }
-          bankSelectedMarker = marker; marker.setRadius(baseStyle.radius + 4); marker.setStyle({ weight: 3, color: '#fff4bc' }); marker.bringToFront();
-          activeBankLocation = location.id; bankContext(); wemoLeafletMap.panTo([location.lat, location.lng], { animate: true });
-        });
-      });
-      wemoMapLayers.push(layer);
-      if (fit) {
-        if (bankSearch && locations.length) wemoLeafletMap.fitBounds(window.L.latLngBounds(locations.map((location) => [location.lat, location.lng])), { padding: [34, 34], maxZoom: 15 });
-        else wemoLeafletMap.fitBounds(georgiaBounds, { padding: [24, 24] });
-      }
+      wemoLeafletMap.setMaxZoom(18);
+      renderBankMarkers(filteredBankLocations(data));
       bankContext();
     } catch {
       if (requestId === bankRequestId) bankContext('error');
@@ -565,7 +646,6 @@
     }
     if (wemoLeafletMap) wemoLeafletMap.remove();
     wemoLeafletMap = window.L.map(mapElement, { zoomControl: false, attributionControl: false, zoomSnap: 0.25, preferCanvas: true });
-    wemoBankRenderer = window.L.canvas({ padding: 0.45 });
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(wemoLeafletMap);
     window.L.control.zoom({ position: 'bottomright' }).addTo(wemoLeafletMap);
     setMapLayer(activeMapLayer);
@@ -581,6 +661,7 @@
       if (layerMenu) layerMenu.hidden = true;
       $('[data-map-layers]')?.setAttribute('aria-expanded', 'false');
     });
+    wemoLeafletMap.on('zoomend moveend', scheduleBankMarkerRender);
     requestAnimationFrame(() => wemoLeafletMap.invalidateSize());
   }
 
@@ -656,7 +737,7 @@
         activeBankService = service.dataset.bankService; activeBankLocation = null; bankSearch = '';
         renderBankMap(); return;
       }
-      if (event.target.closest('[data-bank-back]')) { if (bankSelectedMarker) { const radius = activeBankService === 'branches' ? 6 : 5; bankSelectedMarker.setRadius(radius); bankSelectedMarker.setStyle({ weight: 2, color: '#fff' }); } activeBankLocation = null; bankSelectedMarker = null; bankContext(); return; }
+      if (event.target.closest('[data-bank-back]')) { activeBankLocation = null; bankContext(); scheduleBankMarkerRender(); return; }
       if (event.target.closest('[data-bank-retry]')) { bankLocationCache.delete(activeBankService); renderBankMap({ refresh: true }); return; }
       if (event.target.closest('[data-bank-clear]')) { bankSearch = ''; activeBankLocation = null; updateBankSearchUI(true); renderBankMap(); }
     });

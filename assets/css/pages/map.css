@@ -106,3 +106,45 @@
 
 .wemo-map.banking .map-sheet:has(.bank-location-card) { min-height: 92px; }
 .wemo-map.banking:has(.bank-location-card) .map-layer-control, .wemo-map.banking:has(.bank-location-card) .map-priority-control { bottom: 126px; }
+
+
+/* Zoom-aware BOG pins and clusters */
+.bank-map-pin-wrap, .bank-map-cluster-wrap { overflow: visible !important; border: 0; background: transparent; }
+.bank-map-pin, .bank-map-cluster { appearance: none; border: 0; font-family: var(--font-ui); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.bank-map-pin {
+  position: relative; display: grid; width: 38px; height: 38px; place-items: center; padding: 0;
+  border: 3px solid rgba(255,255,255,.96); border-radius: 50% 50% 50% 12px;
+  background: linear-gradient(145deg,color-mix(in srgb,var(--marker-color) 76%,#fff),var(--marker-color));
+  color: #fff; box-shadow: 0 7px 15px rgba(19,19,30,.35), inset 0 1px 0 rgba(255,255,255,.3);
+  transform: rotate(-45deg); transform-origin: 50% 50%;
+  animation: bankPinIn .34s cubic-bezier(.2,.82,.2,1) both; animation-delay: var(--pin-delay,0ms);
+  transition: translate .18s ease, scale .18s ease, box-shadow .18s ease;
+}
+.bank-map-pin > span { display: grid; width: 24px; height: 24px; place-items: center; transform: rotate(45deg); }
+.bank-map-pin svg { width: 16px; stroke-width: 2.1; }
+.bank-map-pin::after { content: ''; position: absolute; top: 5px; left: 7px; width: 8px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.35); transform: rotate(12deg); }
+.bank-map-pin:hover { translate: 0 -2px; scale: 1.06; box-shadow: 0 10px 20px rgba(19,19,30,.42), inset 0 1px 0 rgba(255,255,255,.3); }
+.bank-map-pin:active { scale: .92; }
+.bank-map-pin.is-selected { border-color: #fff4bc; box-shadow: 0 0 0 7px color-mix(in srgb,var(--marker-color) 25%,transparent), 0 10px 24px rgba(19,19,30,.42); animation: bankPinSelected 1.65s ease-in-out infinite; }
+.bank-map-cluster {
+  position: relative; display: grid; width: 46px; height: 46px; place-items: center; padding: 0;
+  border: 3px solid rgba(255,255,255,.96); border-radius: 50%;
+  background: linear-gradient(145deg,color-mix(in srgb,var(--marker-color) 82%,#fff),var(--marker-color));
+  color: #fff; box-shadow: 0 0 0 5px color-mix(in srgb,var(--marker-color) 18%,transparent), 0 8px 20px rgba(19,19,30,.34);
+  animation: bankClusterIn .3s cubic-bezier(.2,.82,.2,1) both; animation-delay: var(--pin-delay,0ms);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.bank-map-cluster::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(255,255,255,.28); border-radius: inherit; }
+.bank-map-cluster span { position: relative; z-index: 1; font-size: 12px; font-weight: 800; letter-spacing: -.02em; }
+.bank-map-cluster:hover { transform: translateY(-2px) scale(1.06); box-shadow: 0 0 0 7px color-mix(in srgb,var(--marker-color) 20%,transparent), 0 11px 24px rgba(19,19,30,.4); }
+.bank-map-cluster:active { transform: scale(.94); }
+.bank-map-pin:focus-visible, .bank-map-cluster:focus-visible { outline: 3px solid #fff4bc; outline-offset: 3px; }
+@keyframes bankPinIn { from { opacity: 0; transform: translateY(-10px) rotate(-45deg) scale(.55); } to { opacity: 1; transform: translateY(0) rotate(-45deg) scale(1); } }
+@keyframes bankClusterIn { from { opacity: 0; transform: scale(.65); } to { opacity: 1; transform: scale(1); } }
+@keyframes bankPinSelected {
+  0%,100% { transform: rotate(-45deg) scale(1); }
+  50% { transform: rotate(-45deg) translate(2px,-2px) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bank-map-pin, .bank-map-cluster { animation: none; transition: none; }
+}
